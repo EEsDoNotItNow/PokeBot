@@ -5,7 +5,7 @@ import argparse
 import sys
 
 from .code.Client import Client
-from .code.ExampleModule import ExampleModule
+from .code.GameEngine import GameEngine
 from .code.Log import Log
 from .code.SQL import SQL
 
@@ -41,7 +41,7 @@ x.register(SQL("poke.db"))
 ### Register all modules here ###
 #################################
 
-x.register(ExampleModule())
+x.register(GameEngine())
 
 #################################
 ### Register all modules here ###
