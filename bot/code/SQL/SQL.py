@@ -18,10 +18,10 @@ class SQL(metaclass=Singleton):
         self.log = Log()
         self.client = Client()
         self._commit_in_progress = False
+        self.log.info("SQL init completed")
 
 
     async def on_ready(self):
-        self.log.info("SQL registered to recieve commands!")
 
         if not await self.table_exists('users'):
             self.log.warning("Users table not found, creating")
@@ -29,6 +29,9 @@ class SQL(metaclass=Singleton):
             
         if not await self.table_exists('servers'):
             self.log.warning("Servers table not found, creating")
+
+            
+        self.log.info("SQL registered to recieve commands!")
 
 
     async def on_message(self, message):
