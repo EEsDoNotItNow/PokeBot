@@ -1,4 +1,4 @@
 
-class Pokedex:
 
+class Pokedex:
     pass

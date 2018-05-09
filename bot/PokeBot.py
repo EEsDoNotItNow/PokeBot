@@ -3,9 +3,9 @@
 import os
 import argparse
 
-from code.Client import Client
-from code.ExampleModule import ExampleModule
-from code.Log import Log
+from .code.Client import Client
+from .code.ExampleModule import ExampleModule
+from .code.Log import Log
 
 parser = argparse.ArgumentParser(description='Basic Bot Demo')
 
@@ -15,6 +15,9 @@ parser.add_argument('--name',
 
 parser.add_argument('--token',
                     help='Token to use to login')
+
+parser.add_argument('--env',
+                    help='Current environment')
 
 parser.add_argument('--log-level',
                     choices = ['INFO','DEBUG'],
