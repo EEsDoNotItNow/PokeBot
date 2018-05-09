@@ -102,3 +102,5 @@ ENV/
 
 # Grab what ever is new!!
 Pipfile.lock
+
+*.db
