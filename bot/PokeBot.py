@@ -2,10 +2,13 @@
 
 import os
 import argparse
+import sys
 
 from .code.Client import Client
 from .code.ExampleModule import ExampleModule
 from .code.Log import Log
+from .code.SQL import SQL
+
 
 parser = argparse.ArgumentParser(description='Basic Bot Demo')
 
@@ -32,6 +35,7 @@ log.info(args)
 
 x = Client()
 
+x.register(SQL("poke.db"))
 
 #################################
 ### Register all modules here ###
