@@ -14,12 +14,16 @@ class SQL(metaclass=Singleton):
     def __init__(self, db_name):
         self.conn = sqlite3.connect(db_name)
         self.conn.row_factory = self.dict_factory
-        self.cur = self.conn.cursor()
         self.log = Log()
         self.client = Client()
         self._commit_in_progress = False
         self.log.info("SQL init completed")
 
+
+    @property
+    def cur(self):
+        return self.conn.cursor()
+    
 
     async def on_ready(self):
 

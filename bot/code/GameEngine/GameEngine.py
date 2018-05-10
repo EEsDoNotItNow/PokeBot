@@ -3,7 +3,7 @@ import re
 
 from ..Log import Log
 from ..Client import Client
-from ..Player import Trainer
+from ..Player import Trainer, League
 
 class GameEngine:
 
@@ -26,12 +26,10 @@ class GameEngine:
             self.log.info("Saw a play command, handle it!")
             await self.command_proc(message)
 
-        pass
-
 
     async def on_ready(self):
         self.log.info("GameEngine, ready to recieve commands!")
-        pass
+        await League.table_setup()
 
 
     async def on_resumed(self):
@@ -43,12 +41,17 @@ class GameEngine:
 
         match_obj = re.match("> *register *$", message.content)
         if match_obj:
-            await self.client.send_message(message.channel, f"So you wanna register <@{message.author.id}>? Too bad I don't work yet!")
-
             # Create a basic trainer object
-            new_trainer = Trainer(message.author.id, message.server.id)
+            trainer = await League(message.server.id).get_trainer(message.author.id, message.server.id)
+            if trainer is not None:
+                await self.client.send_message(message.channel, "Error, I cannot re-register you!")
+                return
 
-            em = await new_trainer.get_trainer_card()
+            # We are good to register them!
+            trainer = await League(message.server.id).register(message.author.id, message.server.id)
+
+            em = await trainer.get_trainer_card()
+            # await self.client.send_message(message.channel, f"Registered: {trainer}")
 
             await self.client.send_message(message.channel, embed=em)
 
