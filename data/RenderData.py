@@ -114,6 +114,7 @@ for entry in pokemon_types:
 
 output = {}
 output['pokedex'] = dex
+output['types'] = types_lookup
 
 with open("base.json",'w') as fp:
     json.dump(output,fp,indent=4,sort_keys=True)
