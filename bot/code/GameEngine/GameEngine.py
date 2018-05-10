@@ -3,6 +3,7 @@ import re
 
 from ..Log import Log
 from ..Client import Client
+from ..Player import Trainer
 
 class GameEngine:
 
@@ -43,4 +44,12 @@ class GameEngine:
         match_obj = re.match("> *register *$", message.content)
         if match_obj:
             await self.client.send_message(message.channel, f"So you wanna register <@{message.author.id}>? Too bad I don't work yet!")
+
+            # Create a basic trainer object
+            new_trainer = Trainer(message.author.id, message.server.id)
+
+            em = await new_trainer.get_trainer_card()
+
+            await self.client.send_message(message.channel, embed=em)
+
             return
