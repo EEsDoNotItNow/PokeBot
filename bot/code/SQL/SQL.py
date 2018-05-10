@@ -48,15 +48,15 @@ class SQL(metaclass=Singleton):
     async def commit(self, now=False):
         # Schedule a commit in the future
         # Get loop from the client, schedule a call to _commit and return
-        self.log.info("Start a commit()")
+        # self.log.info("Start a commit()")
         asyncio.ensure_future(self._commit(now))
-        self.log.info("Finsihed a commit()")
+        # self.log.info("Finsihed a commit()")
 
 
     async def _commit(self, now=False):
-        self.log.info("Start a _commit()")
+        # self.log.info("Start a _commit()")
         if self._commit_in_progress:
-            self.log.info("Skipped a _commit()")
+            # self.log.info("Skipped a _commit()")
             return
         self._commit_in_progress = True
         await asyncio.sleep(5)

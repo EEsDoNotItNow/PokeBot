@@ -17,28 +17,6 @@ class League:
         pass
 
 
-    @classmethod
-    async def table_setup(cls):
-        """Setup any SQL tables needed for this class
-        """
-        log = Log()
-        log.info("Check to see if trainers exists.")
-        sql = SQL()
-        if not await sql.table_exists("trainers"):
-            log.info("Create trainers table")
-            cur = sql.cur
-            cmd = """
-                CREATE TABLE trainers 
-                (
-                    trainer_id TEXT NOT NULL,
-                    user_id TEXT NOT NULL, 
-                    server_id TEXT NOT NULL,
-                    nickname TEXT,
-                    created_on TEXT DEFAULT CURRENT_TIMESTAMP
-                )
-            """
-            cur.execute(cmd)
-            await sql.commit()
 
 
 

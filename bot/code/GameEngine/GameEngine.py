@@ -4,6 +4,7 @@ import re
 from ..Log import Log
 from ..Client import Client
 from ..Player import Trainer, League
+from ..SQL import table_setup
 
 class GameEngine:
 
@@ -29,7 +30,7 @@ class GameEngine:
 
     async def on_ready(self):
         self.log.info("GameEngine, ready to recieve commands!")
-        await League.table_setup()
+        await table_setup()
 
 
     async def on_resumed(self):
