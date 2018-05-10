@@ -124,11 +124,9 @@ async def table_setup():
                 effort_sp_attack INTEGER NOT NULL,
                 effort_sp_defense INTEGER NOT NULL,
                 effort_speed INTEGER NOT NULL,
-                gendered BOOLEAN DEFAULT 1,
-                gender_ratio REAL DEFAULT 0.5,
-                catch_rate INTEGER NOT NULL,
-                hatch_time_min INTEGER,
-                hatch_time_max INTEGER,
+                gender_ratio INTEGER NOT NULL,
+                catch_rate INTEGER,
+                hatch_time INTEGER,
                 abilities TEXT,
                 hidden_abilities TEXT
             )

@@ -4,6 +4,8 @@ import csv
 import json
 from pprint import pprint
 
+dex = {}
+
 with open("pokemon/pokemon.csv") as csvfile:
     reader = csv.DictReader(csvfile)
     raw_dex = []
@@ -14,6 +16,16 @@ with open("pokemon/pokemon.csv") as csvfile:
                 raw_dex[-1][key] = int(raw_dex[-1][key])
             except ValueError:
                 pass
+
+for entry in raw_dex:
+    pokemon_id = entry['id']
+    dex[pokemon_id] = {}
+    dex[pokemon_id]['pokemon_id'] = pokemon_id
+    dex[pokemon_id]['identifier'] = entry['identifier']
+    dex[pokemon_id]['height'] = entry['height']
+    dex[pokemon_id]['weight'] = entry['weight']
+    dex[pokemon_id]['base_xp'] = entry['base_experience']
+
 
 with open("pokemon/pokemon_stats.csv") as csvfile:
     reader = csv.DictReader(csvfile)
@@ -26,6 +38,15 @@ with open("pokemon/pokemon_stats.csv") as csvfile:
             except ValueError:
                 pass
 
+stat_lookup = { 1:"hp", 2:"attack", 3:"defense", 4:"sp_attack", 5:"sp_defense", 6:"speed"}
+for entry in raw_stats:
+    pokemon_id = entry['pokemon_id']
+    base_key = "base_" + stat_lookup[entry['stat_id']]
+    effort_key = "effort_" + stat_lookup[entry['stat_id']]
+    dex[pokemon_id][base_key] = entry['base_stat']
+    dex[pokemon_id][effort_key] = entry['effort']
+
+
 with open("pokemon/pokemon_species.csv") as csvfile:
     reader = csv.DictReader(csvfile)
     species_stats = []
@@ -37,22 +58,14 @@ with open("pokemon/pokemon_species.csv") as csvfile:
             except ValueError:
                 pass
 
-pprint(species_stats)
-exit()
-
-dex = {}
-
-for poke in raw_dex:
-    entry_key = poke['id']
-    dex[entry_key] = dict(poke)
-    dex[entry_key]['stats'] = {}
-
-for stats_dict in raw_stats:
-    dex[stats_dict['pokemon_id']]['stats'][stats_dict['stat_id']] = {}
-    dex[stats_dict['pokemon_id']]['stats'][stats_dict['stat_id']]['base'] = stats_dict['base_stat']
-    dex[stats_dict['pokemon_id']]['stats'][stats_dict['stat_id']]['effort'] = stats_dict['effort']
+for entry in species_stats:
+    pokemon_id = entry['id']
+    dex[pokemon_id]['gender_ratio'] = entry['gender_rate']
+    dex[pokemon_id]['catch_rate'] = entry['capture_rate']
+    dex[pokemon_id]['hatch_time'] = entry['hatch_counter']
+    dex[pokemon_id]['base_happiness'] = entry['base_happiness']
 
 
 with open("poke_base.json",'w') as fp:
-    json.dump(dex,fp,indent=4)
+    json.dump(dex,fp,indent=4,sort_keys=True)
 
