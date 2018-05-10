@@ -2,6 +2,7 @@
 import asyncio
 import sqlite3
 import atexit
+import pathlib
 
 from ..Singleton import Singleton
 from ..Log import Log
@@ -13,12 +14,27 @@ class SQL(metaclass=Singleton):
     """
 
     def __init__(self, db_name):
+
+        db_path = pathlib.Path(db_name)
+        if not db_path.is_file():
+            self.create_db(db_name)
+
         self.conn = sqlite3.connect(db_name)
         self.conn.row_factory = self.dict_factory
         self.log = Log()
         self.client = Client()
         self._commit_in_progress = False
         self.log.info("SQL init completed")
+
+
+    def create_db(self, db_name):
+        conn = sqlite3.connect(db_name)
+        cur = conn.cursor()
+        cur.execute("PRAGMA journal_mode=WAL")
+        conn.commit()
+        cur.execute("PRAGMA synchronous=1")
+        conn.commit()
+        conn.close()
 
 
     @property

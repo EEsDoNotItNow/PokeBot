@@ -55,8 +55,8 @@ async def table_setup():
         cmd = """
             CREATE TABLE trainer_stats
             (
-                trainer_id TEXT NOT NULL,
-                pokecoin REAL DEFAULT 0,
+                trainer_id TEXT NOT NULL UNIQUE,
+                pokecoin REAL DEFAULT 100,
                 xp INTEGER DEFAULT 0,
                 level_normal INTEGER DEFAULT 0,
                 level_fight INTEGER DEFAULT 0,
@@ -75,6 +75,24 @@ async def table_setup():
                 level_ice INTEGER DEFAULT 0,
                 level_dragon INTEGER DEFAULT 0,
                 level_dark INTEGER DEFAULT 0
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
+    log.info("Check to see if trainer_pokedex exists.")
+    if not await sql.table_exists("trainer_pokedex"):
+        log.info("Create trainer_pokedex table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE trainer_pokedex
+            (
+                trainer_id TEXT NOT NULL,
+                pokemon_id TEXT NOT NULL,
+                caught INTEGER DEFAULT 0,
+                seen INTEGER DEFAULT 0,
+                defeated INTEGER DEFAULT 0
             )
         """
         cur.execute(cmd)

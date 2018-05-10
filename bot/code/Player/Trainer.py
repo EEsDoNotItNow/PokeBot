@@ -3,6 +3,7 @@
 import discord
 import datetime
 import dateutil.parser
+import uuid
 
 from ..Client import Client
 from ..Log import Log
@@ -26,6 +27,71 @@ class Trainer:
         self.user_id =  values['user_id']
         self.server_id =  values['server_id']
 
+        cmd = "SELECT * FROM trainer_stats WHERE trainer_id = :trainer_id"
+        values = self.sql.cur.execute(cmd, locals()).fetchone()
+
+        self.stats = dict(values)
+
+
+
+    @classmethod
+    async def generate_trainer_tables(cls, user_id, server_id):
+
+        user = Client().get_server(server_id).get_member(user_id)
+
+        sql = SQL()
+
+        name = user.nick if user.nick else user.name
+
+        cmd = """INSERT INTO trainers 
+            (trainer_id, 
+            user_id, 
+            server_id, 
+            nickname,
+            created_on)
+            VALUES
+            (:trainer_id, :user_id, :server_id, :name, :now)"""
+
+        trainer_id = str(uuid.uuid4())
+        now = datetime.datetime.now()
+
+        sql.cur.execute(cmd, locals())
+        await sql.commit()
+
+        """
+            CREATE TABLE trainer_stats
+            (
+                trainer_id TEXT NOT NULL UNIQUE,
+                pokecoin REAL DEFAULT 0,
+                xp INTEGER DEFAULT 0,
+                level_normal INTEGER DEFAULT 0,
+                level_fight INTEGER DEFAULT 0,
+                level_flying INTEGER DEFAULT 0,
+                level_poison INTEGER DEFAULT 0,
+                level_ground INTEGER DEFAULT 0,
+                level_rock INTEGER DEFAULT 0,
+                level_bug INTEGER DEFAULT 0,
+                level_ghost INTEGER DEFAULT 0,
+                level_steel INTEGER DEFAULT 0,
+                level_fire INTEGER DEFAULT 0,
+                level_water INTEGER DEFAULT 0,
+                level_grass INTEGER DEFAULT 0,
+                level_electric INTEGER DEFAULT 0,
+                level_psychic INTEGER DEFAULT 0,
+                level_ice INTEGER DEFAULT 0,
+                level_dragon INTEGER DEFAULT 0,
+                level_dark INTEGER DEFAULT 0
+            )
+        """
+
+        cmd = """INSERT INTO trainer_stats
+        (trainer_id)
+        VALUES
+        (:trainer_id)"""
+        sql.cur.execute(cmd, locals())
+        await sql.commit()
+
+
 
     async def get_trainer_card(self):
         em = discord.Embed()
@@ -37,11 +103,7 @@ class Trainer:
 
         em.set_author(name=self.nickname)
 
-        em.add_field(name="Level", value=0)
-
-        em.add_field(name="Pokedex", value="15/75")
-
-        em.add_field(name="Leader", value="Bolt (Pikachu) L.25")
+        em.add_field(name="Pokecoin", value=f"{self.stats['pokecoin']:,.2f}")
 
         em.timestamp = self.created_on
 
