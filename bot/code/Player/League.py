@@ -38,3 +38,18 @@ class League:
         return await self.get_trainer(user_id, server_id)
 
 
+    async def deregister(self, user_id, server_id):
+        """Register with the league!
+        """
+
+        cmd = "SELECT trainer_id FROM trainers WHERE server_id=:server_id AND user_id=:user_id"
+        value = cur.execute(cmd, locals()).fetchone()
+        if value is None:
+            return False
+
+        # Sorry dude, you are getting BALETED
+        cmd = "DELETE FROM trainers WHERE server_id=:server_id AND user_id=:user_id"
+        cur.execute(cmd, locals())
+        await self.sql.commit()
+
+
