@@ -6,6 +6,7 @@ import atexit
 from ..Singleton import Singleton
 from ..Log import Log
 from ..Client import Client
+from .table_setup import table_setup
 
 class SQL(metaclass=Singleton):
     """Manage SQL connection, as well as basic user information
@@ -34,6 +35,7 @@ class SQL(metaclass=Singleton):
         if not await self.table_exists('servers'):
             self.log.warning("Servers table not found, creating")
 
+        await table_setup()
             
         self.log.info("SQL registered to recieve commands!")
 

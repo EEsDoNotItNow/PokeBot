@@ -1,13 +1,13 @@
 
 from ..Log import Log
-from .SQL import SQL
+from . import SQL
 
 async def table_setup():
     """Setup any SQL tables needed for this class
     """
     log = Log()
     log.info("Check to see if trainers exists.")
-    sql = SQL()
+    sql = SQL.SQL()
     if not await sql.table_exists("trainers"):
         log.info("Create trainers table")
         cur = sql.cur
@@ -25,9 +25,7 @@ async def table_setup():
         await sql.commit()
 
 
-    log = Log()
     log.info("Check to see if trainer_stats exists.")
-    sql = SQL()
     if not await sql.table_exists("trainer_stats"):
         log.info("Create trainer_stats table")
         cur = sql.cur

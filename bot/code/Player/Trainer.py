@@ -27,46 +27,6 @@ class Trainer:
         self.server_id =  values['server_id']
 
 
-    @classmethod
-    async def table_setup(cls):
-        """Setup any SQL tables needed for this class
-        """
-        log = Log()
-        log.info("Check to see if trainer_stats exists.")
-        sql = SQL()
-        if not await sql.table_exists("trainer_stats"):
-            log.info("Create trainer_stats table")
-            cur = sql.cur
-            cmd = """
-                CREATE TABLE trainer_stats
-                (
-                    trainer_id TEXT NOT NULL,
-                    pokecoin REAL DEFAULT 0,
-                    xp INTEGER DEFAULT 0,
-                    level_normal INTEGER DEFAULT 0,
-                    level_fight INTEGER DEFAULT 0,
-                    level_flying INTEGER DEFAULT 0,
-                    level_poison INTEGER DEFAULT 0,
-                    level_ground INTEGER DEFAULT 0,
-                    level_rock INTEGER DEFAULT 0,
-                    level_bug INTEGER DEFAULT 0,
-                    level_ghost INTEGER DEFAULT 0,
-                    level_steel INTEGER DEFAULT 0,
-                    level_fire INTEGER DEFAULT 0,
-                    level_water INTEGER DEFAULT 0,
-                    level_grass INTEGER DEFAULT 0,
-                    level_electric INTEGER DEFAULT 0,
-                    level_psychic INTEGER DEFAULT 0,
-                    level_ice INTEGER DEFAULT 0,
-                    level_dragon INTEGER DEFAULT 0,
-                    level_dark INTEGER DEFAULT 0
-                )
-            """
-            cur.execute(cmd)
-            await sql.commit()
-
-
-
     async def get_trainer_card(self):
         em = discord.Embed()
 

@@ -30,7 +30,6 @@ class GameEngine:
 
     async def on_ready(self):
         self.log.info("GameEngine, ready to recieve commands!")
-        await table_setup()
 
 
     async def on_resumed(self):
