@@ -27,14 +27,6 @@ class SQL(metaclass=Singleton):
     
 
     async def on_ready(self):
-
-        if not await self.table_exists('users'):
-            self.log.warning("Users table not found, creating")
-            await self._create_user_table()
-            
-        if not await self.table_exists('servers'):
-            self.log.warning("Servers table not found, creating")
-
         await table_setup()
             
         self.log.info("SQL registered to recieve commands!")
@@ -67,24 +59,6 @@ class SQL(metaclass=Singleton):
         self._commit_in_progress = False
         self.log.info("Finished a _commit()")
 
-
-    async def _create_user_table(self):
-        cmd = """    
-                CREATE TABLE IF NOT EXISTS users
-                (
-                    name TEXT NOT NULL,
-                    user_id TEXT NOT NULL,
-                    discriminator TEXT,
-                    avatar TEXT,
-                    bot BOOLEAN,
-                    avatar_url TEXT,
-                    default_avatar TEXT,
-                    default_avatar_url TEXT,
-                    mention TEXT,
-                    created_at INTEGER
-                )"""
-        self.cur.execute(cmd)
-        await self.commit()
 
 
     async def table_exists(self, table_name):
