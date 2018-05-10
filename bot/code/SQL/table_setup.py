@@ -6,8 +6,31 @@ async def table_setup():
     """Setup any SQL tables needed for this class
     """
     log = Log()
-    log.info("Check to see if trainers exists.")
     sql = SQL.SQL()
+    
+    log.info("Check to see if users exists.")
+    if not await sql.table_exists("users"):
+        log.info("Create users table")
+        cur = sql.cur
+        cmd = """    
+            CREATE TABLE IF NOT EXISTS users
+            (
+                name TEXT NOT NULL,
+                user_id TEXT NOT NULL,
+                discriminator TEXT,
+                avatar TEXT,
+                bot BOOLEAN,
+                avatar_url TEXT,
+                default_avatar TEXT,
+                default_avatar_url TEXT,
+                mention TEXT,
+                created_at INTEGER
+            )"""
+        cur.execute(cmd)
+        await sql.commit()
+
+
+    log.info("Check to see if trainers exists.")
     if not await sql.table_exists("trainers"):
         log.info("Create trainers table")
         cur = sql.cur
@@ -52,6 +75,76 @@ async def table_setup():
                 level_ice INTEGER DEFAULT 0,
                 level_dragon INTEGER DEFAULT 0,
                 level_dark INTEGER DEFAULT 0
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
+    log.info("Check to see if pokedex exists.")
+    if not await sql.table_exists("pokedex"):
+        log.info("Create pokedex table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE pokedex
+            (
+                pokemon_id TEXT DEFAULT 0,
+                identifier TEXT NOT NULL,
+                height INTEGER NOT NULL,
+                weight INTEGER NOT NULL,
+                base_xp INTEGER NOT NULL,
+                base_hp INTEGER NOT NULL,
+                base_attack INTEGER NOT NULL, 
+                base_defense INTEGER NOT NULL, 
+                base_sp_attack INTEGER NOT NULL,
+                base_sp_defense INTEGER NOT NULL,
+                base_speed INTEGER NOT NULL,
+                effort_hp INTEGER NOT NULL,
+                effort_attack INTEGER NOT NULL, 
+                effort_defense INTEGER NOT NULL, 
+                effort_sp_attack INTEGER NOT NULL,
+                effort_sp_defense INTEGER NOT NULL,
+                effort_speed INTEGER NOT NULL,
+                gendered BOOLEAN DEFAULT 1,
+                gender_ratio REAL DEFAULT 0.5,
+                catch_rate INTEGER NOT NULL,
+                hatch_time_min INTEGER,
+                hatch_time_max INTEGER,
+                abilities TEXT,
+                hidden_abilities TEXT
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
+    log.info("Check to see if monsters exists.")
+    if not await sql.table_exists("monsters"):
+        log.info("Create monsters table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE monsters
+            (
+                pokemon_id TEXT NOT NULL,
+                monster_id TEXT NOT NULL,
+                name TEXT,
+                hp INTEGER NOT NULL,
+                xp INTEGER NOT NULL,
+                ability TEXT, 
+                hidden_ability TEXT,
+                gender TEXT,
+                iv_hp INTEGER DEFAULT 0,
+                iv_attack INTEGER DEFAULT 0,
+                iv_defense INTEGER DEFAULT 0,
+                iv_sp_attack INTEGER DEFAULT 0,
+                iv_sp_defense INTEGER DEFAULT 0,
+                iv_speed INTEGER DEFAULT 0,
+                ev_hp INTEGER DEFAULT 0,
+                ev_attack INTEGER DEFAULT 0,
+                ev_defense INTEGER DEFAULT 0,
+                ev_sp_attack INTEGER DEFAULT 0,
+                ev_sp_defense INTEGER DEFAULT 0,
+                ev_speed INTEGER DEFAULT 0
             )
         """
         cur.execute(cmd)
