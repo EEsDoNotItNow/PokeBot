@@ -20,6 +20,14 @@ with open("pokemon/pokemon.csv") as csvfile:
 for entry in raw_dex:
     pokemon_id = entry['id']
     dex[pokemon_id] = {}
+    dex[pokemon_id]['gender_ratio'] = None
+    dex[pokemon_id]['catch_rate'] = None
+    dex[pokemon_id]['hatch_time'] = None
+    dex[pokemon_id]['base_happiness'] = None
+
+
+for entry in raw_dex:
+    pokemon_id = entry['id']
     dex[pokemon_id]['pokemon_id'] = pokemon_id
     dex[pokemon_id]['identifier'] = entry['identifier']
     dex[pokemon_id]['height'] = entry['height']
@@ -64,7 +72,6 @@ for entry in species_stats:
     dex[pokemon_id]['catch_rate'] = entry['capture_rate']
     dex[pokemon_id]['hatch_time'] = entry['hatch_counter']
     dex[pokemon_id]['base_happiness'] = entry['base_happiness']
-
 
 with open("poke_base.json",'w') as fp:
     json.dump(dex,fp,indent=4,sort_keys=True)

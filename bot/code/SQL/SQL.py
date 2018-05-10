@@ -47,7 +47,10 @@ class SQL(metaclass=Singleton):
 
     async def on_ready(self):
         if self.setup_needed:
+            self.log.warning("Setup needed for SQL tables, starting")
+            self.log.warning("Calling table_setup()")
             await table_setup()
+            self.log.warning("Calling populate()")
             await populate()
             
         self.log.info("SQL registered to recieve commands!")
