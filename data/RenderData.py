@@ -26,6 +26,20 @@ with open("pokemon/pokemon_stats.csv") as csvfile:
             except ValueError:
                 pass
 
+with open("pokemon/pokemon_species.csv") as csvfile:
+    reader = csv.DictReader(csvfile)
+    species_stats = []
+    for entry in reader:
+        species_stats.append(dict(entry))
+        for key in species_stats[-1]:
+            try:
+                species_stats[-1][key] = int(species_stats[-1][key])
+            except ValueError:
+                pass
+
+pprint(species_stats)
+exit()
+
 dex = {}
 
 for poke in raw_dex:

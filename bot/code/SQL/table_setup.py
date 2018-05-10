@@ -90,9 +90,10 @@ async def table_setup():
             (
                 trainer_id TEXT NOT NULL,
                 pokemon_id TEXT NOT NULL,
-                caught INTEGER DEFAULT 0,
                 seen INTEGER DEFAULT 0,
-                defeated INTEGER DEFAULT 0
+                battled INTEGER DEFAULT 0,
+                defeated INTEGER DEFAULT 0,
+                caught INTEGER DEFAULT 0
             )
         """
         cur.execute(cmd)

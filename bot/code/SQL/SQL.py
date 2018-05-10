@@ -8,6 +8,7 @@ from ..Singleton import Singleton
 from ..Log import Log
 from ..Client import Client
 from .table_setup import table_setup
+from .populate import populate
 
 class SQL(metaclass=Singleton):
     """Manage SQL connection, as well as basic user information
@@ -16,8 +17,10 @@ class SQL(metaclass=Singleton):
     def __init__(self, db_name):
 
         db_path = pathlib.Path(db_name)
+        self.setup_needed = False
         if not db_path.is_file():
             self.create_db(db_name)
+            self.setup_needed = True
 
         self.conn = sqlite3.connect(db_name)
         self.conn.row_factory = self.dict_factory
@@ -43,7 +46,9 @@ class SQL(metaclass=Singleton):
     
 
     async def on_ready(self):
-        await table_setup()
+        if self.setup_needed:
+            await table_setup()
+            await populate()
             
         self.log.info("SQL registered to recieve commands!")
 

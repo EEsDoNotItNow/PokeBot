@@ -4,6 +4,7 @@ import discord
 import datetime
 import dateutil.parser
 import uuid
+import numpy
 
 from ..Client import Client
 from ..Log import Log
@@ -105,6 +106,13 @@ class Trainer:
 
         em.add_field(name="Pokecoin", value=f"{self.stats['pokecoin']:,.2f}")
 
+        em.add_field(name="Level", value=f"{self.level:,d}")
+
         em.timestamp = self.created_on
 
         return em
+
+
+    @property 
+    def level(self):
+        return int(numpy.sqrt(self.stats['xp']))
