@@ -16,12 +16,12 @@ async def populate():
 
     log.info("Loading pokedex data")
 
-    with open("data/poke_base.json") as fp:
+    with open("data/base.json") as fp:
         data = json.load(fp)
 
     log.info(f"Must load {len(data)} rows")
     cur = sql.cur
-    for key in data:
+    for key in data['pokedex']:
         # log.info(data[key])
         cmd = """INSERT INTO pokedex 
         (
@@ -44,7 +44,9 @@ async def populate():
             effort_speed,
             gender_ratio,
             catch_rate,
-            hatch_time
+            hatch_time,
+            type1,
+            type2
         ) VALUES (
             :pokemon_id,
             :identifier,
@@ -65,14 +67,16 @@ async def populate():
             :effort_speed,
             :gender_ratio,
             :catch_rate,
-            :hatch_time
+            :hatch_time,
+            :type1,
+            :type2
         )"""
         try:
-            cur.execute(cmd, data[key])
+            cur.execute(cmd, data['pokedex'][key])
         except:
             # log.exception(data[key])
-            pprint(data["1"])
-            pprint(data[key])
+            pprint(data['pokedex']["1"])
+            pprint(data['pokedex'][key])
             raise
     await sql.commit()
     log.info("Writes completed")

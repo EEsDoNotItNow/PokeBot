@@ -24,6 +24,7 @@ for entry in raw_dex:
     dex[pokemon_id]['catch_rate'] = None
     dex[pokemon_id]['hatch_time'] = None
     dex[pokemon_id]['base_happiness'] = None
+    dex[pokemon_id]['type2'] = None
 
 
 for entry in raw_dex:
@@ -73,6 +74,47 @@ for entry in species_stats:
     dex[pokemon_id]['hatch_time'] = entry['hatch_counter']
     dex[pokemon_id]['base_happiness'] = entry['base_happiness']
 
-with open("poke_base.json",'w') as fp:
-    json.dump(dex,fp,indent=4,sort_keys=True)
+
+# Lets handle types!
+with open("pokemon/types.csv") as csvfile:
+    reader = csv.DictReader(csvfile)
+    types_lookup = []
+    for entry in reader:
+        types_lookup.append(dict(entry))
+        for key in types_lookup[-1]:
+            try:
+                types_lookup[-1][key] = int(types_lookup[-1][key])
+            except ValueError:
+                pass
+temp = tuple(types_lookup)
+types_lookup = {}
+for entry in temp:
+    types_lookup[entry['id']] = entry['identifier']
+
+
+with open("pokemon/pokemon_types.csv") as csvfile:
+    reader = csv.DictReader(csvfile)
+    pokemon_types = []
+    for entry in reader:
+        pokemon_types.append(dict(entry))
+        for key in pokemon_types[-1]:
+            try:
+                pokemon_types[-1][key] = int(pokemon_types[-1][key])
+            except ValueError:
+                pass
+
+for entry in pokemon_types:
+    pokemon_id = entry['pokemon_id']
+    if entry['slot'] == 1:
+        dex[pokemon_id]['type1'] = entry['type_id']
+    elif entry['slot'] == 2:
+        dex[pokemon_id]['type2'] = entry['type_id']
+    else:
+        raise KeyError(f"Unknown slot '{entry['slot']}'")
+
+output = {}
+output['pokedex'] = dex
+
+with open("base.json",'w') as fp:
+    json.dump(output,fp,indent=4,sort_keys=True)
 

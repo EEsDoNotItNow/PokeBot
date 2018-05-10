@@ -128,7 +128,9 @@ async def table_setup():
                 catch_rate INTEGER,
                 hatch_time INTEGER,
                 abilities TEXT,
-                hidden_abilities TEXT
+                hidden_abilities TEXT,
+                type1 TEXT NOT NULL,
+                type2 TEXT
             )
         """
         cur.execute(cmd)

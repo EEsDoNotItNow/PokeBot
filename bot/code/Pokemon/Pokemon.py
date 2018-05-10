@@ -3,8 +3,11 @@ from ..SQL import SQL
 from ..Log import Log
 
 class Pokemon:
+
+
     sql = SQL()
     log = Log()
+
 
     def __init__(self, _id):
 
