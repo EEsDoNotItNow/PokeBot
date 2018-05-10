@@ -31,6 +31,16 @@ class GameEngine:
     async def on_ready(self):
         self.log.info("GameEngine, ready to recieve commands!")
 
+        # Test of the pokemon class
+        from ..Pokemon import Pokemon
+        x = Pokemon(1)
+        self.log.info(x)
+        await x.load()
+        self.log.info(x)
+        self.log.info("Finished test.")
+
+
+
 
     async def on_resumed(self):
         self.log.info("GameEngine, ready to recieve commands!")
