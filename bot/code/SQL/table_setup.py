@@ -182,3 +182,19 @@ async def table_setup():
         """
         cur.execute(cmd)
         await sql.commit()
+
+    log.info("Check to see if type_efficacy exists.")
+    if not await sql.table_exists("type_efficacy"):
+        log.info("Create type_efficacy table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE type_efficacy
+            (
+                damage_type_id INTEGER NOT NULL,
+                target_type_id INTEGER NOT NULL,
+                damage_factor INTEGER NOT NULL
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+

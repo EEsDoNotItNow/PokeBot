@@ -39,8 +39,10 @@ class GameEngine:
         self.log.info(x)
 
         for i in range(1,19):
-            x = Type(i)
-            self.log.info(f"{i}: {x}")
+            for j in range(1,19):
+                x = Type(i)
+                y = Type(j)
+                self.log.info(f"{x} x {y} = {x*y:.0%}")
 
         self.log.info("Finished test.")
 

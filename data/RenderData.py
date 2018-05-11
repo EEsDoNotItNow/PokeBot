@@ -112,9 +112,25 @@ for entry in pokemon_types:
     else:
         raise KeyError(f"Unknown slot '{entry['slot']}'")
 
+
+with open("pokemon/type_efficacy.csv") as csvfile:
+    reader = csv.DictReader(csvfile)
+    type_efficacy = []
+    for entry in reader:
+        type_efficacy.append(dict(entry))
+        for key in type_efficacy[-1]:
+            try:
+                type_efficacy[-1][key] = int(type_efficacy[-1][key])
+            except ValueError:
+                pass
+
+for entry in type_efficacy:
+    print(entry)
+
 output = {}
 output['pokedex'] = dex
 output['types'] = types_lookup
+output['type_efficacy'] = type_efficacy
 
 with open("base.json",'w') as fp:
     json.dump(output,fp,indent=4,sort_keys=True)

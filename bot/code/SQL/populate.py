@@ -98,6 +98,27 @@ async def populate():
             log.critical("Loading of data failed, we cannot conintue!")
             raise
 
+    log.info(f"Must load {len(data['type_efficacy'])} rows")
+    cur = sql.cur
+    for entry in data['type_efficacy']:
+        # log.info(data[key])
+        cmd = """INSERT INTO type_efficacy 
+        (
+            damage_type_id,
+            target_type_id,
+            damage_factor
+        ) VALUES (
+            :damage_type_id,
+            :target_type_id,
+            :damage_factor
+        )"""
+        try:
+            cur.execute(cmd, entry)
+        except:
+            log.critical("Loading of data failed, we cannot conintue!")
+            raise
+
     await sql.commit()
 
     log.info("Populate wites completed")
+
