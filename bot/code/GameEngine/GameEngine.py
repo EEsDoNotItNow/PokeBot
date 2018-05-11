@@ -32,11 +32,16 @@ class GameEngine:
         self.log.info("GameEngine, ready to recieve commands!")
 
         # Test of the pokemon class
-        from ..Pokemon import Pokemon
+        from ..Pokemon import Pokemon, Type
         x = Pokemon(1)
         self.log.info(x)
         await x.load()
         self.log.info(x)
+
+        for i in range(1,19):
+            x = Type(i)
+            self.log.info(f"{i}: {x}")
+
         self.log.info("Finished test.")
 
 
