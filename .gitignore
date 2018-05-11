@@ -104,3 +104,6 @@ ENV/
 Pipfile.lock
 
 *.db
+data/base.json
+poke.db-shm
+poke.db-wal

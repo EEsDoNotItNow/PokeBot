@@ -124,13 +124,52 @@ with open("pokemon/type_efficacy.csv") as csvfile:
             except ValueError:
                 pass
 
-for entry in type_efficacy:
-    print(entry)
+# Handle world generation
+
+with open("world/encounters.csv") as csvfile:
+    reader = csv.DictReader(csvfile)
+    encounters = []
+    for entry in reader:
+        encounters.append(dict(entry))
+        for key in encounters[-1]:
+            try:
+                encounters[-1][key] = int(encounters[-1][key])
+            except ValueError:
+                pass
+
+with open("world/location_names.csv") as csvfile:
+    reader = csv.DictReader(csvfile)
+    location_names = []
+    for entry in reader:
+        if entry['local_language_id'] != '9':
+            continue
+        location_names.append(dict(entry))
+        for key in location_names[-1]:
+            try:
+                location_names[-1][key] = int(location_names[-1][key])
+            except ValueError:
+                pass
+
+with open("world/zone_connections.csv") as csvfile:
+    reader = csv.DictReader(csvfile)
+    zone_connections = []
+    for entry in reader:
+        zone_connections.append(dict(entry))
+        for key in zone_connections[-1]:
+            try:
+                zone_connections[-1][key] = int(zone_connections[-1][key])
+            except ValueError:
+                pass
+
+locations = []
 
 output = {}
 output['pokedex'] = dex
 output['types'] = types_lookup
 output['type_efficacy'] = type_efficacy
+output['location_names'] = location_names
+output['encounters'] = encounters
+output['zone_connections'] = zone_connections
 
 with open("base.json",'w') as fp:
     json.dump(output,fp,indent=4,sort_keys=True)
