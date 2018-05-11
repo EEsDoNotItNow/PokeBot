@@ -24,8 +24,8 @@ class MonsterSpawner:
         pokemon_id = cur.execute(cmd).fetchone()['pokemon_id']
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
-        poke = Monster(pokemon_id)
-        await poke.load()
+        poke = await Monster(pokemon_id)
+        # await poke.load()
 
         poke.xp = np.random.randint(0,1e6)
 
