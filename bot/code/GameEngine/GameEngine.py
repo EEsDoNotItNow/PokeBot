@@ -76,5 +76,4 @@ class GameEngine:
             else:
                 await self.client.send_message(message.channel, f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")
 
-
             return
