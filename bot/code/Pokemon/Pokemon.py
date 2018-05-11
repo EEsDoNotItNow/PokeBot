@@ -2,6 +2,8 @@
 from ..SQL import SQL
 from ..Log import Log
 
+from .Type import Type
+
 class Pokemon:
 
 
@@ -62,4 +64,8 @@ class Pokemon:
         self.type1 = data['type1']
         self.type2 = data['type2']
         self.weight = data['weight']
+
+        self.type1 = Type(self.type1)
+        if self.type2:
+            self.type2 = Type(self.type2)
 
