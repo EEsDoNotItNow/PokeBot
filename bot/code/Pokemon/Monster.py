@@ -49,9 +49,8 @@ class Monster(Pokemon):
 
         em.add_field(name="Type", value=f"{str(self.type1).title()}{type2}")
 
-        hp = self.calc_stat( self.base_hp, self.iv_hp, self.ev_hp, self.level, 1  )
 
-        stats_block = f"`HP: {self.hp}/{hp}`"
+        stats_block = f"`HP: {self.hp_current}/{self.hp}`"
         stats_block += f"\n`ATK: {self.attack}`"
         stats_block += f"\n`DEF: {self.defense}`"
         stats_block += f"\n`S.ATK: {self.sp_attack}`"
@@ -148,3 +147,18 @@ class Monster(Pokemon):
         self.sp_attack = self.calc_stat(self.base_sp_attack, self.iv_sp_attack, self.ev_sp_attack, self.level, 1)
         self.sp_defense = self.calc_stat(self.base_sp_defense, self.iv_sp_defense, self.ev_sp_defense, self.level, 1)
         self.speed = self.calc_stat(self.base_speed, self.iv_speed, self.ev_speed, self.level, 1)
+
+
+    async def heal(self, amount=None):
+        """Add given amount of HP
+
+        @param 
+        """
+
+        if amount:
+            if self.hp_current + amount > self.hp:
+                self.hp_current = self.hp
+            else:
+                self.hp_current += amount
+        else:
+            self.hp_current = self.hp
