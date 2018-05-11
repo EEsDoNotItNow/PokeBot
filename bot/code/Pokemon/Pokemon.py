@@ -13,6 +13,8 @@ class Pokemon:
 
         self.id = int(_id)
         self.identifier = "NOT YET LOADED"
+        self.type1 = None
+        self.type2 = None
 
 
     def __repr__(self):
@@ -20,7 +22,11 @@ class Pokemon:
 
 
     def __str__(self):
-        return f"<Pokemon, Identifier: {self.identifier.title()}>"
+        if self.type2:
+            type2 = f"/{self.type2}"
+        else:
+            type2 = ""
+        return f"<Pokemon: {self.identifier.title()} ({self.type1}{type2})>"
 
 
     async def load(self):
