@@ -8,12 +8,11 @@ class Type:
     """Handle basic maths of types
     """
 
-    sql = SQL()
-    log = Log()
-
     type_efficacy = None
 
     def __init__(self, type_id):
+        self.sql = SQL()
+        self.log = Log()
         self.type_id = type_id
         self.identifier = self.sql.cur.execute("SELECT identifier FROM types WHERE type_id=:type_id", locals()).fetchone()['identifier']
 

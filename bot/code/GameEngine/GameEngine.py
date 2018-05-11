@@ -6,6 +6,8 @@ from ..Client import Client
 from ..Player import Trainer, League
 from ..SQL import table_setup
 
+from ..Pokemon import MonsterSpawner, Pokemon
+
 class GameEngine:
 
     def __init__(self):
@@ -30,15 +32,6 @@ class GameEngine:
 
     async def on_ready(self):
         self.log.info("GameEngine, ready to recieve commands!")
-
-        # Test of the pokemon class
-        from ..Pokemon import Pokemon, Type
-        x = Pokemon(1)
-        self.log.info(x)
-        await x.load()
-        self.log.info(x)
-
-        self.log.info("Finished test.")
 
 
     async def on_resumed(self):
@@ -74,5 +67,17 @@ class GameEngine:
                 await self.client.send_message(message.channel, f"The Discord League is sorry to see you go, <@!{message.author.id}>")
             else:
                 await self.client.send_message(message.channel, f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")
+
+            return
+
+        match_obj = re.match("> *spawn ?(\d+)?$", message.content)
+        if match_obj:
+
+            self.log.info(match_obj.groups())
+            spawner = MonsterSpawner()
+            poke = await spawner.spawn_random()
+            self.log.info(poke)
+
+            await self.client.send_message(message.channel, "test", embed=await poke.em())
 
             return

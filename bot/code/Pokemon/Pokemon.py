@@ -1,4 +1,6 @@
 
+import discord
+
 from ..SQL import SQL
 from ..Log import Log
 
@@ -7,13 +9,11 @@ from .Type import Type
 class Pokemon:
 
 
-    sql = SQL()
-    log = Log()
+    def __init__(self, pokemon_id):
+        self.sql = SQL()
+        self.log = Log()
 
-
-    def __init__(self, _id):
-
-        self.id = int(_id)
+        self.pokemon_id = pokemon_id
         self.identifier = "NOT YET LOADED"
         self.type1 = None
         self.type2 = None
@@ -31,9 +31,24 @@ class Pokemon:
         return f"<Pokemon: {self.identifier.title()} ({self.type1}{type2})>"
 
 
+    async def em(self):
+        """Return an embed object to display this class
+        """
+
+        em = discord.Embed()
+        em.title = self.identifier.title()
+        if self.type2:
+            type2 = f"/{str(self.type2).title()}"
+        else:
+            type2 = ""
+        em.add_field(name="Type", value=f"{str(self.type1).title()}{type2}")
+
+        return em
+
+
     async def load(self):
         # Define locals for use in SQL
-        pokemon_id = self.id
+        pokemon_id = self.pokemon_id
         cmd = "SELECT * FROM pokedex WHERE pokemon_id=:pokemon_id"
         cur = self.sql.cur
         data = cur.execute(cmd, locals()).fetchone()
