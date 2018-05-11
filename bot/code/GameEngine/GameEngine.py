@@ -72,9 +72,9 @@ class GameEngine:
             # Create a basic trainer object
             result =  await League(message.server.id).deregister(message.author.id, message.server.id)
             if result:
-                await self.client.send_message(message.channel, f"The Discord League is sorry to see you go, <@!{message.author.id}")
+                await self.client.send_message(message.channel, f"The Discord League is sorry to see you go, <@!{message.author.id}>")
             else:
-                await self.client.send_message(message.channel, f"The Discord League doesn't seem to have you registered, <@!{message.author.id}")
+                await self.client.send_message(message.channel, f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")
 
 
             return
