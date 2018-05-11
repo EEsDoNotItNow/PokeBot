@@ -1,4 +1,5 @@
 
+from .Enums import EnumStatus
 from .Monster import Monster
 from .MonsterSpawner import MonsterSpawner
 from .Pokedex import Pokedex

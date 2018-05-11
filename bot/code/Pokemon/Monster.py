@@ -8,6 +8,7 @@ from ..Log import Log
 from ..SQL import SQL
 
 from .Pokemon import Pokemon
+from . import EnumStatus
 
 class Monster(Pokemon):
 
@@ -26,6 +27,8 @@ class Monster(Pokemon):
 
         self.monster_id = monster_id
 
+        self.status = EnumStatus.ALIVE
+
 
     async def em(self, debug=False):
         """Return an embed object to display this class
@@ -43,6 +46,7 @@ class Monster(Pokemon):
             type2 = f"/{str(self.type2).title()}"
         else:
             type2 = ""
+
         em.add_field(name="Type", value=f"{str(self.type1).title()}{type2}")
 
         hp = self.calc_stat( self.base_hp, self.iv_hp, self.ev_hp, self.level, 1  )
@@ -55,6 +59,8 @@ class Monster(Pokemon):
         stats_block += f"\n`SPD: {self.speed}`"
 
         em.add_field(name="Stats", value=stats_block, inline=False)
+
+        em.add_field(name="Status", value=self.status)
 
         if debug:
             evs = {      
