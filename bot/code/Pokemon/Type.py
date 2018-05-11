@@ -37,3 +37,20 @@ class Type:
         return damage_factor/100
 
 
+    def __lt__(self, other):
+        return Type.type_efficacy[self.type_id][other.type_id] < 100
+
+    def __le__(self, other):
+        return Type.type_efficacy[self.type_id][other.type_id] <= 100
+
+    def __eq__(self, other):
+        return Type.type_efficacy[self.type_id][other.type_id] == 100
+
+    def __ne__(self, other):
+        return Type.type_efficacy[self.type_id][other.type_id] != 100
+
+    def __gt__(self, other):
+        return Type.type_efficacy[self.type_id][other.type_id] > 100
+
+    def __ge__(self, other):
+        return Type.type_efficacy[self.type_id][other.type_id] >= 100

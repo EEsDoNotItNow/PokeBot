@@ -38,12 +38,6 @@ class GameEngine:
         await x.load()
         self.log.info(x)
 
-        for i in range(1,19):
-            for j in range(1,19):
-                x = Type(i)
-                y = Type(j)
-                self.log.info(f"{x} x {y} = {x*y:.0%}")
-
         self.log.info("Finished test.")
 
 
