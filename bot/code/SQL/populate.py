@@ -19,7 +19,7 @@ async def populate():
     with open("data/base.json") as fp:
         data = json.load(fp)
 
-    log.info(f"Must load {len(data)} rows")
+    log.info(f"Must load {len(data['pokedex'])} rows")
     cur = sql.cur
     for key in data['pokedex']:
         # log.info(data[key])
@@ -74,36 +74,30 @@ async def populate():
         try:
             cur.execute(cmd, data['pokedex'][key])
         except:
-            # log.exception(data[key])
-            pprint(data['pokedex']["1"])
-            pprint(data['pokedex'][key])
+            log.critical("Loading of data failed, we cannot conintue!")
             raise
-    await sql.commit()
-    log.info("Writes completed")
 
-    """
-                (
-                pokemon_id TEXT DEFAULT 0,
-                identifier TEXT NOT NULL,
-                height INTEGER NOT NULL,
-                weight INTEGER NOT NULL,
-                base_xp INTEGER NOT NULL,
-                base_hp INTEGER NOT NULL,
-                base_attack INTEGER NOT NULL, 
-                base_defense INTEGER NOT NULL, 
-                base_sp_attack INTEGER NOT NULL,
-                base_sp_defense INTEGER NOT NULL,
-                base_speed INTEGER NOT NULL,
-                effort_hp INTEGER NOT NULL,
-                effort_attack INTEGER NOT NULL, 
-                effort_defense INTEGER NOT NULL, 
-                effort_sp_attack INTEGER NOT NULL,
-                effort_sp_defense INTEGER NOT NULL,
-                effort_speed INTEGER NOT NULL,
-                gender_ratio INTEGER NOT NULL,
-                catch_rate INTEGER,
-                hatch_time INTEGER,
-                abilities TEXT,
-                hidden_abilities TEXT
-            )
-    """
+    log.info(f"Must load {len(data['types'])} rows")
+    cur = sql.cur
+    for key in data['types']:
+        cmd = """INSERT INTO types 
+        (
+            type_id,
+            identifier
+        ) VALUES (
+            :type_id,
+            :identifier
+        )"""
+        type_id = key
+        identifier = data['types'][key]
+        try:
+            cur.execute(cmd, locals())
+        except:
+            log.critical(type_id)
+            log.critical(identifier)
+            log.critical("Loading of data failed, we cannot conintue!")
+            raise
+
+    await sql.commit()
+
+    log.info("Populate wites completed")

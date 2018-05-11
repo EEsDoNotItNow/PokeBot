@@ -168,3 +168,17 @@ async def table_setup():
         """
         cur.execute(cmd)
         await sql.commit()
+
+    log.info("Check to see if types exists.")
+    if not await sql.table_exists("types"):
+        log.info("Create types table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE types
+            (
+                type_id TEXT NOT NULL,
+                identifier TEXT NOT NULL
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
