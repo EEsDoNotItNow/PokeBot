@@ -72,12 +72,13 @@ class SQL(metaclass=Singleton):
 
 
     async def _commit(self, now=False):
-        # self.log.info("Start a _commit()")
-        if self._commit_in_progress:
-            # self.log.info("Skipped a _commit()")
+        self.log.debug("Start a _commit()")
+        if self._commit_in_progress and not now:
+            self.log.debug("Skipped a _commit()")
             return
         self._commit_in_progress = True
-        await asyncio.sleep(5)
+        if not now:
+            await asyncio.sleep(5)
         # Commit SQL
         self.conn.commit()
         self._commit_in_progress = False
