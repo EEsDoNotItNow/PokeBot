@@ -26,6 +26,30 @@ class Monster(Pokemon):
     async def load(self):
         await super().load()
 
+        self.hp_current = self.base_hp
+        self.xp = 0
+
+        self.iv_hp = 0
+        self.iv_attack = 0
+        self.iv_defense = 0
+        self.iv_sp_attack = 0
+        self.iv_sp_defense = 0
+        self.iv_speed = 0
+
+        self.ev_hp = 0
+        self.ev_attack = 0
+        self.ev_defense = 0
+        self.ev_sp_attack = 0
+        self.ev_sp_defense = 0
+        self.ev_speed = 0
+        
+        self.hp = 0
+        self.attack = 0
+        self.defense = 0
+        self.sp_attack = 0
+        self.sp_defense = 0
+        self.speed = 0
+
         if self.monster_id:
             # TODO: Load from SQL
             raise NotImplementedError()
