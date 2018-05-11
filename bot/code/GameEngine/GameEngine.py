@@ -4,7 +4,7 @@ import re
 from ..Log import Log
 from ..Client import Client
 from ..Player import Trainer, League
-from ..SQL import table_setup
+from ..SQL import SQL
 
 from ..Pokemon import MonsterSpawner, Pokemon
 
@@ -78,6 +78,20 @@ class GameEngine:
             poke = await spawner.spawn_random()
             self.log.info(poke)
 
-            await self.client.send_message(message.channel, "test", embed=await poke.em(debug=True))
+            await self.client.send_message(message.channel, "Demo Spawn Example (very random)", embed=await poke.em(debug=True))
+
+            return
+
+
+        match_obj = re.match(">test$", message.content)
+        if match_obj:
+
+            self.log.info(match_obj.groups())
+
+            cur = SQL().cur
+            locations = cur.execute("SELECT * FROM locations")
+
+            for location in locations:
+                self.log.info(location)
 
             return

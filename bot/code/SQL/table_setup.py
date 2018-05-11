@@ -198,3 +198,51 @@ async def table_setup():
         cur.execute(cmd)
         await sql.commit()
 
+    log.info("Check to see if encounters exists.")
+    if not await sql.table_exists("encounters"):
+        log.info("Create encounters table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE encounters
+            (
+                location_id TEXT NOT NULL,
+                encounter_slot_id TEXT,
+                location_area_id TEXT,
+                max_level INTEGER,
+                min_level INTEGER,
+                pokemon_id TEXT,
+                version_id TEXT
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+    log.info("Check to see if locations exists.")
+    if not await sql.table_exists("locations"):
+        log.info("Create location table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE locations
+            (
+                location_id TEXT NOT NULL,
+                name TEXT NOT NULL
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+    log.info("Check to see if zone_connections exists.")
+    if not await sql.table_exists("zone_connections"):
+        log.info("Create location table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE zone_connections
+            (
+                location_id_1 TEXT NOT NULL,
+                location_id_2 TEXT NOT NULL,
+                distance REAL NOT NULL
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+

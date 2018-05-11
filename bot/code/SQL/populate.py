@@ -118,7 +118,82 @@ async def populate():
             log.critical("Loading of data failed, we cannot conintue!")
             raise
 
+
+    log.info(f"Must load {len(data['encounters'])} rows")
+    cur = sql.cur
+    for entry in data['encounters']:
+        # log.info(data[key])
+        entry['location_id'] = entry['id']
+        cmd = """INSERT INTO encounters 
+        (
+            location_id,
+            encounter_slot_id,
+            location_area_id,
+            max_level,
+            min_level,
+            pokemon_id,
+            version_id
+        ) VALUES (
+            :location_id,
+            :encounter_slot_id,
+            :location_area_id,
+            :max_level,
+            :min_level,
+            :pokemon_id,
+            :version_id
+        )"""
+        try:
+            cur.execute(cmd, entry)
+        except:
+            log.critical("Loading of data failed, we cannot conintue!")
+            print(entry)
+            raise
+
+
+    log.info(f"Must load {len(data['location_names'])} rows")
+    cur = sql.cur
+    for entry in data['location_names']:
+        # log.info(data[key])
+        cmd = """INSERT INTO locations 
+        (
+            location_id,
+            name
+        ) VALUES (
+            :location_id,
+            :name
+        )"""
+        try:
+            cur.execute(cmd, entry)
+        except:
+            log.critical("Loading of data failed, we cannot conintue!")
+            raise
+
+
+    log.info(f"Must load {len(data['zone_connections'])} rows")
+    cur = sql.cur
+    for entry in data['zone_connections']:
+        # log.info(data[key])
+        cmd = """INSERT INTO zone_connections 
+        (
+            location_id_1,
+            location_id_2,
+            distance
+        ) VALUES (
+            :location_id_1,
+            :location_id_2,
+            :distance
+        )"""
+        try:
+            cur.execute(cmd, entry)
+        except:
+            log.critical("Loading of data failed, we cannot conintue!")
+            raise
+
+
+
     await sql.commit()
 
     log.info("Populate wites completed")
+
+
 
