@@ -40,8 +40,6 @@ class GameEngine:
         self.log.info("Finished test.")
 
 
-
-
     async def on_resumed(self):
         self.log.info("GameEngine, ready to recieve commands!")
         pass
