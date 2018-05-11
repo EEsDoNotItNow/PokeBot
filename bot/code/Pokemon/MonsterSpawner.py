@@ -1,4 +1,5 @@
 
+import numpy as np
 
 from ..SQL import SQL
 from ..Log import Log
@@ -24,6 +25,17 @@ class MonsterSpawner:
 
         poke = Monster(pokemon_id)
         await poke.load()
+
+        poke.xp = np.random.randint(0,1e6)
+
+        await poke.update_state()
+
+        poke.iv_hp = np.random.randint(0,31)
+        poke.iv_attack = np.random.randint(0,31)
+        poke.iv_defense = np.random.randint(0,31)
+        poke.iv_sp_attack = np.random.randint(0,31)
+        poke.iv_sp_defense = np.random.randint(0,31)
+        poke.iv_speed = np.random.randint(0,31)
 
         return poke
 

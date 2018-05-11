@@ -78,6 +78,6 @@ class GameEngine:
             poke = await spawner.spawn_random()
             self.log.info(poke)
 
-            await self.client.send_message(message.channel, "test", embed=await poke.em())
+            await self.client.send_message(message.channel, "test", embed=await poke.em(debug=True))
 
             return
