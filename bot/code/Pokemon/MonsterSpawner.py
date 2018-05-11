@@ -23,6 +23,7 @@ class MonsterSpawner:
         cmd = "SELECT pokemon_id FROM pokedex ORDER BY RANDOM() LIMIT 1"
         pokemon_id = cur.execute(cmd).fetchone()['pokemon_id']
 
+        # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
         poke = Monster(pokemon_id)
         await poke.load()
 
