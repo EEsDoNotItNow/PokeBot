@@ -6,15 +6,13 @@ import numpy as np
 from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
-from ..Wrappers import asyncinit
 
 from .Pokemon import Pokemon
 
-@asyncinit
 class Monster(Pokemon):
 
 
-    async def __init__(self, pokemon_id, monster_id=None):
+    def __init__(self, pokemon_id, monster_id=None):
         """Create a new Monster (an acutal pokemon in the sim)
 
         @param pokemon_id Id from the pokedex table, stats are based off this value
@@ -27,8 +25,6 @@ class Monster(Pokemon):
         super().__init__(pokemon_id)
 
         self.monster_id = monster_id
-
-        await self.load()
 
 
     async def em(self, debug=False):
