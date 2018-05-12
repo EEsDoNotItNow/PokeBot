@@ -49,8 +49,7 @@ class World:
         """
         await self.client.send_message(channel, f"We have {len(self.zones)} registered zones.")
 
-
-        await self.client.send_message(channel, f"We have {len(self.zones)} registered zones.")
+        await self.client.send_message(channel, f"Printing our first 10 examples:")
 
         for count, key in enumerate(self.zones):
             self.log.info(count)
