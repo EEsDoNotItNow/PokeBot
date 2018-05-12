@@ -74,7 +74,22 @@ async def table_setup():
                 level_psychic INTEGER DEFAULT 0,
                 level_ice INTEGER DEFAULT 0,
                 level_dragon INTEGER DEFAULT 0,
-                level_dark INTEGER DEFAULT 0
+                level_dark INTEGER DEFAULT 0,
+                /* Fun player stats */
+                commands INTEGER DEFAULT 0,
+                steps_taken INTEGER DEFAULT 0,
+                meters_biked INTEGER DEFAULT 0,
+
+                pokeballs_thrown INTEGER DEFAULT 0,
+
+                pokemon_caught INTEGER DEFAULT 0,
+                pokemon_fainted INTEGER DEFAULT 0,
+                pokemon_released INTEGER DEFAULT 0,
+
+                damage_dealt INTEGER DEFAULT 0,
+                damage_taken INTEGER DEFAULT 0,
+                total_turns INTEGER DEFAULT 0
+
             )
         """
         cur.execute(cmd)

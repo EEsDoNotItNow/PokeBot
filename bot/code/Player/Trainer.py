@@ -59,32 +59,6 @@ class Trainer:
         sql.cur.execute(cmd, locals())
         await sql.commit()
 
-        """
-            CREATE TABLE trainer_stats
-            (
-                trainer_id TEXT NOT NULL UNIQUE,
-                pokecoin REAL DEFAULT 0,
-                xp INTEGER DEFAULT 0,
-                level_normal INTEGER DEFAULT 0,
-                level_fight INTEGER DEFAULT 0,
-                level_flying INTEGER DEFAULT 0,
-                level_poison INTEGER DEFAULT 0,
-                level_ground INTEGER DEFAULT 0,
-                level_rock INTEGER DEFAULT 0,
-                level_bug INTEGER DEFAULT 0,
-                level_ghost INTEGER DEFAULT 0,
-                level_steel INTEGER DEFAULT 0,
-                level_fire INTEGER DEFAULT 0,
-                level_water INTEGER DEFAULT 0,
-                level_grass INTEGER DEFAULT 0,
-                level_electric INTEGER DEFAULT 0,
-                level_psychic INTEGER DEFAULT 0,
-                level_ice INTEGER DEFAULT 0,
-                level_dragon INTEGER DEFAULT 0,
-                level_dark INTEGER DEFAULT 0
-            )
-        """
-
         cmd = """INSERT INTO trainer_stats
         (trainer_id)
         VALUES
