@@ -95,3 +95,17 @@ class GameEngine:
                 self.log.info(location)
 
             return
+
+
+        match_obj = re.match(">map$", message.content)
+        if match_obj:
+
+            self.log.info(match_obj.groups())
+
+            cur = SQL().cur
+            locations = cur.execute("SELECT * FROM locations")
+
+            for location in locations:
+                self.log.info(location)
+
+            return
