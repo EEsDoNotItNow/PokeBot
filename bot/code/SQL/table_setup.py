@@ -8,6 +8,7 @@ async def table_setup():
     log = Log()
     sql = SQL.SQL()
     
+
     log.info("Check to see if users exists.")
     if not await sql.table_exists("users"):
         log.info("Create users table")
@@ -154,6 +155,34 @@ async def table_setup():
         await sql.commit()
 
 
+    log.info("Check to see if moves exists.")
+    if not await sql.table_exists("moves"):
+        log.info("Create moves table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE moves
+            (
+                move_id TEXT NOT NULL,
+                identifier TEXT NOT NULL,
+                generation_id INTEGER, 
+                type_id TEXT NOT NULL,
+                power INTEGER,
+                pp_max INTEGER,
+                accuracy INTEGER,
+                priority INTEGER,
+                target_id TEXT,
+                damage_class_id TEXT,
+                effect_id TEXT,
+                effect_chance INTEGER,
+                contest_type_id TEXT,
+                contest_effect_id TEXT,
+                super_contest_effect_id TEXT
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
     log.info("Check to see if monsters exists.")
     if not await sql.table_exists("monsters"):
         log.info("Create monsters table")
@@ -191,6 +220,24 @@ async def table_setup():
         cur.execute(cmd)
         await sql.commit()
 
+
+    log.info("Check to see if move_slots exists.")
+    if not await sql.table_exists("move_slots"):
+        log.info("Create move_slots table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE move_slots
+            (
+                move_id INTEGER NOT NULL,
+                slot_number INTEGER NOT NULL,
+                pp INTEGER NOT NULL,
+                pp_max INTEGER NOT NULL
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
     log.info("Check to see if types exists.")
     if not await sql.table_exists("types"):
         log.info("Create types table")
@@ -204,6 +251,7 @@ async def table_setup():
         """
         cur.execute(cmd)
         await sql.commit()
+
 
     log.info("Check to see if type_efficacy exists.")
     if not await sql.table_exists("type_efficacy"):
@@ -219,6 +267,7 @@ async def table_setup():
         """
         cur.execute(cmd)
         await sql.commit()
+
 
     log.info("Check to see if encounters exists.")
     if not await sql.table_exists("encounters"):
@@ -239,6 +288,7 @@ async def table_setup():
         cur.execute(cmd)
         await sql.commit()
 
+
     log.info("Check to see if locations exists.")
     if not await sql.table_exists("locations"):
         log.info("Create location table")
@@ -252,6 +302,7 @@ async def table_setup():
         """
         cur.execute(cmd)
         await sql.commit()
+
 
     log.info("Check to see if zone_connections exists.")
     if not await sql.table_exists("zone_connections"):
