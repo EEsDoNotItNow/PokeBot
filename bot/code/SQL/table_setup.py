@@ -228,7 +228,8 @@ async def table_setup():
         cmd = """
             CREATE TABLE move_slots
             (
-                move_id INTEGER NOT NULL,
+                move_id TEXT NOT NULL,
+                move_uuid TEXT NOT NULL,
                 slot_number INTEGER NOT NULL,
                 pp INTEGER NOT NULL,
                 pp_max INTEGER NOT NULL
