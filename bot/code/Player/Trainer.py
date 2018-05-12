@@ -10,6 +10,7 @@ from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
 
+
 class Trainer:
 
     def __init__(self, trainer_id):
@@ -88,7 +89,6 @@ class Trainer:
             cur.execute(cmd, locals())
         await self.sql.commit()
         self.log.info("log completed")
-
 
 
     async def get_trainer_card(self):
