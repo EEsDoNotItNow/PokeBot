@@ -107,3 +107,4 @@ Pipfile.lock
 data/base.json
 poke.db-shm
 poke.db-wal
+*.swp
