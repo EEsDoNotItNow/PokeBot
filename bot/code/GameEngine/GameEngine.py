@@ -1,4 +1,5 @@
 
+import asyncio
 import re
 
 from ..Log import Log
@@ -100,7 +101,8 @@ class GameEngine:
         if match_obj:
             self.log.info(match_obj.groups())
             world = World()
-
+            await world.load()
             await world.debug(message.channel)
+
             return
 
