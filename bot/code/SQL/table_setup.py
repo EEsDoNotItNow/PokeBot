@@ -159,8 +159,8 @@ async def table_setup():
         cmd = """
             CREATE TABLE monsters
             (
+                monster_id TEXT NOT NULL UNIQUE,
                 pokemon_id TEXT NOT NULL,
-                monster_id TEXT NOT NULL,
                 name TEXT,
                 hp INTEGER NOT NULL,
                 attack INTEGER NOT NULL,
@@ -168,7 +168,6 @@ async def table_setup():
                 sp_attack INTEGER NOT NULL,
                 sp_defense INTEGER NOT NULL,
                 speed INTEGER NOT NULL,
-                defense INTEGER NOT NULL,
                 xp INTEGER NOT NULL,
                 ability TEXT, 
                 hidden_ability TEXT,

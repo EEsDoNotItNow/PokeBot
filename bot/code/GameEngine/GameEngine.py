@@ -80,6 +80,7 @@ class GameEngine:
             spawner = MonsterSpawner()
             poke = await spawner.spawn_random()
             self.log.info(poke)
+            await poke.save()
 
             await self.client.send_message(message.channel, "Demo Spawn Example (very random)", embed=await poke.em(debug=True))
 

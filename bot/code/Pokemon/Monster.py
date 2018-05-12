@@ -28,6 +28,10 @@ class Monster(Pokemon):
         self.monster_id = monster_id
 
         self.status = EnumStatus.ALIVE
+        
+
+    def __repr__(self):
+        return f"Monster({self.pokemon_id})"
 
 
     async def em(self, debug=False):
@@ -135,6 +139,72 @@ class Monster(Pokemon):
 
         # TODO: We also need to load from the SQL 
 
+
+    async def save(self):
+
+        cur = self.sql.cur
+        cmd = """REPLACE INTO monsters
+            (
+                monster_id,
+                pokemon_id,
+                name,
+                hp,
+                attack,
+                defense,
+                sp_attack,
+                sp_defense,
+                speed,
+                defense,
+                xp,
+                ability, 
+                hidden_ability,
+                gender,
+                iv_hp,
+                iv_attack,
+                iv_defense,
+                iv_sp_attack,
+                iv_sp_defense,
+                iv_speed,
+                ev_hp,
+                ev_attack,
+                ev_defense,
+                ev_sp_attack,
+                ev_sp_defense,
+                ev_speed
+            ) VALUES (
+                :monster_id,
+                :pokemon_id,
+                :name,
+                :hp,
+                :attack,
+                :defense,
+                :sp_attack,
+                :sp_defense,
+                :speed,
+                :defense,
+                :xp,
+                :ability, 
+                :hidden_ability,
+                :gender,
+                :iv_hp,
+                :iv_attack,
+                :iv_defense,
+                :iv_sp_attack,
+                :iv_sp_defense,
+                :iv_speed,
+                :ev_hp,
+                :ev_attack,
+                :ev_defense,
+                :ev_sp_attack,
+                :ev_sp_defense,
+                :ev_speed
+            )
+        """
+        # Build data table
+        data = {}
+        ret = cur.execute("PRAGMA table_info(monsters)").fetchall()
+
+        cur.execute(cmd,dir(self))
 
     async def update_state(self):
         """Update state given current stats
