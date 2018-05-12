@@ -87,12 +87,15 @@ class GameEngine:
         match_obj = re.match(">test$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
+            trainer = await League(message.server.id).get_trainer(message.author.id, message.server.id)
+            if trainer is None:
+                await self.client.send_message(message.channel, "Sorry, you need to register first!")
+                return
 
-            cur = SQL().cur
-            locations = cur.execute("SELECT * FROM locations")
-
-            for location in locations:
-                self.log.info(location)
+            stats_dict = {}
+            stats_dict['commands'] = 1
+            await trainer.log_stats(stats_dict)
+            self.log.info("Finished test command")
 
             return
 

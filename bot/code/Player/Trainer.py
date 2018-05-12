@@ -34,7 +34,6 @@ class Trainer:
         self.stats = dict(values)
 
 
-
     @classmethod
     async def generate_trainer_tables(cls, user_id, server_id):
 
@@ -65,6 +64,30 @@ class Trainer:
         (:trainer_id)"""
         sql.cur.execute(cmd, locals())
         await sql.commit()
+
+
+    async def log_stats(self, stats_dict):
+
+        cmd = "PRAGMA table_info(trainer_stats)"
+        cur = self.sql.cur
+        data = cur.execute(cmd).fetchall()
+        valid_keys = []
+        for entry in data:
+            valid_keys.append(entry['name'])
+        self.log.info(valid_keys)
+
+        for key in stats_dict:
+            if key not in valid_keys:
+                raise ValueError()
+        trainer_id = self.trainer_id
+        for key in stats_dict:
+            value = stats_dict[key]
+            cmd = f"""UPDATE trainer_stats 
+                      SET {key} = {key} + :value
+                      WHERE trainer_id = :trainer_id"""
+            cur.execute(cmd, locals())
+        await self.sql.commit()
+        self.log.info("log completed")
 
 
 
