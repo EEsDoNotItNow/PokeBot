@@ -2,6 +2,7 @@
 
 import discord
 import numpy as np
+import uuid
 
 from ..Client import Client
 from ..Log import Log
@@ -107,7 +108,12 @@ class Monster(Pokemon):
     async def load(self):
         await super().load()
 
+        self.name = self.identifier
+
         self.hp_current = self.base_hp
+        self.ability = None
+        self.hidden_ability = None
+        self.gender = "?"
         self.xp = 0
 
         self.level = await self.calc_level()
@@ -134,8 +140,9 @@ class Monster(Pokemon):
         self.speed = 0
 
         if self.monster_id:
-            # TODO: Load from SQL
             raise NotImplementedError()
+        else:
+            self.monster_id = str(uuid.uuid4())
 
         # TODO: We also need to load from the SQL 
 
@@ -201,10 +208,14 @@ class Monster(Pokemon):
             )
         """
         # Build data table
-        data = {}
+        local_keys = {}
         ret = cur.execute("PRAGMA table_info(monsters)").fetchall()
+        print(ret)
+        for entry in ret:
+            local_keys[entry['name']] = getattr(self, entry['name'])
 
-        cur.execute(cmd,dir(self))
+        cur.execute(cmd,local_keys)
+        await self.sql.commit()
 
     async def update_state(self):
         """Update state given current stats

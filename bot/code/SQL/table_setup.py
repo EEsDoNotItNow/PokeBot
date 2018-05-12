@@ -75,6 +75,7 @@ async def table_setup():
                 level_ice INTEGER DEFAULT 0,
                 level_dragon INTEGER DEFAULT 0,
                 level_dark INTEGER DEFAULT 0,
+                
                 /* Fun player stats */
                 commands INTEGER DEFAULT 0,
                 steps_taken INTEGER DEFAULT 0,
