@@ -34,6 +34,8 @@ class GameEngine:
 
     async def on_ready(self):
         self.log.info("GameEngine, ready to recieve commands!")
+        admin = await self.client.get_user_info(205161476204396544)
+        await self.client.send_message(admin, "ready!")
 
 
     async def on_resumed(self):
