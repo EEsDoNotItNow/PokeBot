@@ -4,7 +4,7 @@ class Region:
     pass
 
     def __init__(self, region_id):
-        pass
+        self.region_id = region_id
 
 
     def link(self, other_id, distance):

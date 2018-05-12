@@ -7,6 +7,7 @@ from ..Player import Trainer, League
 from ..SQL import SQL
 
 from ..Pokemon import MonsterSpawner, Pokemon
+from ..World import World
 
 class GameEngine:
 
@@ -72,7 +73,6 @@ class GameEngine:
 
         match_obj = re.match("> *spawn ?(\d+)?$", message.content)
         if match_obj:
-
             self.log.info(match_obj.groups())
             spawner = MonsterSpawner()
             poke = await spawner.spawn_random()
@@ -85,7 +85,6 @@ class GameEngine:
 
         match_obj = re.match(">test$", message.content)
         if match_obj:
-
             self.log.info(match_obj.groups())
 
             cur = SQL().cur
@@ -99,13 +98,7 @@ class GameEngine:
 
         match_obj = re.match(">map$", message.content)
         if match_obj:
-
             self.log.info(match_obj.groups())
-
-            cur = SQL().cur
-            locations = cur.execute("SELECT * FROM locations")
-
-            for location in locations:
-                self.log.info(location)
-
+            world = World()
             return
+
