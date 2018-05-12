@@ -1,5 +1,5 @@
 
-
+from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
 
@@ -14,6 +14,7 @@ class World:
 
         self.log = Log()
         self.sql = SQL()
+        self.client = Client()
 
         self.link_regions()
 
@@ -42,3 +43,18 @@ class World:
             self.zones[connection['location_id_1']].link(connection['location_id_2'], connection['distance'])
             self.zones[connection['location_id_2']].link(connection['location_id_1'], connection['distance'])
         
+
+    async def debug(self, channel):
+        """Temp debug func for testing
+        """
+        await self.client.send_message(channel, f"We have {len(self.zones)} registered zones.")
+
+
+        await self.client.send_message(channel, f"We have {len(self.zones)} registered zones.")
+
+        for count, key in enumerate(self.zones):
+            self.log.info(count)
+            self.log.info(key)
+            if count > 10:
+                break
+            await self.client.send_message(channel, self.zones[key])

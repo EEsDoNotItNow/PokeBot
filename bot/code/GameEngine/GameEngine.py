@@ -100,5 +100,7 @@ class GameEngine:
         if match_obj:
             self.log.info(match_obj.groups())
             world = World()
+
+            await world.debug(message.channel)
             return
 
