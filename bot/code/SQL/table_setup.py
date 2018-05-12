@@ -183,6 +183,20 @@ async def table_setup():
         await sql.commit()
 
 
+    log.info("Check to see if move_set exists.")
+    if not await sql.table_exists("move_set"):
+        log.info("Create move_set table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE move_set
+            (
+                move_id TEXT NOT NULL -- Much more work to do here!
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
     log.info("Check to see if monsters exists.")
     if not await sql.table_exists("monsters"):
         log.info("Create monsters table")
