@@ -29,6 +29,39 @@ class Monster(Pokemon):
         self.monster_id = monster_id
 
         self.status = EnumStatus.ALIVE
+
+        # Setup some sensible default values
+        self.name = "NOT LOADED"
+
+        self.hp_current = -1
+
+        self.level = -1
+
+        self.ability = None
+        self.hidden_ability = None
+        self.gender = "?"
+        self.xp = 0
+
+        self.iv_hp = 0
+        self.iv_attack = 0
+        self.iv_defense = 0
+        self.iv_sp_attack = 0
+        self.iv_sp_defense = 0
+        self.iv_speed = 0
+
+        self.ev_hp = 0
+        self.ev_attack = 0
+        self.ev_defense = 0
+        self.ev_sp_attack = 0
+        self.ev_sp_defense = 0
+        self.ev_speed = 0
+        
+        self.hp = 0
+        self.attack = 0
+        self.defense = 0
+        self.sp_attack = 0
+        self.sp_defense = 0
+        self.speed = 0
         
 
     def __repr__(self):
@@ -111,33 +144,9 @@ class Monster(Pokemon):
         self.name = self.identifier
 
         self.hp_current = self.base_hp
-        self.ability = None
-        self.hidden_ability = None
-        self.gender = "?"
-        self.xp = 0
 
         self.level = await self.calc_level()
 
-        self.iv_hp = 0
-        self.iv_attack = 0
-        self.iv_defense = 0
-        self.iv_sp_attack = 0
-        self.iv_sp_defense = 0
-        self.iv_speed = 0
-
-        self.ev_hp = 0
-        self.ev_attack = 0
-        self.ev_defense = 0
-        self.ev_sp_attack = 0
-        self.ev_sp_defense = 0
-        self.ev_speed = 0
-        
-        self.hp = 0
-        self.attack = 0
-        self.defense = 0
-        self.sp_attack = 0
-        self.sp_defense = 0
-        self.speed = 0
 
         if self.monster_id:
             raise NotImplementedError()
@@ -216,6 +225,7 @@ class Monster(Pokemon):
 
         cur.execute(cmd,local_keys)
         await self.sql.commit()
+
 
     async def update_state(self):
         """Update state given current stats
