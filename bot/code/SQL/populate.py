@@ -527,14 +527,9 @@ async def populate():
             raise
     log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")
 
-
     log.info(f"SQL Population took {time.time()-t_start_sql:.3f}s")
     log.info(f"Total Population took {time.time()-t_start_csv:.3f}s")
 
-
-    await sql.commit()
+    await sql.commit(now=True)
 
     log.info("Populate wites completed")
-
-
-
