@@ -118,5 +118,5 @@ class MoveSlot(Move):
             data = cur.execute(cmd).fetchone()
 
             for key in data:
-                if hasattr(self,key):
+                if data[key] is not "" and hasattr(self,key):
                     setattr(self,key,data[key])
