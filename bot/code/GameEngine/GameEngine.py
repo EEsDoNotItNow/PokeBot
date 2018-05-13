@@ -94,12 +94,12 @@ class GameEngine:
 
             await self.client.send_message(message.channel, "Demo of move sets!")
 
-            for i in range(12,50):
-                move = Move(i)
+            for i in range(1,15+1):
+                move = MoveSlot(i)
                 await move.load()
-                em = await move.em(debug=True)
+                em = await move.em()
                 # self.log.info(dir(em))
-                self.log.info(em.fields)
+                # self.log.info(em.fields)
                 await self.client.send_message(message.channel, embed=em)
 
 

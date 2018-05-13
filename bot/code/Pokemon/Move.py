@@ -100,7 +100,24 @@ class MoveSlot(Move):
 
 
     def __str__(self):
-        return f"MoveSlot<{self.identifier}, {self.move_uuid}>"
+        return f"{self.identifier} PP:{self.pp}/{self.pp_max}"
+
+
+    async def em(self, debug=False):
+        """Return an embed object to display this class
+        """
+
+        em = discord.Embed()
+        em.title = self.identifier.title()
+        em.add_field(name="Power", value=self.power)
+        em.add_field(name="PP", value=f"{self.pp}/{self.pp_max}")
+        if debug:
+            em.add_field(name="Move UUID", value=self.move_uuid)
+            em.add_field(name="Description", value=self.short_effect, inline=False)
+            em.add_field(name="Accuracy", value=self.accuracy)
+            em.add_field(name="Priority", value=self.priority)
+            em.add_field(name="Move ID", value=self.move_id, inline=False)
+        return em
 
 
     async def load(self):
@@ -112,6 +129,7 @@ class MoveSlot(Move):
         if self.move_uuid == None:
             # Generate a new UUID
             self.move_uuid = uuid.uuid4()
+            self.pp = self.pp_max
         else:
             cmd = f"SELECT * FROM move_slots WHERE move_uuid={self.move_uuid}"
             cur = self.sql.cur
