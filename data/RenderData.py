@@ -75,7 +75,7 @@ for entry in species_stats:
     dex[pokemon_id]['base_happiness'] = entry['base_happiness']
 
 
-# Lets handle types!
+# Handle Pokemon
 with open("pokemon/types.csv") as csvfile:
     reader = csv.DictReader(csvfile)
     types_lookup = []
