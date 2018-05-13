@@ -130,7 +130,6 @@ async def ingest_csv(csv_dir):
 
     # ID is not used, remap it to move_id, 
     for entry in move_effect_prose:
-        print(entry)
         entry['effect_id'] = entry['move_effect_id']
         del entry['move_effect_id']
     log.info(f"move_effect_prose loaded in {time.time()-t_step:.3f}s")

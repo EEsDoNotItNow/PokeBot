@@ -1,13 +1,14 @@
 
 import asyncio
 import re
+import time
 
 from ..Log import Log
 from ..Client import Client
 from ..Player import Trainer, League
 from ..SQL import SQL
 
-from ..Pokemon import MonsterSpawner, Pokemon
+from ..Pokemon import MonsterSpawner, Pokemon, Move, MoveSlot
 from ..World import World
 
 class GameEngine:
@@ -90,14 +91,18 @@ class GameEngine:
         match_obj = re.match(">test$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
-            trainer = await League(message.server.id).get_trainer(message.author.id, message.server.id)
-            if trainer is None:
-                await self.client.send_message(message.channel, "Sorry, you need to register first!")
-                return
 
-            stats_dict = {}
-            stats_dict['commands'] = 1
-            await trainer.log_stats(stats_dict)
+            await self.client.send_message(message.channel, "Demo of move sets!")
+
+            for i in range(12,50):
+                move = Move(i)
+                await move.load()
+                em = await move.em(debug=True)
+                # self.log.info(dir(em))
+                self.log.info(em.fields)
+                await self.client.send_message(message.channel, embed=em)
+
+
             self.log.info("Finished test command")
 
             return

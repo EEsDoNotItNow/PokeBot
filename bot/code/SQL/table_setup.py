@@ -286,7 +286,7 @@ async def table_setup():
                 move_uuid TEXT NOT NULL,
                 slot_number INTEGER NOT NULL,
                 pp INTEGER NOT NULL,
-                pp_max INTEGER NOT NULL
+                pp_max_slot INTEGER NOT NULL
             )
         """
         cur.execute(cmd)
