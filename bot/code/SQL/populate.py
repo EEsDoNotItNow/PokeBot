@@ -10,10 +10,11 @@ from . import SQL
 
 
 async def ingest_csv(csv_dir):
-
+    log = Log()
     dex = {}
 
-
+    log.info("Load pokemon.csv")
+    t_step = time.time()
     with open(csv_dir / "pokemon/pokemon.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         raw_dex = []
@@ -44,8 +45,11 @@ async def ingest_csv(csv_dir):
         dex[pokemon_id]['height'] = entry['height']
         dex[pokemon_id]['weight'] = entry['weight']
         dex[pokemon_id]['base_xp'] = entry['base_experience']
+    log.info(f"pokemon loaded in {time.time()-t_step:.3f}s")
 
 
+    log.info("Load pokemon_stats.csv")
+    t_step = time.time()
     with open(csv_dir / "pokemon/pokemon_stats.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         raw_stats = []
@@ -64,8 +68,11 @@ async def ingest_csv(csv_dir):
         effort_key = "effort_" + stat_lookup[entry['stat_id']]
         dex[pokemon_id][base_key] = entry['base_stat']
         dex[pokemon_id][effort_key] = entry['effort']
+    log.info(f"pokemon_stats loaded in {time.time()-t_step:.3f}s")
 
 
+    log.info("Load pokemon_species.csv")
+    t_step = time.time()
     with open(csv_dir / "pokemon/pokemon_species.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         species_stats = []
@@ -83,9 +90,27 @@ async def ingest_csv(csv_dir):
         dex[pokemon_id]['catch_rate'] = entry['capture_rate']
         dex[pokemon_id]['hatch_time'] = entry['hatch_counter']
         dex[pokemon_id]['base_happiness'] = entry['base_happiness']
+    log.info(f"pokemon_species loaded in {time.time()-t_step:.3f}s")
+
+
+    log.info("Load pokemon_moves.csv")
+    t_step = time.time()
+    with open(csv_dir / "pokemon/pokemon_moves.csv") as csvfile:
+        reader = csv.DictReader(csvfile)
+        pokemon_moves = []
+        for entry in reader:
+            pokemon_moves.append(dict(entry))
+            for key in pokemon_moves[-1]:
+                try:
+                    pokemon_moves[-1][key] = int(pokemon_moves[-1][key])
+                except ValueError:
+                    pass
+    log.info(f"pokemon_moves loaded in {time.time()-t_step:.3f}s")
 
 
     # Handle Pokemon
+    log.info("Load types.csv")
+    t_step = time.time()
     with open(csv_dir / "pokemon/types.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         types_lookup = []
@@ -100,8 +125,11 @@ async def ingest_csv(csv_dir):
     types_lookup = {}
     for entry in temp:
         types_lookup[entry['id']] = entry['identifier']
+    log.info(f"types loaded in {time.time()-t_step:.3f}s")
 
 
+    log.info("Load pokemon_types.csv")
+    t_step = time.time()
     with open(csv_dir / "pokemon/pokemon_types.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         pokemon_types = []
@@ -121,8 +149,11 @@ async def ingest_csv(csv_dir):
             dex[pokemon_id]['type2'] = entry['type_id']
         else:
             raise KeyError(f"Unknown slot '{entry['slot']}'")
+    log.info(f"pokemon_types loaded in {time.time()-t_step:.3f}s")
 
 
+    log.info("Load type_efficacy.csv")
+    t_step = time.time()
     with open(csv_dir / "pokemon/type_efficacy.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         type_efficacy = []
@@ -133,9 +164,12 @@ async def ingest_csv(csv_dir):
                     type_efficacy[-1][key] = int(type_efficacy[-1][key])
                 except ValueError:
                     pass
+    log.info(f"type_efficacy loaded in {time.time()-t_step:.3f}s")
 
     # Handle world generation
 
+    log.info("Load encounters.csv")
+    t_step = time.time()
     with open(csv_dir / "world/encounters.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         encounters = []
@@ -146,7 +180,10 @@ async def ingest_csv(csv_dir):
                     encounters[-1][key] = int(encounters[-1][key])
                 except ValueError:
                     pass
+    log.info(f"encounters loaded in {time.time()-t_step:.3f}s")
 
+    log.info("Load location_names.csv")
+    t_step = time.time()
     with open(csv_dir / "world/location_names.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         location_names = []
@@ -159,7 +196,10 @@ async def ingest_csv(csv_dir):
                     location_names[-1][key] = int(location_names[-1][key])
                 except ValueError:
                     pass
+    log.info(f"location_names loaded in {time.time()-t_step:.3f}s")
 
+    log.info("Load zone_connections.csv")
+    t_step = time.time()
     with open(csv_dir / "world/zone_connections.csv") as csvfile:
         reader = csv.DictReader(csvfile)
         zone_connections = []
@@ -170,15 +210,17 @@ async def ingest_csv(csv_dir):
                     zone_connections[-1][key] = int(zone_connections[-1][key])
                 except ValueError:
                     pass
+    log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")
 
     locations = []
 
     output = {}
-    output['pokedex'] = dex
-    output['types'] = types_lookup
-    output['type_efficacy'] = type_efficacy
-    output['location_names'] = location_names
     output['encounters'] = encounters
+    output['location_names'] = location_names
+    output['pokedex'] = dex
+    output['pokemon_moves'] = pokemon_moves
+    output['type_efficacy'] = type_efficacy
+    output['types'] = types_lookup
     output['zone_connections'] = zone_connections
 
     return output
@@ -193,13 +235,14 @@ async def populate():
     log.info("Loading pokedex data")
 
     csv_dir = pathlib.Path("data/")
-    t0 = time.time()
+    t_start_csv = time.time()
     data = await ingest_csv(csv_dir)
 
-    log.info(f"Full csv load took {time.time()-t0:.3f}s")
+    log.info(f"Full csv load took {time.time()-t_start_csv:.3f}s")
 
     log.info(f"Must load {len(data['pokedex'])} pokedex rows")
-    t1 = time.time()
+    t_start_sql = time.time()
+    t_step = time.time()
     cur = sql.cur
     for key in data['pokedex']:
         # log.info(data[key])
@@ -256,10 +299,10 @@ async def populate():
         except:
             log.critical("Loading of data failed, we cannot conintue!")
             raise
-    log.info(f"pokedex loaded in {time.time()-t1:.3f}s")
+    log.info(f"pokedex loaded in {time.time()-t_step:.3f}s")
 
     log.info(f"Must load types {len(data['types']):,d} rows")
-    t2 = time.time()
+    t_step = time.time()
     cur = sql.cur
     for key in data['types']:
         cmd = """INSERT INTO types 
@@ -279,10 +322,10 @@ async def populate():
             log.critical(identifier)
             log.critical("Loading of data failed, we cannot conintue!")
             raise
-    log.info(f"types loaded in {time.time()-t2:.3f}s")
+    log.info(f"types loaded in {time.time()-t_step:.3f}s")
 
     log.info(f"Must load type_efficacy {len(data['type_efficacy']):,d} rows")
-    t3 = time.time()
+    t_step = time.time()
     cur = sql.cur
     for entry in data['type_efficacy']:
         # log.info(data[key])
@@ -301,12 +344,12 @@ async def populate():
         except:
             log.critical("Loading of data failed, we cannot conintue!")
             raise
-    log.info(f"type_efficacy loaded in {time.time()-t3:.3f}s")
+    log.info(f"type_efficacy loaded in {time.time()-t_step:.3f}s")
 
 
 
     log.info(f"Must load encounters {len(data['encounters']):,d} rows")
-    t4 = time.time()
+    t_step = time.time()
     cur = sql.cur
     for entry in data['encounters']:
         # log.info(data[key])
@@ -335,11 +378,11 @@ async def populate():
             log.critical("Loading of data failed, we cannot conintue!")
             print(entry)
             raise
-    log.info(f"encounters loaded in {time.time()-t4:.3f}s")
+    log.info(f"encounters loaded in {time.time()-t_step:.3f}s")
 
 
     log.info(f"Must load locations {len(data['location_names']):,d} rows")
-    t5 = time.time()
+    t_step = time.time()
     cur = sql.cur
     for entry in data['location_names']:
         # log.info(data[key])
@@ -356,11 +399,11 @@ async def populate():
         except:
             log.critical("Loading of data failed, we cannot conintue!")
             raise
-    log.info(f"location_names loaded in {time.time()-t5:.3f}s")
+    log.info(f"location_names loaded in {time.time()-t_step:.3f}s")
 
 
     log.info(f"Must load zone_connections {len(data['zone_connections']):,d} rows")
-    t6 = time.time()
+    t_step = time.time()
     cur = sql.cur
     for entry in data['zone_connections']:
         # log.info(data[key])
@@ -379,11 +422,11 @@ async def populate():
         except:
             log.critical("Loading of data failed, we cannot conintue!")
             raise
-    log.info(f"zone_connections loaded in {time.time()-t6:.3f}s")
+    log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")
 
 
-    log.info(f"SQL Population took {time.time()-t1:.3f}s")
-    log.info(f"Total Population took {time.time()-t0:.3f}s")
+    log.info(f"SQL Population took {time.time()-t_start_sql:.3f}s")
+    log.info(f"Total Population took {time.time()-t_start_csv:.3f}s")
 
 
     await sql.commit()

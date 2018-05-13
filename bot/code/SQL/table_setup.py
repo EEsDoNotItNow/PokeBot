@@ -183,14 +183,19 @@ async def table_setup():
         await sql.commit()
 
 
-    log.info("Check to see if move_set exists.")
-    if not await sql.table_exists("move_set"):
-        log.info("Create move_set table")
+    log.info("Check to see if pokemon_moves exists.")
+    if not await sql.table_exists("pokemon_moves"):
+        log.info("Create pokemon_moves table")
         cur = sql.cur
         cmd = """
-            CREATE TABLE move_set
+            CREATE TABLE pokemon_moves
             (
-                move_id TEXT NOT NULL -- Much more work to do here!
+                pokemon_id TEXT NOT NULL,
+                version_group_id TEXT NOT NULL,
+                move_id TEXT NOT NULL,
+                pokemon_move_method_id INTEGER,
+                level INTEGER
+                --order INTEGER --This is an SQL keyword, and I'm not sure we need it?
             )
         """
         cur.execute(cmd)
