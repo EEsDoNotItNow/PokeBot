@@ -62,6 +62,8 @@ class Move:
         cmd = f"SELECT * FROM moves WHERE move_id={self.move_id}"
         cur = self.sql.cur
         data = cur.execute(cmd).fetchone()
+        if data == None:
+            raise ValueError(f"move_id {self.move_id} was not found in the db!")
         for key in data:
             if data[key] is not "" and hasattr(self,key):
                 setattr(self,key,data[key])
