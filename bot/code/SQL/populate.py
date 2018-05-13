@@ -115,6 +115,27 @@ async def ingest_csv(csv_dir):
     log.info(f"moves loaded in {time.time()-t_step:.3f}s")
 
 
+    log.info("Load move_effect_prose.csv")
+    t_step = time.time()
+    with open(csv_dir / "pokemon/move_effect_prose.csv") as csvfile:
+        reader = csv.DictReader(csvfile)
+        move_effect_prose = []
+        for entry in reader:
+            move_effect_prose.append(dict(entry))
+            for key in move_effect_prose[-1]:
+                try:
+                    move_effect_prose[-1][key] = int(move_effect_prose[-1][key])
+                except ValueError:
+                    pass
+
+    # ID is not used, remap it to move_id, 
+    for entry in move_effect_prose:
+        print(entry)
+        entry['effect_id'] = entry['move_effect_id']
+        del entry['move_effect_id']
+    log.info(f"move_effect_prose loaded in {time.time()-t_step:.3f}s")
+
+
     log.info("Load pokemon_moves.csv")
     t_step = time.time()
     with open(csv_dir / "pokemon/pokemon_moves.csv") as csvfile:
@@ -128,6 +149,21 @@ async def ingest_csv(csv_dir):
                 except ValueError:
                     pass
     log.info(f"pokemon_moves loaded in {time.time()-t_step:.3f}s")
+
+
+    log.info("Load pokemon_move_method_prose.csv")
+    t_step = time.time()
+    with open(csv_dir / "pokemon/pokemon_move_method_prose.csv") as csvfile:
+        reader = csv.DictReader(csvfile)
+        pokemon_move_method_prose = []
+        for entry in reader:
+            pokemon_move_method_prose.append(dict(entry))
+            for key in pokemon_move_method_prose[-1]:
+                try:
+                    pokemon_move_method_prose[-1][key] = int(pokemon_move_method_prose[-1][key])
+                except ValueError:
+                    pass
+    log.info(f"pokemon_move_method_prose loaded in {time.time()-t_step:.3f}s")
 
 
     # Handle Pokemon
@@ -239,8 +275,10 @@ async def ingest_csv(csv_dir):
     output = {}
     output['encounters'] = encounters
     output['location_names'] = location_names
-    output['pokedex'] = dex
+    output['move_effect_prose'] = move_effect_prose
     output['moves'] = moves
+    output['pokedex'] = dex
+    output['pokemon_move_method_prose'] = pokemon_move_method_prose
     output['pokemon_moves'] = pokemon_moves
     output['type_efficacy'] = type_efficacy
     output['types'] = types
@@ -322,7 +360,7 @@ async def populate():
         try:
             cur.execute(cmd, data['pokedex'][key])
         except:
-            log.critical("Loading of data failed, we cannot conintue!")
+            log.critical("Loading of data failed, we cannot continue!")
             raise
     log.info(f"pokedex loaded in {time.time()-t_step:.3f}s")
 
@@ -371,7 +409,7 @@ async def populate():
             cur.execute(cmd, entry)
         except:
             log.info(entry)
-            log.critical("Loading of data failed, we cannot conintue!")
+            log.critical("Loading of data failed, we cannot continue!")
             raise
     log.info(f"moves loaded in {time.time()-t_step:.3f}s")
 
@@ -399,9 +437,61 @@ async def populate():
         try:
             cur.execute(cmd, entry)
         except:
-            log.critical("Loading of data failed, we cannot conintue!")
+            log.critical("Loading of data failed, we cannot continue!")
             raise
     log.info(f"pokemon_moves loaded in {time.time()-t_step:.3f}s")
+
+
+    log.info(f"Must load {len(data['move_effect_prose'])} move_effect_prose rows")
+    t_start_sql = time.time()
+    t_step = time.time()
+    cur = sql.cur
+    for entry in data['move_effect_prose']:
+        # log.info(data[key])
+        cmd = """INSERT INTO move_effect_prose 
+        (
+            effect_id,
+            local_language_id,
+            short_effect,
+            effect
+        ) VALUES (
+            :effect_id,
+            :local_language_id,
+            :short_effect,
+            :effect
+        )"""
+        try:
+            cur.execute(cmd, entry)
+        except:
+            log.critical("Loading of data failed, we cannot continue!")
+            raise
+    log.info(f"move_effect_prose loaded in {time.time()-t_step:.3f}s")
+
+
+    log.info(f"Must load {len(data['pokemon_move_method_prose'])} pokemon_move_method_prose rows")
+    t_start_sql = time.time()
+    t_step = time.time()
+    cur = sql.cur
+    for entry in data['pokemon_move_method_prose']:
+        # log.info(data[key])
+        cmd = """INSERT INTO pokemon_move_method_prose 
+        (
+            pokemon_move_method_id,
+            local_language_id,
+            name,
+            description
+        ) VALUES (
+            :pokemon_move_method_id,
+            :local_language_id,
+            :name,
+            :description
+        )"""
+        try:
+            cur.execute(cmd, entry)
+        except:
+            log.critical("Loading of data failed, we cannot continue!")
+            raise
+    log.info(f"pokemon_move_method_prose loaded in {time.time()-t_step:.3f}s")
 
 
     log.info(f"Must load types {len(data['types']):,d} rows")
@@ -423,7 +513,7 @@ async def populate():
         except:
             log.critical(type_id)
             log.critical(identifier)
-            log.critical("Loading of data failed, we cannot conintue!")
+            log.critical("Loading of data failed, we cannot continue!")
             raise
     log.info(f"types loaded in {time.time()-t_step:.3f}s")
 
@@ -446,7 +536,7 @@ async def populate():
         try:
             cur.execute(cmd, entry)
         except:
-            log.critical("Loading of data failed, we cannot conintue!")
+            log.critical("Loading of data failed, we cannot continue!")
             raise
     log.info(f"type_efficacy loaded in {time.time()-t_step:.3f}s")
 
@@ -478,7 +568,7 @@ async def populate():
         try:
             cur.execute(cmd, entry)
         except:
-            log.critical("Loading of data failed, we cannot conintue!")
+            log.critical("Loading of data failed, we cannot continue!")
             print(entry)
             raise
     log.info(f"encounters loaded in {time.time()-t_step:.3f}s")
@@ -500,7 +590,7 @@ async def populate():
         try:
             cur.execute(cmd, entry)
         except:
-            log.critical("Loading of data failed, we cannot conintue!")
+            log.critical("Loading of data failed, we cannot continue!")
             raise
     log.info(f"location_names loaded in {time.time()-t_step:.3f}s")
 
@@ -523,7 +613,7 @@ async def populate():
         try:
             cur.execute(cmd, entry)
         except:
-            log.critical("Loading of data failed, we cannot conintue!")
+            log.critical("Loading of data failed, we cannot continue!")
             raise
     log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")
 

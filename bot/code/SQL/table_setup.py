@@ -202,6 +202,41 @@ async def table_setup():
         await sql.commit()
 
 
+    log.info("Check to see if move_effect_prose exists.")
+    if not await sql.table_exists("move_effect_prose"):
+        log.info("Create move_effect_prose table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE move_effect_prose
+            (
+                effect_id TEXT NOT NULL,
+                local_language_id TEXT NOT NULL,
+                short_effect TEXT,
+                effect TEXT
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
+    log.info("Check to see if pokemon_move_method_prose exists.")
+    if not await sql.table_exists("pokemon_move_method_prose"):
+        log.info("Create pokemon_move_method_prose table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE pokemon_move_method_prose
+            (
+                pokemon_move_method_id TEXT NOT NULL,
+                local_language_id TEXT NOT NULL,
+                name TEXT,
+                description TEXT
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
+
     log.info("Check to see if monsters exists.")
     if not await sql.table_exists("monsters"):
         log.info("Create monsters table")
