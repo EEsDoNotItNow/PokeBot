@@ -101,22 +101,22 @@ class Monster(Pokemon):
 
         if debug:
             evs = {      
-                "ev_hp":self.ev_hp,
-                "ev_attack":self.ev_attack,
-                "ev_defense":self.ev_defense,
-                "ev_sp_attack":self.ev_sp_attack,
-                "ev_sp_defense":self.ev_sp_defense,
-                "ev_speed":self.ev_speed,
+                "ev_hp": self.ev_hp,
+                "ev_attack": self.ev_attack,
+                "ev_defense": self.ev_defense,
+                "ev_sp_attack": self.ev_sp_attack,
+                "ev_sp_defense": self.ev_sp_defense,
+                "ev_speed": self.ev_speed,
             }
             em.add_field(name="EVs", value=evs)
 
             ivs = {      
-                "iv_hp":self.iv_hp,
-                "iv_attack":self.iv_attack,
-                "iv_defense":self.iv_defense,
-                "iv_sp_attack":self.iv_sp_attack,
-                "iv_sp_defense":self.iv_sp_defense,
-                "iv_speed":self.iv_speed,
+                "iv_hp": self.iv_hp,
+                "iv_attack": self.iv_attack,
+                "iv_defense": self.iv_defense,
+                "iv_sp_attack": self.iv_sp_attack,
+                "iv_sp_defense": self.iv_sp_defense,
+                "iv_speed": self.iv_speed,
             }
             em.add_field(name="IVs", value=ivs)
 
