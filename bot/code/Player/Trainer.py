@@ -26,8 +26,8 @@ class Trainer:
 
         self.nickname = values['nickname']
         self.created_on = dateutil.parser.parse(values['created_on'])
-        self.user_id =  values['user_id']
-        self.server_id =  values['server_id']
+        self.user_id = values['user_id']
+        self.server_id = values['server_id']
 
         cmd = "SELECT * FROM trainer_stats WHERE trainer_id = :trainer_id"
         values = self.sql.cur.execute(cmd, locals()).fetchone()
@@ -94,8 +94,8 @@ class Trainer:
     async def get_trainer_card(self):
         em = discord.Embed()
 
-        server = self.client.get_server(self.server_id)
-        member = server.get_member(self.user_id)
+        # server = self.client.get_server(self.server_id)
+        # member = server.get_member(self.user_id)
 
         em.title = "Trainer Card"
 
