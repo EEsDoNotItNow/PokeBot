@@ -1,9 +1,15 @@
 pipeline {
     agent { dockerfile true } //{ additionalBuildArgs '--no-cache'}  if we wanted to be slower!
 
+    environment {
+        LC_ALL=C.UTF-8
+        LANG=C.UTF-8
+    }
+
     stages {
         stage('Setup') {
             steps {
+                sh ''
                 sh 'pipenv install'
                 sh 'echo Setup complete!'
             }
