@@ -1,5 +1,5 @@
 pipeline {
-    agent { dockerfile true }
+    agent { dockerfile true } //{ additionalBuildArgs '--no-cache'}  if we wanted to be slower!
     stages {
         stage('Setup') {
             steps {
