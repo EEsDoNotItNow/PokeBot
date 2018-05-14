@@ -353,11 +353,7 @@ async def populate():
             :type1,
             :type2
         )"""
-        try:
-            cur.execute(cmd, data['pokedex'][key])
-        except:
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, data['pokedex'][key])
     log.info(f"pokedex loaded in {time.time()-t_step:.3f}s")
 
 
@@ -401,12 +397,7 @@ async def populate():
             :contest_effect_id,
             :super_contest_effect_id
         )"""
-        try:
-            cur.execute(cmd, entry)
-        except:
-            log.info(entry)
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, entry)
     log.info(f"moves loaded in {time.time()-t_step:.3f}s")
 
 
@@ -430,11 +421,7 @@ async def populate():
             :pokemon_move_method_id,
             :level
         )"""
-        try:
-            cur.execute(cmd, entry)
-        except:
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, entry)
     log.info(f"pokemon_moves loaded in {time.time()-t_step:.3f}s")
 
 
@@ -456,11 +443,7 @@ async def populate():
             :short_effect,
             :effect
         )"""
-        try:
-            cur.execute(cmd, entry)
-        except:
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, entry)
     log.info(f"move_effect_prose loaded in {time.time()-t_step:.3f}s")
 
 
@@ -482,11 +465,7 @@ async def populate():
             :name,
             :description
         )"""
-        try:
-            cur.execute(cmd, entry)
-        except:
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, entry)
     log.info(f"pokemon_move_method_prose loaded in {time.time()-t_step:.3f}s")
 
 
@@ -504,13 +483,7 @@ async def populate():
         )"""
         type_id = key
         identifier = data['types'][key]
-        try:
-            cur.execute(cmd, locals())
-        except:
-            log.critical(type_id)
-            log.critical(identifier)
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, locals())
     log.info(f"types loaded in {time.time()-t_step:.3f}s")
 
 
@@ -529,11 +502,7 @@ async def populate():
             :target_type_id,
             :damage_factor
         )"""
-        try:
-            cur.execute(cmd, entry)
-        except:
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, entry)
     log.info(f"type_efficacy loaded in {time.time()-t_step:.3f}s")
 
 
@@ -561,12 +530,7 @@ async def populate():
             :pokemon_id,
             :version_id
         )"""
-        try:
-            cur.execute(cmd, entry)
-        except:
-            log.critical("Loading of data failed, we cannot continue!")
-            print(entry)
-            raise
+        cur.execute(cmd, entry)
     log.info(f"encounters loaded in {time.time()-t_step:.3f}s")
 
 
@@ -583,11 +547,7 @@ async def populate():
             :location_id,
             :name
         )"""
-        try:
-            cur.execute(cmd, entry)
-        except:
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, entry)
     log.info(f"location_names loaded in {time.time()-t_step:.3f}s")
 
 
@@ -606,11 +566,7 @@ async def populate():
             :location_id_2,
             :distance
         )"""
-        try:
-            cur.execute(cmd, entry)
-        except:
-            log.critical("Loading of data failed, we cannot continue!")
-            raise
+        cur.execute(cmd, entry)
     log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")
 
     log.info(f"SQL Population took {time.time()-t_start_sql:.3f}s")
