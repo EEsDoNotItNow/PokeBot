@@ -23,8 +23,8 @@ pipeline {
         }
     }
     post {
-    always {
-      discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', link: BUILD_URL, successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: JOB_NAME, webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
+        always {
+          discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: 'Jenkins Build', webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
+        }
     }
-  }
 }
