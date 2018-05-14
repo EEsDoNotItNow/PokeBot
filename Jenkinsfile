@@ -29,10 +29,12 @@ pipeline {
                 sh 'python3 -m unittest -v'
             }
         }
+        stage('Post Analysis') {
+            warnings
+        }
     }
     post {
         always {
-            warnings
             discordSend description: "Jenkins Pipeline Build: ${GIT_BRANCH}#${env.BUILD_ID}\n\nResult: ${currentBuild.currentResult}", link: "${myGitURL}", footer: 'Have a nice build!', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: "${GIT_COMMIT}", webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
         }
     }
