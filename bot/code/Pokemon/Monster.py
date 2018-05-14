@@ -55,14 +55,14 @@ class Monster(Pokemon):
         self.ev_sp_attack = 0
         self.ev_sp_defense = 0
         self.ev_speed = 0
-        
+
         self.hp = 0
         self.attack = 0
         self.defense = 0
         self.sp_attack = 0
         self.sp_defense = 0
         self.speed = 0
-        
+
 
     def __repr__(self):
         return f"Monster({self.pokemon_id})"
@@ -100,7 +100,7 @@ class Monster(Pokemon):
         em.add_field(name="Status", value=self.status)
 
         if debug:
-            evs = {      
+            evs = {
                 "ev_hp": self.ev_hp,
                 "ev_attack": self.ev_attack,
                 "ev_defense": self.ev_defense,
@@ -110,7 +110,7 @@ class Monster(Pokemon):
             }
             em.add_field(name="EVs", value=evs)
 
-            ivs = {      
+            ivs = {
                 "iv_hp": self.iv_hp,
                 "iv_attack": self.iv_attack,
                 "iv_defense": self.iv_defense,
@@ -136,7 +136,7 @@ class Monster(Pokemon):
 
     async def calc_level(self):
         return int(np.floor( self.xp**(1/3) ))
-    
+
 
     async def load(self):
         await super().load()
@@ -153,7 +153,7 @@ class Monster(Pokemon):
         else:
             self.monster_id = str(uuid.uuid4())
 
-        # TODO: We also need to load from the SQL 
+        # TODO: We also need to load from the SQL
 
 
     async def save(self):
@@ -172,7 +172,7 @@ class Monster(Pokemon):
                 speed,
                 defense,
                 xp,
-                ability, 
+                ability,
                 hidden_ability,
                 gender,
                 iv_hp,
@@ -199,7 +199,7 @@ class Monster(Pokemon):
                 :speed,
                 :defense,
                 :xp,
-                :ability, 
+                :ability,
                 :hidden_ability,
                 :gender,
                 :iv_hp,
@@ -243,7 +243,7 @@ class Monster(Pokemon):
     async def heal(self, amount=None):
         """Add given amount of HP
 
-        @param 
+        @param
         """
 
         if amount:
