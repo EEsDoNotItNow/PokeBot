@@ -22,7 +22,7 @@ class Basic(unittest.TestCase):
 
 
     def test_import_all_move_slots(self):
-        for i in range(1,728+1):
+        for i in range(1, 728+1):
             move_slot = MoveSlot(move_id = i)
 
             # We cannot run async calls from here, use _run
@@ -30,4 +30,4 @@ class Basic(unittest.TestCase):
             move_slot.__str__()
             move_slot.__repr__()
             _run(move_slot.em())
-            self.assertEqual(move_slot.move_id,str(i))
+            self.assertEqual(move_slot.move_id, str(i))

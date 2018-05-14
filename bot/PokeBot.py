@@ -23,7 +23,7 @@ parser.add_argument('--env',
                     help='Current environment')
 
 parser.add_argument('--log-level',
-                    choices = ['INFO','DEBUG'],
+                    choices = ['INFO', 'DEBUG'],
                     default='INFO',
                     help='Token to use to login')
 

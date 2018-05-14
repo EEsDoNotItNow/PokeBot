@@ -7,4 +7,4 @@ class Basic(unittest.TestCase):
         pass
 
     def test_proof_of_concept(self):
-        self.assertEqual(1,int('1'))
+        self.assertEqual(1, int('1'))

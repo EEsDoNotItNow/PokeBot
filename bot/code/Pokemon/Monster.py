@@ -223,7 +223,7 @@ class Monster(Pokemon):
         for entry in ret:
             local_keys[entry['name']] = getattr(self, entry['name'])
 
-        cur.execute(cmd,local_keys)
+        cur.execute(cmd, local_keys)
         await self.sql.commit()
 
 

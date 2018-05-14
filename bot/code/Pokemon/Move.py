@@ -65,15 +65,15 @@ class Move:
         if data == None:
             raise ValueError(f"move_id {self.move_id} was not found in the db!")
         for key in data:
-            if data[key] is not "" and hasattr(self,key):
-                setattr(self,key,data[key])
+            if data[key] is not "" and hasattr(self, key):
+                setattr(self, key, data[key])
 
         cmd = f"SELECT * FROM move_effect_prose WHERE effect_id={self.effect_id}"
         cur = self.sql.cur
         data = cur.execute(cmd).fetchone()
         for key in data:
-            if data[key] is not "" and hasattr(self,key):
-                setattr(self,key,data[key])
+            if data[key] is not "" and hasattr(self, key):
+                setattr(self, key, data[key])
 
 
 
@@ -138,5 +138,5 @@ class MoveSlot(Move):
             data = cur.execute(cmd).fetchone()
 
             for key in data:
-                if data[key] is not "" and hasattr(self,key):
-                    setattr(self,key,data[key])
+                if data[key] is not "" and hasattr(self, key):
+                    setattr(self, key, data[key])
