@@ -31,7 +31,7 @@ pipeline {
         }
         stage('Post Analysis') {
             steps{
-                sh 'flake8'
+                sh 'flake8 || true'
                 step([$class: 'WarningsPublisher', parserConfigurations: [[parserName: 'pep8']]])
             }
         }
