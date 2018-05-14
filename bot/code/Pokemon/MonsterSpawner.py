@@ -3,8 +3,9 @@ import numpy as np
 
 from ..SQL import SQL
 from ..Log import Log
-from .Pokemon import Pokemon
 from .Monster import Monster
+
+
 
 class MonsterSpawner:
     """Handle creation of wild spawns, or other random creatures!
@@ -40,4 +41,3 @@ class MonsterSpawner:
         await poke.heal()
 
         return poke
-

@@ -6,6 +6,8 @@ from ..Log import Log
 
 from .Type import Type
 
+
+
 class Pokemon:
 
 
@@ -83,4 +85,3 @@ class Pokemon:
         self.type1 = Type(self.type1)
         if self.type2:
             self.type2 = Type(self.type2)
-
