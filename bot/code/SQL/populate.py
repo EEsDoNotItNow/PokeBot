@@ -493,7 +493,7 @@ async def populate():
     log.info(f"pokemon_move_method_prose loaded in {time.time()-t_step:.3f}s")
 
 
-    log.info(f"Must load types {len(data['types']):, d} rows")
+    log.info(f"Must load types {len(data['types']):,d} rows")
     t_step = time.time()
     cur = sql.cur
     for key in data['types']:
@@ -517,7 +517,7 @@ async def populate():
     log.info(f"types loaded in {time.time()-t_step:.3f}s")
 
 
-    log.info(f"Must load type_efficacy {len(data['type_efficacy']):, d} rows")
+    log.info(f"Must load type_efficacy {len(data['type_efficacy']):,d} rows")
     t_step = time.time()
     cur = sql.cur
     for entry in data['type_efficacy']:
@@ -540,7 +540,7 @@ async def populate():
     log.info(f"type_efficacy loaded in {time.time()-t_step:.3f}s")
 
 
-    log.info(f"Must load encounters {len(data['encounters']):, d} rows")
+    log.info(f"Must load encounters {len(data['encounters']):,d} rows")
     t_step = time.time()
     cur = sql.cur
     for entry in data['encounters']:
@@ -573,7 +573,7 @@ async def populate():
     log.info(f"encounters loaded in {time.time()-t_step:.3f}s")
 
 
-    log.info(f"Must load locations {len(data['location_names']):, d} rows")
+    log.info(f"Must load locations {len(data['location_names']):,d} rows")
     t_step = time.time()
     cur = sql.cur
     for entry in data['location_names']:
@@ -594,7 +594,7 @@ async def populate():
     log.info(f"location_names loaded in {time.time()-t_step:.3f}s")
 
 
-    log.info(f"Must load zone_connections {len(data['zone_connections']):, d} rows")
+    log.info(f"Must load zone_connections {len(data['zone_connections']):,d} rows")
     t_step = time.time()
     cur = sql.cur
     for entry in data['zone_connections']:
