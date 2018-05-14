@@ -18,6 +18,7 @@ pipeline {
                     sh 'echo Test of the $CLIENT_TOKEN'
                 }
                 sh 'python3 --version'
+                sh 'python3 -m unittest -v'
             }
         }
     }
