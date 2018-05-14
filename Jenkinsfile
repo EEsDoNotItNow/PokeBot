@@ -3,8 +3,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'pipenv install'
-                sh 'pip3 freeze'
+                sh 'pip install Pipfile'
             }
         }
         stage('build') {
