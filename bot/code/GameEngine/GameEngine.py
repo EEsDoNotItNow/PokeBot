@@ -1,15 +1,14 @@
 
-import asyncio
 import re
-import time
 
 from ..Log import Log
 from ..Client import Client
-from ..Player import Trainer, League
-from ..SQL import SQL
+from ..Player import League
 
-from ..Pokemon import MonsterSpawner, Pokemon, Move, MoveSlot
+from ..Pokemon import MonsterSpawner, MoveSlot
 from ..World import World
+
+
 
 class GameEngine:
 
@@ -24,11 +23,11 @@ class GameEngine:
         self.log.info(f"Saw message: {message.content}")
 
         match_obj = re.match("<@!?(?P<id>\d+)>", message.content)
-        if match_obj and match_obj.group('id')==self.client.user.id:
+        if match_obj and match_obj.group('id') == self.client.user.id:
             self.log.info("Saw a command, handle it!")
 
         match_obj = re.match("^>", message.content)
-        if match_obj :
+        if match_obj:
             self.log.info("Saw a play command, handle it!")
             await self.command_proc(message)
 
@@ -67,11 +66,13 @@ class GameEngine:
         match_obj = re.match("> *deregister *$", message.content)
         if match_obj:
             # Create a basic trainer object
-            result =  await League(message.server.id).deregister(message.author.id, message.server.id)
+            result = await League(message.server.id).deregister(message.author.id, message.server.id)
             if result:
-                await self.client.send_message(message.channel, f"The Discord League is sorry to see you go, <@!{message.author.id}>")
+                await self.client.send_message(message.channel,
+                                               f"The Discord League is sorry to see you go, <@!{message.author.id}>")  # noqa: E501
             else:
-                await self.client.send_message(message.channel, f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")
+                await self.client.send_message(message.channel,
+                                               f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")  # noqa: E501
 
             return
 
@@ -83,7 +84,8 @@ class GameEngine:
             self.log.info(poke)
             await poke.save()
 
-            await self.client.send_message(message.channel, "Demo Spawn Example (very random)", embed=await poke.em(debug=True))
+            await self.client.send_message(message.channel,
+                                           "Demo Spawn Example (very random)", embed=await poke.em(debug=True))
 
             return
 
@@ -94,7 +96,7 @@ class GameEngine:
 
             await self.client.send_message(message.channel, "Demo of move sets!")
 
-            for i in range(0, 15+1):
+            for i in range(0, 15 + 1):
                 move = MoveSlot(i)
                 await move.load()
                 em = await move.em()
@@ -116,4 +118,3 @@ class GameEngine:
             await world.debug(message.channel)
 
             return
-

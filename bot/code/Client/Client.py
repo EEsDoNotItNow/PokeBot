@@ -1,8 +1,9 @@
 
 import discord
-import asyncio
 
 from ..Log import Log
+
+
 
 class Client(discord.Client):
 
@@ -26,7 +27,7 @@ class Client(discord.Client):
     def register(self, cls):
         """Register a class with our client.
         """
-        #TODO: Check if this class is here or not!
+        # TODO: Check if this class is here or not!
         self.registry.append(cls)
 
 
@@ -311,4 +312,3 @@ class Client(discord.Client):
         for module in self.registry:
             if hasattr(module, 'on_voice_state_update'):
                 await module.on_voice_state_update(before, after)
-
