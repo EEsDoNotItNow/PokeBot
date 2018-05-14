@@ -18,13 +18,14 @@ pipeline {
                     sh 'echo Test of the $CLIENT_TOKEN'
                 }
                 sh 'python3 --version'
+                sh 'rm poke.db || true'
                 sh 'python3 -m unittest -v'
             }
         }
     }
     post {
         always {
-          discordSend description: 'Jenkins Pipeline Build: ${env.BUILD_ID}', footer: 'Footer Text', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: 'Jenkins Build', webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
+          discordSend description: 'Jenkins Pipeline Build: $BUILD_ID', footer: 'Footer Text', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: 'Jenkins Build', webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
         }
     }
 }
