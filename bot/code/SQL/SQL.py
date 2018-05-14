@@ -1,7 +1,6 @@
 
 import asyncio
 import sqlite3
-import atexit
 import pathlib
 
 from ..Singleton import Singleton
@@ -9,6 +8,8 @@ from ..Log import Log
 from ..Client import Client
 from .table_setup import table_setup
 from .populate import populate
+
+
 
 class SQL(metaclass=Singleton):
     """Manage SQL connection, as well as basic user information

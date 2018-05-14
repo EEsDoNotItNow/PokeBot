@@ -2,6 +2,8 @@
 from ..Log import Log
 from . import SQL
 
+
+
 async def table_setup():
     """Setup any SQL tables needed for this class
     """
@@ -373,4 +375,3 @@ async def table_setup():
         """
         cur.execute(cmd)
         await sql.commit()
-
