@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'virtualenv .env'
+                sh 'pipenv install'
             }
         }
         stage('build') {
