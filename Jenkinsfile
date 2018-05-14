@@ -9,9 +9,6 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'pwd'
-                sh 'ls -la'
-                sh 'pipenv install'
                 sh 'echo Setup complete!'
             }
         }
