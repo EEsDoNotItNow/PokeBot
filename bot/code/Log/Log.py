@@ -30,4 +30,9 @@ class Log:
 
 
     def __getattr__(self, name):
+        if name == "_log" and "_log" not in self.__dict__:
+            # Someone is trying to log before we can accept it, just return a null function
+            return logging.getLogger()
+
         return getattr(self._log, name)
+
