@@ -2,7 +2,7 @@ pipeline {
     agent { dockerfile true } //{ additionalBuildArgs '--no-cache'}  if we wanted to be slower!
 
 
-    def MyGitURL = "${GIT_URL}"s
+    def MyGitURL = "${GIT_URL}"
 
     environment {
         LC_ALL = 'C.UTF-8'
