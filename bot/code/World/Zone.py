@@ -26,6 +26,6 @@ class Zone:
 
         cur = self.sql.cur
         cmd = "SELECT * FROM locations"
-        data = cur.execute(cmd).fetchone()
+        cur.execute(cmd).fetchone()
 
         self.log.info("Loaded data")
