@@ -20,7 +20,7 @@ class Pokemon:
 
 
     def __repr__(self):
-        return f"Pokemon({self.pokemon_id})"
+        return f"Pokemon({self.id})"
 
 
     def __str__(self):
