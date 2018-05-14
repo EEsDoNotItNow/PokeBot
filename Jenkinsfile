@@ -6,8 +6,8 @@ pipeline {
     environment {
         LC_ALL = 'C.UTF-8'
         LANG = 'C.UTF-8'
-        myGitURL = "${GIT_URL}".replaceAll("\\.git","")
-        myGitURL = "${myGitURL}/commit/${GIT_COMMIT}"
+        temp = "${GIT_URL}".replaceAll("\\.git","")
+        myGitURL = "${temp}/commit/${GIT_COMMIT}"
     }
 
     stages {
