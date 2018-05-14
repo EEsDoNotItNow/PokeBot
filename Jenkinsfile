@@ -12,7 +12,7 @@ pipeline {
                 sh 'echo Setup complete!'
             }
         }
-        stage('build') {
+        stage('Unit testing') {
             steps {
                 withCredentials([string(credentialsId: 'CLIENT_TOKEN', variable: 'CLIENT_TOKEN')]) {
                     sh 'echo Test of the $CLIENT_TOKEN'
