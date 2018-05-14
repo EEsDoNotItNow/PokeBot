@@ -14,7 +14,7 @@ pipeline {
         stage('Setup') {
             steps {
                 sh 'echo ${myGitURL}'
-                sh 'echo Setup complete!'    
+                sh 'echo Setup complete!'
             }
         }
         stage('Unit testing') {

@@ -43,7 +43,7 @@ class SQL(metaclass=Singleton):
     @property
     def cur(self):
         return self.conn.cursor()
-    
+
 
     async def on_ready(self):
         if self.setup_needed:
@@ -52,7 +52,7 @@ class SQL(metaclass=Singleton):
             await table_setup()
             self.log.warning("Calling populate()")
             await populate()
-            
+
         self.log.info("SQL registered to recieve commands!")
 
 

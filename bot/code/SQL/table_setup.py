@@ -7,13 +7,13 @@ async def table_setup():
     """
     log = Log()
     sql = SQL.SQL()
-    
+
 
     log.info("Check to see if users exists.")
     if not await sql.table_exists("users"):
         log.info("Create users table")
         cur = sql.cur
-        cmd = """    
+        cmd = """
             CREATE TABLE IF NOT EXISTS users
             (
                 name TEXT NOT NULL,
@@ -36,10 +36,10 @@ async def table_setup():
         log.info("Create trainers table")
         cur = sql.cur
         cmd = """
-            CREATE TABLE trainers 
+            CREATE TABLE trainers
             (
                 trainer_id TEXT NOT NULL,
-                user_id TEXT NOT NULL, 
+                user_id TEXT NOT NULL,
                 server_id TEXT NOT NULL,
                 nickname TEXT,
                 created_on TEXT DEFAULT CURRENT_TIMESTAMP
@@ -131,14 +131,14 @@ async def table_setup():
                 weight INTEGER,
                 base_xp INTEGER NOT NULL,
                 base_hp INTEGER NOT NULL,
-                base_attack INTEGER NOT NULL, 
-                base_defense INTEGER NOT NULL, 
+                base_attack INTEGER NOT NULL,
+                base_defense INTEGER NOT NULL,
                 base_sp_attack INTEGER NOT NULL,
                 base_sp_defense INTEGER NOT NULL,
                 base_speed INTEGER NOT NULL,
                 effort_hp INTEGER NOT NULL,
-                effort_attack INTEGER NOT NULL, 
-                effort_defense INTEGER NOT NULL, 
+                effort_attack INTEGER NOT NULL,
+                effort_defense INTEGER NOT NULL,
                 effort_sp_attack INTEGER NOT NULL,
                 effort_sp_defense INTEGER NOT NULL,
                 effort_speed INTEGER NOT NULL,
@@ -164,7 +164,7 @@ async def table_setup():
             (
                 move_id TEXT NOT NULL,
                 identifier TEXT NOT NULL,
-                generation_id INTEGER, 
+                generation_id INTEGER,
                 type_id TEXT NOT NULL,
                 power INTEGER,
                 pp_max INTEGER,
@@ -254,7 +254,7 @@ async def table_setup():
                 sp_defense INTEGER NOT NULL,
                 speed INTEGER NOT NULL,
                 xp INTEGER NOT NULL,
-                ability TEXT, 
+                ability TEXT,
                 hidden_ability TEXT,
                 gender TEXT,
                 iv_hp INTEGER DEFAULT 0,

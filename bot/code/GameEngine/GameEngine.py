@@ -19,7 +19,7 @@ class GameEngine:
         pass
 
 
-    async def on_message(self, message):        
+    async def on_message(self, message):
 
         self.log.info(f"Saw message: {message.content}")
 

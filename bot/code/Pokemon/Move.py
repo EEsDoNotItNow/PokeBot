@@ -86,7 +86,7 @@ class MoveSlot(Move):
         @param move_id [REQUIRED] Id of the move, used to look up information in the DB
         @param move_uuid Unique ID of the move. If not given before being saved, will be generated
         @param slot_number Slot number (1-4) that a move sits in. Can be -1 to indicate it is temporary (When picking a new more, for instance)
-        @param pp 
+        @param pp
         """
 
         super().__init__(move_id)

@@ -26,7 +26,7 @@ async def ingest_csv(csv_dir):
                 except ValueError:
                     pass
 
-    # We are unable to guarentee that ALL entries will have all data, 
+    # We are unable to guarentee that ALL entries will have all data,
     #   so we load them with default NULLs into the DB
     for entry in raw_dex:
         pokemon_id = entry['id']
@@ -106,7 +106,7 @@ async def ingest_csv(csv_dir):
                 except ValueError:
                     pass
 
-    # ID is not used, remap it to move_id, 
+    # ID is not used, remap it to move_id,
     for entry in moves:
         entry['move_id'] = entry['id']
         del entry['id']
@@ -128,7 +128,7 @@ async def ingest_csv(csv_dir):
                 except ValueError:
                     pass
 
-    # ID is not used, remap it to move_id, 
+    # ID is not used, remap it to move_id,
     for entry in move_effect_prose:
         entry['effect_id'] = entry['move_effect_id']
         del entry['move_effect_id']
@@ -308,7 +308,7 @@ async def populate():
     cur = sql.cur
     for key in data['pokedex']:
         # log.info(data[key])
-        cmd = """INSERT INTO pokedex 
+        cmd = """INSERT INTO pokedex
         (
             pokemon_id,
             identifier,
@@ -370,7 +370,7 @@ async def populate():
     cur = sql.cur
     for entry in data['moves']:
         # log.info(entry)
-        cmd = """INSERT INTO moves 
+        cmd = """INSERT INTO moves
         (
             move_id,
             identifier,
@@ -419,7 +419,7 @@ async def populate():
     cur = sql.cur
     for entry in data['pokemon_moves']:
         # log.info(data[key])
-        cmd = """INSERT INTO pokemon_moves 
+        cmd = """INSERT INTO pokemon_moves
         (
             pokemon_id,
             version_group_id,
@@ -447,7 +447,7 @@ async def populate():
     cur = sql.cur
     for entry in data['move_effect_prose']:
         # log.info(data[key])
-        cmd = """INSERT INTO move_effect_prose 
+        cmd = """INSERT INTO move_effect_prose
         (
             effect_id,
             local_language_id,
@@ -473,7 +473,7 @@ async def populate():
     cur = sql.cur
     for entry in data['pokemon_move_method_prose']:
         # log.info(data[key])
-        cmd = """INSERT INTO pokemon_move_method_prose 
+        cmd = """INSERT INTO pokemon_move_method_prose
         (
             pokemon_move_method_id,
             local_language_id,
@@ -497,7 +497,7 @@ async def populate():
     t_step = time.time()
     cur = sql.cur
     for key in data['types']:
-        cmd = """INSERT INTO types 
+        cmd = """INSERT INTO types
         (
             type_id,
             identifier
@@ -522,7 +522,7 @@ async def populate():
     cur = sql.cur
     for entry in data['type_efficacy']:
         # log.info(data[key])
-        cmd = """INSERT INTO type_efficacy 
+        cmd = """INSERT INTO type_efficacy
         (
             damage_type_id,
             target_type_id,
@@ -546,7 +546,7 @@ async def populate():
     for entry in data['encounters']:
         # log.info(data[key])
         entry['location_id'] = entry['id']
-        cmd = """INSERT INTO encounters 
+        cmd = """INSERT INTO encounters
         (
             location_id,
             encounter_slot_id,
@@ -578,7 +578,7 @@ async def populate():
     cur = sql.cur
     for entry in data['location_names']:
         # log.info(data[key])
-        cmd = """INSERT INTO locations 
+        cmd = """INSERT INTO locations
         (
             location_id,
             name
@@ -599,7 +599,7 @@ async def populate():
     cur = sql.cur
     for entry in data['zone_connections']:
         # log.info(data[key])
-        cmd = """INSERT INTO zone_connections 
+        cmd = """INSERT INTO zone_connections
         (
             location_id_1,
             location_id_2,

@@ -1058,7 +1058,7 @@ Changes []{move:nature-power} to []{move:thunderbolt}."
 371,9,Does nothing.,Does nothing.
 372,9,Has a $effect_chance% chance to paralyze the target.,Inflicts [regular damage]{mechanic:regular-damage}.  Has a $effect_chance% chance to [paralyze]{mechanic:paralysis} the target.
 373,9,"Grounds the target, and hits even Flying-type or levitating Pokémon.",Inflicts regular damage.  Grounds the target until it leaves battle.  Ignores levitation effects and the immunity of []{type:flying}-type Pokémon.
-374,9,Prevents the target from leaving battle.,Inflicts regular damage.  Traps the target.  
+374,9,Prevents the target from leaving battle.,Inflicts regular damage.  Traps the target.
 375,9,Raises the user's Attack by one stage after inflicting damage.,Inflicts regular damage.  Raises the user's Attack by one stage.
 376,9,Adds []{type:grass} to the target's types.,Adds []{type:grass} to the target's types.
 377,9,Protects all friendly Pokémon from damaging moves.  Only works on the first turn after the user is sent out.,Protects all friendly Pokémon from damaging moves.  Only works on the first turn after the user is sent out.

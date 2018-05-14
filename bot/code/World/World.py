@@ -44,7 +44,7 @@ class World:
 
             self.zones[connection['location_id_1']].link(connection['location_id_2'], connection['distance'])
             self.zones[connection['location_id_2']].link(connection['location_id_1'], connection['distance'])
-        
+
 
     async def debug(self, channel):
         """Temp debug func for testing
