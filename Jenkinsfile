@@ -2,7 +2,6 @@ pipeline {
     agent { dockerfile true } //{ additionalBuildArgs '--no-cache'}  if we wanted to be slower!
 
 
-    def MyGitURL = "${GIT_URL}"
 
     environment {
         LC_ALL = 'C.UTF-8'
@@ -13,6 +12,8 @@ pipeline {
         stage('Setup') {
             steps {
                 sh 'echo Setup complete!'
+
+                def MyGitURL = "${GIT_URL}"
             }
         }
         stage('Unit testing') {
