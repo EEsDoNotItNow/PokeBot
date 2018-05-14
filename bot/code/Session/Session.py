@@ -3,6 +3,8 @@ import uuid
 
 from .States import GameSessionStates
 
+
+
 class Session:
     """Game play session to manage player interactions
     """
@@ -19,4 +21,3 @@ class Session:
         """Player in a session has issued a command, handle it.
         """
         self.log.info(f"Command from player seen: {message.content}")
-

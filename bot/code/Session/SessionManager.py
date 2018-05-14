@@ -2,6 +2,8 @@
 from ..Log import Log
 from ..Singleton import Singleton
 
+
+
 class SessionManager(metaclass=Singleton):
     """Given information, return active or new sessions
     """
@@ -13,11 +15,11 @@ class SessionManager(metaclass=Singleton):
 
 
     async def command_proc(self, message):
-        """Find, or load, the correct session 
+        """Find, or load, the correct session
         """
         self.log.info(f"Saw command to process: {message.content}")
 
-        # Check our active sessions 
+        # Check our active sessions
         pass
 
         # Check our inaction sessions

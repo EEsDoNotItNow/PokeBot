@@ -5,8 +5,6 @@ from ..Log import Log
 from ..Client import Client
 from ..Player import League
 
-from ..Pokemon import MonsterSpawner, MoveSlot
-from ..World import World
 from ..Session import SessionManager
 
 
@@ -90,4 +88,3 @@ class GameEngine:
 
         # If we failed to trigger a command, we need to ask the session manager to handle it!
         await self.session_manager.command_proc(message)
-

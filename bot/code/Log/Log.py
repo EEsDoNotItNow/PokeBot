@@ -3,6 +3,8 @@ import logging
 
 class Log:
     __shared_state = {}
+
+
     def __init__(self, args=None):
 
         # Borg pattern
@@ -35,4 +37,3 @@ class Log:
             return logging.getLogger()
 
         return getattr(self._log, name)
-

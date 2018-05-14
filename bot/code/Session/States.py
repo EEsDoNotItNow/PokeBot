@@ -1,8 +1,6 @@
 
 import enum
 
-from enum import auto
-
 
 class GameSessionStates(enum.IntEnum):
     """
