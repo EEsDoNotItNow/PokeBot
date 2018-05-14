@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh ''
+                sh 'echo $USER'
                 sh 'pipenv install'
                 sh 'echo Setup complete!'
             }
