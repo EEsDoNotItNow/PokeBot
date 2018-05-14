@@ -16,7 +16,7 @@ class EXPRetry:
     def __init__(self):
         self.retry_array = [
                             0.1, 0.2, 0.5,
-                              1,   2,   5,
+                              1,   2,   5,  # noqa: E241
                              10,  20,  50,  # noqa: E241
                             100, 200, 500]  # noqa: E131,E241
         self.retries = -1
