@@ -29,6 +29,12 @@ pipeline {
                 sh 'python3 -m unittest -v'
             }
         }
+        stage('Post Analysis') {
+            steps{
+                sh 'flake8 > flake-results.txt || true'
+                step([$class: 'WarningsPublisher', parserConfigurations: [[parserName: 'pep8', pattern:'flake-results.txt']]])
+            }
+        }
     }
     post {
         always {
