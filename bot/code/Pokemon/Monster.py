@@ -11,6 +11,8 @@ from ..SQL import SQL
 from .Pokemon import Pokemon
 from . import EnumStatus
 
+
+
 class Monster(Pokemon):
 
 
