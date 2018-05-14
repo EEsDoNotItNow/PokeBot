@@ -3,12 +3,11 @@
 import unittest
 import logging
 import sys
-import os
-
 from ._run import _run
 
 from ..code.SQL import SQL
 from ..code.Pokemon import MoveSlot
+
 
 class Basic(unittest.TestCase):
 
@@ -22,8 +21,8 @@ class Basic(unittest.TestCase):
 
 
     def test_import_all_move_slots(self):
-        for i in range(1, 728+1):
-            move_slot = MoveSlot(move_id = i)
+        for i in range(1, 728 + 1):
+            move_slot = MoveSlot(move_id=i)
 
             # We cannot run async calls from here, use _run
             _run(move_slot.load())
