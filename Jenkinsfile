@@ -10,7 +10,7 @@ pipeline {
         stage('build') {
             steps {
                 withCredentials([string(credentialsId: 'CLIENT_TOKEN', variable: 'CLIENT_TOKEN')]) {
-                    sh 'Test of the $CLIENT_TOKEN'
+                    sh 'echo Test of the $CLIENT_TOKEN'
                 }
                 sh 'python3 --version'
             }
