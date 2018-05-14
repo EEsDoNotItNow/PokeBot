@@ -14,7 +14,8 @@ class Type:
         self.sql = SQL()
         self.log = Log()
         self.type_id = type_id
-        self.identifier = self.sql.cur.execute("SELECT identifier FROM types WHERE type_id=:type_id", locals()).fetchone()['identifier']
+        self.identifier = self.sql.cur.execute("SELECT identifier FROM types WHERE type_id=:type_id",
+                                               locals()).fetchone()['identifier']
 
         if not Type.type_efficacy:
             Type.type_efficacy = True
@@ -33,7 +34,7 @@ class Type:
     def __mul__(self, other):
         damage_factor = Type.type_efficacy[self.type_id][other.type_id]
 
-        return damage_factor/100
+        return damage_factor / 100
 
 
     def __lt__(self, other):

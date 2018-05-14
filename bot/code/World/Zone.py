@@ -3,6 +3,8 @@
 from ..SQL import SQL
 from ..Log import Log
 
+
+
 class Zone:
 
 
@@ -25,6 +27,5 @@ class Zone:
         cur = self.sql.cur
         cmd = "SELECT * FROM locations"
         data = cur.execute(cmd).fetchone()
-        
-        self.log.info("Loaded data")
 
+        self.log.info("Loaded data")

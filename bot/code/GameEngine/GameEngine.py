@@ -1,16 +1,15 @@
 
-import asyncio
 import re
-import time
 
 from ..Log import Log
 from ..Client import Client
-from ..Player import Trainer, League
-from ..SQL import SQL
+from ..Player import League
 
-from ..Pokemon import MonsterSpawner, Pokemon, Move, MoveSlot
+from ..Pokemon import MonsterSpawner, MoveSlot
 from ..World import World
 from ..Session import SessionManager
+
+
 
 class GameEngine:
 
@@ -21,12 +20,12 @@ class GameEngine:
         pass
 
 
-    async def on_message(self, message):        
+    async def on_message(self, message):
 
         self.log.info(f"Saw message: {message.content}")
 
         match_obj = re.match("^>", message.content)
-        if match_obj :
+        if match_obj:
             self.log.info("Saw a play command, handle it!")
             await self.command_proc(message)
 
@@ -67,20 +66,23 @@ class GameEngine:
         match_obj = re.match("> *deregister *$", message.content)
         if match_obj:
             # Create a basic trainer object
-            result =  await League(message.server.id).deregister(message.author.id, message.server.id)
+            result = await League(message.server.id).deregister(message.author.id, message.server.id)
             if result:
-                await self.client.send_message(message.channel, f"The Discord League is sorry to see you go, <@!{message.author.id}>")
+                await self.client.send_message(message.channel,
+                                               f"The Discord League is sorry to see you go, <@!{message.author.id}>")  # noqa: E501
             else:
-                await self.client.send_message(message.channel, f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")
+                await self.client.send_message(message.channel,
+                                               f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")  # noqa: E501
 
             return
-
 
         match_obj = re.match(">test$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
 
+
             await self.client.send_message(message.channel, "Enum testing...")
+
 
             self.log.info("Finished test command")
 
@@ -88,3 +90,4 @@ class GameEngine:
 
         # If we failed to trigger a command, we need to ask the session manager to handle it!
         await self.session_manager.command_proc(message)
+

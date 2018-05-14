@@ -7,6 +7,8 @@ from ..SQL import SQL
 
 from .Zone import Zone
 
+
+
 class World:
 
 
@@ -22,9 +24,6 @@ class World:
     async def load(self):
 
         cur = self.sql.cur
-        cmd = "SELECT * FROM locations"
-        zones = cur.execute(cmd).fetchall()
-
         cmd = "SELECT * FROM zone_connections"
         zone_connections = cur.execute(cmd).fetchall()
 
@@ -44,7 +43,7 @@ class World:
 
             self.zones[connection['location_id_1']].link(connection['location_id_2'], connection['distance'])
             self.zones[connection['location_id_2']].link(connection['location_id_1'], connection['distance'])
-        
+
 
     async def debug(self, channel):
         """Temp debug func for testing
@@ -56,8 +55,7 @@ class World:
         for count, key in enumerate(self.zones):
             if count > 10:
                 break
-            #await self.client.send_message(channel, self.zones[key])
+            # await self.client.send_message(channel, self.zones[key])
             self.log.info("Create Future")
             await asyncio.ensure_future(self.client.send_message(channel, self.zones[key]))
             self.log.info("Future ensured")
-

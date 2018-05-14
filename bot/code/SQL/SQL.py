@@ -1,7 +1,6 @@
 
 import asyncio
 import sqlite3
-import atexit
 import pathlib
 
 from ..Singleton import Singleton
@@ -9,6 +8,8 @@ from ..Log import Log
 from ..Client import Client
 from .table_setup import table_setup
 from .populate import populate
+
+
 
 class SQL(metaclass=Singleton):
     """Manage SQL connection, as well as basic user information
@@ -43,7 +44,7 @@ class SQL(metaclass=Singleton):
     @property
     def cur(self):
         return self.conn.cursor()
-    
+
 
     async def on_ready(self):
         if self.setup_needed:
@@ -52,7 +53,7 @@ class SQL(metaclass=Singleton):
             await table_setup()
             self.log.warning("Calling populate()")
             await populate()
-            
+
         self.log.info("SQL registered to recieve commands!")
 
 

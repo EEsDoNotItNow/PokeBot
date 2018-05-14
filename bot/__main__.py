@@ -1,1 +1,1 @@
-from . import PokeBot  # noqa: E265,F401
+from . import PokeBot  # noqa: E265, F401

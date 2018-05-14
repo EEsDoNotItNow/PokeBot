@@ -1,7 +1,4 @@
 
-import uuid
-import datetime
-
 from ..SQL import SQL
 from ..Log import Log
 from .Trainer import Trainer
@@ -33,7 +30,7 @@ class League:
         """Register with the league!
         """
 
-        trainer_id = await Trainer.generate_trainer_tables(user_id, server_id)
+        await Trainer.generate_trainer_tables(user_id, server_id)
 
         return await self.get_trainer(user_id, server_id)
 
@@ -54,5 +51,3 @@ class League:
         await self.sql.commit()
 
         return True
-
-

@@ -1,8 +1,9 @@
 
 import discord
-import asyncio
 
 from ..Log import Log
+
+
 
 class Client(discord.Client):
 
@@ -22,11 +23,11 @@ class Client(discord.Client):
             self._inited = True
 
 
-    
+
     def register(self, cls):
         """Register a class with our client.
         """
-        #TODO: Check if this class is here or not!
+        # TODO: Check if this class is here or not!
         self.registry.append(cls)
 
 
@@ -34,7 +35,7 @@ class Client(discord.Client):
 
         self.log.debug("on_channel_create")
         for module in self.registry:
-            if hasattr(module,'on_channel_create'):
+            if hasattr(module, 'on_channel_create'):
                 await module.on_channel_create(channel)
 
 
@@ -42,7 +43,7 @@ class Client(discord.Client):
 
         self.log.debug("on_channel_delete")
         for module in self.registry:
-            if hasattr(module,'on_channel_deletechannel'):
+            if hasattr(module, 'on_channel_deletechannel'):
                 await module.on_channel_deletechannel(channel)
 
 
@@ -51,7 +52,7 @@ class Client(discord.Client):
 
         self.log.debug("on_channel_update")
         for module in self.registry:
-            if hasattr(module,'on_channel_update'):
+            if hasattr(module, 'on_channel_update'):
                 await module.on_channel_update(before, after)
 
 
@@ -59,7 +60,7 @@ class Client(discord.Client):
     async def on_error(self, event, *args, **kwargs):
         self.log.exception("Saw exception")
         for module in self.registry:
-            if hasattr(module,'on_error'):
+            if hasattr(module, 'on_error'):
                 await module.on_error(event, *args, **kwargs)
 
 
@@ -68,7 +69,7 @@ class Client(discord.Client):
 
         self.log.debug("on_group_join")
         for module in self.registry:
-            if hasattr(module,'on_group_join'):
+            if hasattr(module, 'on_group_join'):
                 await module.on_group_join(channel, user)
 
 
@@ -77,7 +78,7 @@ class Client(discord.Client):
 
         self.log.debug("on_group_remove")
         for module in self.registry:
-            if hasattr(module,'on_group_remove'):
+            if hasattr(module, 'on_group_remove'):
                 await module.on_group_remove(channel, user)
 
 
@@ -86,7 +87,7 @@ class Client(discord.Client):
 
         self.log.debug("on_member_ban")
         for module in self.registry:
-            if hasattr(module,'on_member_ban'):
+            if hasattr(module, 'on_member_ban'):
                 await module.on_member_ban(member)
 
 
@@ -95,7 +96,7 @@ class Client(discord.Client):
 
         self.log.debug("on_member_join")
         for module in self.registry:
-            if hasattr(module,'on_member_join'):
+            if hasattr(module, 'on_member_join'):
                 await module.on_member_join(member)
 
 
@@ -104,7 +105,7 @@ class Client(discord.Client):
 
         self.log.debug("on_member_remove")
         for module in self.registry:
-            if hasattr(module,'on_member_remove'):
+            if hasattr(module, 'on_member_remove'):
                 await module.on_member_remove(member)
 
 
@@ -113,7 +114,7 @@ class Client(discord.Client):
 
         self.log.debug("on_member_unban")
         for module in self.registry:
-            if hasattr(module,'on_member_unban'):
+            if hasattr(module, 'on_member_unban'):
                 await module.on_member_unban(server, user)
 
 
@@ -121,7 +122,7 @@ class Client(discord.Client):
 
         self.log.debug("on_member_update")
         for module in self.registry:
-            if hasattr(module,'on_member_update'):
+            if hasattr(module, 'on_member_update'):
                 await module.on_member_update(before, after)
 
 
@@ -130,7 +131,7 @@ class Client(discord.Client):
 
         self.log.debug("on_message")
         for module in self.registry:
-            if hasattr(module,'on_message'):
+            if hasattr(module, 'on_message'):
                 await module.on_message(message)
 
 
@@ -138,7 +139,7 @@ class Client(discord.Client):
 
         self.log.debug("on_message_delete")
         for module in self.registry:
-            if hasattr(module,'on_message_delete'):
+            if hasattr(module, 'on_message_delete'):
                 await module.on_message_delete(message)
 
 
@@ -147,7 +148,7 @@ class Client(discord.Client):
 
         self.log.debug("on_message_edit")
         for module in self.registry:
-            if hasattr(module,'on_message_edit'):
+            if hasattr(module, 'on_message_edit'):
                 await module.on_message_edit(before, after)
 
 
@@ -156,7 +157,7 @@ class Client(discord.Client):
 
         self.log.debug("on_reaction_add")
         for module in self.registry:
-            if hasattr(module,'on_reaction_add'):
+            if hasattr(module, 'on_reaction_add'):
                 await module.on_reaction_add(reaction, user)
 
 
@@ -165,7 +166,7 @@ class Client(discord.Client):
 
         self.log.debug("on_reaction_clear")
         for module in self.registry:
-            if hasattr(module,'on_reaction_clear'):
+            if hasattr(module, 'on_reaction_clear'):
                 await module.on_reaction_clear(message, reactions)
 
 
@@ -174,7 +175,7 @@ class Client(discord.Client):
 
         self.log.debug("on_reaction_remove")
         for module in self.registry:
-            if hasattr(module,'on_reaction_remove'):
+            if hasattr(module, 'on_reaction_remove'):
                 await module.on_reaction_remove(reaction, user)
 
 
@@ -183,7 +184,7 @@ class Client(discord.Client):
 
         self.log.info("Bot ready!")
         for module in self.registry:
-            if hasattr(module,'on_ready'):
+            if hasattr(module, 'on_ready'):
                 await module.on_ready()
 
 
@@ -192,7 +193,7 @@ class Client(discord.Client):
 
         self.log.debug("on_resumed")
         for module in self.registry:
-            if hasattr(module,'on_resumed'):
+            if hasattr(module, 'on_resumed'):
                 await module.on_resumed()
 
 
@@ -201,7 +202,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_available")
         for module in self.registry:
-            if hasattr(module,'on_server_available'):
+            if hasattr(module, 'on_server_available'):
                 await module.on_server_available(server)
 
 
@@ -210,7 +211,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_emojis_update")
         for module in self.registry:
-            if hasattr(module,'on_server_emojis_update'):
+            if hasattr(module, 'on_server_emojis_update'):
                 await module.on_server_emojis_update(before, after)
 
 
@@ -219,7 +220,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_join")
         for module in self.registry:
-            if hasattr(module,'on_server_join'):
+            if hasattr(module, 'on_server_join'):
                 await module.on_server_join(server)
 
 
@@ -228,7 +229,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_remove")
         for module in self.registry:
-            if hasattr(module,'on_server_remove'):
+            if hasattr(module, 'on_server_remove'):
                 await module.on_server_remove(server)
 
 
@@ -237,7 +238,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_role_create")
         for module in self.registry:
-            if hasattr(module,'on_server_role_create'):
+            if hasattr(module, 'on_server_role_create'):
                 await module.on_server_role_create(role)
 
 
@@ -246,7 +247,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_role_delete")
         for module in self.registry:
-            if hasattr(module,'on_server_role_delete'):
+            if hasattr(module, 'on_server_role_delete'):
                 await module.on_server_role_delete(role)
 
 
@@ -255,7 +256,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_role_update")
         for module in self.registry:
-            if hasattr(module,'on_server_role_update'):
+            if hasattr(module, 'on_server_role_update'):
                 await module.on_server_role_update(before, after)
 
 
@@ -264,7 +265,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_unavailable")
         for module in self.registry:
-            if hasattr(module,'on_server_unavailable'):
+            if hasattr(module, 'on_server_unavailable'):
                 await module.on_server_unavailable(server)
 
 
@@ -273,7 +274,7 @@ class Client(discord.Client):
 
         self.log.debug("on_server_update")
         for module in self.registry:
-            if hasattr(module,'on_server_update'):
+            if hasattr(module, 'on_server_update'):
                 await module.on_server_update(before, after)
 
 
@@ -282,7 +283,7 @@ class Client(discord.Client):
 
         self.log.debug("on_socket_raw_receive")
         for module in self.registry:
-            if hasattr(module,'on_socket_raw_receive'):
+            if hasattr(module, 'on_socket_raw_receive'):
                 await module.on_socket_raw_receive(msg)
 
 
@@ -291,7 +292,7 @@ class Client(discord.Client):
 
         self.log.debug("on_socket_raw_send")
         for module in self.registry:
-            if hasattr(module,'on_socket_raw_send'):
+            if hasattr(module, 'on_socket_raw_send'):
                 await module.on_socket_raw_send(payload)
 
 
@@ -300,7 +301,7 @@ class Client(discord.Client):
 
         self.log.debug("on_typing")
         for module in self.registry:
-            if hasattr(module,'on_typing'):
+            if hasattr(module, 'on_typing'):
                 await module.on_typing(channel, user, when)
 
 
@@ -309,6 +310,5 @@ class Client(discord.Client):
 
         self.log.debug("on_voice_state_update")
         for module in self.registry:
-            if hasattr(module,'on_voice_state_update'):
+            if hasattr(module, 'on_voice_state_update'):
                 await module.on_voice_state_update(before, after)
-

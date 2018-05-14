@@ -26,8 +26,8 @@ class Trainer:
 
         self.nickname = values['nickname']
         self.created_on = dateutil.parser.parse(values['created_on'])
-        self.user_id =  values['user_id']
-        self.server_id =  values['server_id']
+        self.user_id = values['user_id']
+        self.server_id = values['server_id']
 
         cmd = "SELECT * FROM trainer_stats WHERE trainer_id = :trainer_id"
         values = self.sql.cur.execute(cmd, locals()).fetchone()
@@ -44,10 +44,10 @@ class Trainer:
 
         name = user.nick if user.nick else user.name
 
-        cmd = """INSERT INTO trainers 
-            (trainer_id, 
-            user_id, 
-            server_id, 
+        cmd = """INSERT INTO trainers
+            (trainer_id,
+            user_id,
+            server_id,
             nickname,
             created_on)
             VALUES
@@ -83,7 +83,7 @@ class Trainer:
         trainer_id = self.trainer_id
         for key in stats_dict:
             value = stats_dict[key]
-            cmd = f"""UPDATE trainer_stats 
+            cmd = f"""UPDATE trainer_stats
                       SET {key} = {key} + :value
                       WHERE trainer_id = :trainer_id"""
             cur.execute(cmd, locals())
@@ -94,8 +94,8 @@ class Trainer:
     async def get_trainer_card(self):
         em = discord.Embed()
 
-        server = self.client.get_server(self.server_id)
-        member = server.get_member(self.user_id)
+        # server = self.client.get_server(self.server_id)
+        # member = server.get_member(self.user_id)
 
         em.title = "Trainer Card"
 
@@ -110,6 +110,6 @@ class Trainer:
         return em
 
 
-    @property 
+    @property
     def level(self):
         return int(numpy.sqrt(self.stats['xp']))
