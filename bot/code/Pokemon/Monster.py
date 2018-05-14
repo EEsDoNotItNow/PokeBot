@@ -4,7 +4,6 @@ import discord
 import numpy as np
 import uuid
 
-from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
 
@@ -79,7 +78,7 @@ class Monster(Pokemon):
         em = discord.Embed()
         em.title = self.identifier.title()
 
-        em.add_field(name="Level", value=self.level )
+        em.add_field(name="Level", value=self.level)
 
 
         if self.type2:
@@ -127,17 +126,17 @@ class Monster(Pokemon):
 
     @staticmethod
     def calc_stat(base, iv, ev, level, nature=1):
-        return  int(np.floor( ( np.floor( ( ( 2*base + iv + np.floor(ev/4) )*level)/100 ) + 5 )*nature))
+        return int(np.floor((np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + 5) * nature))
 
 
     @staticmethod
     def calc_hp(base, iv, ev, level):
-        result = int(np.floor( ( ( 2 * base + iv + np.floor(ev/4))*level )/100 ) + level + 10)
+        result = int(np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + level + 10)
         return result
 
 
     async def calc_level(self):
-        return int(np.floor( self.xp**(1/3) ))
+        return int(np.floor(self.xp ** (1 / 3)))
 
 
     async def load(self):
