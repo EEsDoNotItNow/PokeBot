@@ -1,6 +1,6 @@
 
-FROM python:3.6.5
+FROM debian:stable
 
-RUN pip install pipenv
-RUN mkdir -p /.local/share/virtualenvs/
-RUN chmod +w /.local/share/virtualenvs/
+RUN apt-get install -y make build-essential libssl-dev zlib1g-dev
+RUN apt-get install -y libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm
+RUN apt-get install -y libncurses5-dev  libncursesw5-dev xz-utils tk-dev
