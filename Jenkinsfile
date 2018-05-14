@@ -13,7 +13,7 @@ pipeline {
             steps {
                 sh 'echo Setup complete!'
 
-                def MyGitURL = "${GIT_URL}"
+                MyGitURL = "${GIT_URL}"
             }
         }
         stage('Unit testing') {
