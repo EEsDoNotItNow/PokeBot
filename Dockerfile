@@ -1,5 +1,6 @@
 
 FROM python:3.6.5
 
-RUN chmod +w /.local
 RUN pip install pipenv
+RUN mkdir /.local
+RUN chmod +w /.local
