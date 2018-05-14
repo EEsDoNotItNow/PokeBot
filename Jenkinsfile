@@ -13,7 +13,7 @@ pipeline {
             steps {
                 sh 'echo Setup complete!'
 
-                MyGitURL = "${GIT_URL}"
+                
             }
         }
         stage('Unit testing') {
@@ -29,6 +29,9 @@ pipeline {
     }
     post {
         always {
+            script {
+                def MyGitURL = "${GIT_URL}"
+            }
             discordSend description: "Jenkins Pipeline Build: ${GIT_COMMIT} on ${GIT_BRANCH} #${env.BUILD_ID}\n\nResult: ${currentBuild.currentResult}", link: "${MyGitURL}", footer: 'Have a nice build!', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: 'Jenkins Build', webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
         }
     }
