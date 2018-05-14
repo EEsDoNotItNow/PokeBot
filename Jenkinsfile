@@ -12,6 +12,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
+                sh 'echo ${myGitURL}'
                 sh 'echo Setup complete!'
 
                 
