@@ -31,8 +31,8 @@ pipeline {
         }
         stage('Post Analysis') {
             steps{
-                sh 'flake8 || true'
-                step([$class: 'WarningsPublisher', parserConfigurations: [[parserName: 'pep8']]])
+                sh 'flake8 > flake-results.txt || true'
+                step([$class: 'WarningsPublisher', parserConfigurations: [[parserName: 'pep8', pattern:'flake-results.txt']])
             }
         }
     }
