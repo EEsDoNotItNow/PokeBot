@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'pip install --user -r requirements.txt'
+                sh 'virtualenv .env'
             }
         }
         stage('build') {
