@@ -1,6 +1,9 @@
 pipeline {
     agent { dockerfile true } //{ additionalBuildArgs '--no-cache'}  if we wanted to be slower!
 
+
+    def MyGitURL = "${GIT_URL}"s
+
     environment {
         LC_ALL = 'C.UTF-8'
         LANG = 'C.UTF-8'
@@ -23,7 +26,6 @@ pipeline {
             }
         }
     }
-    def MyGitURL = ${GIT_URL}
     post {
         always {
             discordSend description: "Jenkins Pipeline Build: ${GIT_COMMIT} on ${GIT_BRANCH} #${env.BUILD_ID}\n\nResult: ${currentBuild.currentResult}", link: "${MyGitURL}", footer: 'Have a nice build!', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: 'Jenkins Build', webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
