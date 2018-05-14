@@ -1,7 +1,5 @@
 
-from pprint import pprint
 import csv
-import json
 import time
 import pathlib
 
@@ -61,7 +59,7 @@ async def ingest_csv(csv_dir):
                 except ValueError:
                     pass
 
-    stat_lookup = { 1:"hp", 2:"attack", 3:"defense", 4:"sp_attack", 5:"sp_defense", 6:"speed"}
+    stat_lookup = {1: "hp", 2: "attack", 3: "defense", 4: "sp_attack", 5: "sp_defense", 6: "speed"}
     for entry in raw_stats:
         pokemon_id = entry['pokemon_id']
         base_key = "base_" + stat_lookup[entry['stat_id']]
@@ -269,8 +267,6 @@ async def ingest_csv(csv_dir):
                     pass
     log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")
 
-    locations = []
-
     output = {}
     output['encounters'] = encounters
     output['location_names'] = location_names
@@ -284,6 +280,7 @@ async def ingest_csv(csv_dir):
     output['zone_connections'] = zone_connections
 
     return output
+
 
 async def populate():
     """Attmept to populate basic tables
