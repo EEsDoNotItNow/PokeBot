@@ -31,7 +31,7 @@ pipeline {
         }
         stage('Post Analysis') {
             steps{
-                step([$class: 'warnings', consoleParsers: [parserName: 'pep8']])
+				warnings
             }
         }
     }
