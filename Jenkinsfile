@@ -4,6 +4,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
+                sh 'pipenv install'
                 sh 'echo Setup complete!'
             }
         }
