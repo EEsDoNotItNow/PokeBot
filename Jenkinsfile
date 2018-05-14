@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'sudo pip3 install pipenv'
+                sh 'pip3 --user pipenv'
                 sh 'pipenv install'
                 sh 'pip3 freeze'
             }
