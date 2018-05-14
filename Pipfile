@@ -8,6 +8,8 @@ name = "pypi"
 [packages]
 
 discord = "*"
+python-dateutil = "*"
+numpy = "*"
 
 
 [dev-packages]

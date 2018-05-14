@@ -1,0 +1,57 @@
+
+magnemite
+    gender_rate -1
+    genderless
+
+
+tyrogue
+    gr 0
+    male only
+
+bulbasaur
+    gender_rate 1
+    1f:7m
+
+elekid
+    gr 2
+    1f:3m
+
+larvitar
+    gr 4
+    1f:1m
+
+oricorio
+    gr 6
+    3f:1m
+
+litleo
+    gr 7
+    7f:1m
+
+    gr 8
+    female only
+
+
+arcanine
+    r1
+    slow
+
+metapod
+    r2
+    med/fast
+
+wigglytuff
+    r3
+    fast
+
+ bulbasaur
+    r4
+    med/slow
+
+nincada
+    r5
+    Erratic
+
+makuhita
+    r6
+    Fluctuating

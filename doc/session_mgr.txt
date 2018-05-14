@@ -1,0 +1,24 @@
+
+Game States to Track
+    Idle
+    Breeding
+    Hatching
+    Resting
+    Training
+    Working (earn monz)
+
+    Flying
+    Teleporting
+    Walking
+    Biking
+    Running
+    Regional Transition
+
+    Encounter (Option to run?)
+    Battle
+    Post Battle
+
+    Trading
+    Shopping
+    Someones PC
+

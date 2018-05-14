@@ -2,34 +2,56 @@
 import asyncio
 import sqlite3
 import atexit
+import pathlib
 
 from ..Singleton import Singleton
 from ..Log import Log
 from ..Client import Client
+from .table_setup import table_setup
+from .populate import populate
 
 class SQL(metaclass=Singleton):
     """Manage SQL connection, as well as basic user information
     """
 
     def __init__(self, db_name):
+
+        db_path = pathlib.Path(db_name)
+        self.setup_needed = False
+        if not db_path.is_file():
+            self.create_db(db_name)
+            self.setup_needed = True
+
         self.conn = sqlite3.connect(db_name)
         self.conn.row_factory = self.dict_factory
-        self.cur = self.conn.cursor()
         self.log = Log()
         self.client = Client()
         self._commit_in_progress = False
         self.log.info("SQL init completed")
 
 
+    def create_db(self, db_name):
+        conn = sqlite3.connect(db_name)
+        cur = conn.cursor()
+        cur.execute("PRAGMA journal_mode=WAL")
+        conn.commit()
+        cur.execute("PRAGMA synchronous=1")
+        conn.commit()
+        conn.close()
+
+
+    @property
+    def cur(self):
+        return self.conn.cursor()
+    
+
     async def on_ready(self):
-
-        if not await self.table_exists('users'):
-            self.log.warning("Users table not found, creating")
-            await self._create_user_table()
-            
-        if not await self.table_exists('servers'):
-            self.log.warning("Servers table not found, creating")
-
+        if self.setup_needed:
+            self.log.warning("Setup needed for SQL tables, starting")
+            self.log.warning("Calling table_setup()")
+            await table_setup()
+            self.log.warning("Calling populate()")
+            await populate()
             
         self.log.info("SQL registered to recieve commands!")
 
@@ -44,41 +66,24 @@ class SQL(metaclass=Singleton):
     async def commit(self, now=False):
         # Schedule a commit in the future
         # Get loop from the client, schedule a call to _commit and return
-        self.log.info("Start a commit()")
+        # self.log.info("Start a commit()")
         asyncio.ensure_future(self._commit(now))
-        self.log.info("Finsihed a commit()")
+        # self.log.info("Finsihed a commit()")
 
 
     async def _commit(self, now=False):
-        self.log.info("Start a _commit()")
-        if self._commit_in_progress:
-            self.log.info("Skipped a _commit()")
+        self.log.debug("Start a _commit()")
+        if self._commit_in_progress and not now:
+            self.log.debug("Skipped a _commit()")
             return
         self._commit_in_progress = True
-        await asyncio.sleep(5)
+        if not now:
+            await asyncio.sleep(5)
         # Commit SQL
         self.conn.commit()
         self._commit_in_progress = False
         self.log.info("Finished a _commit()")
 
-
-    async def _create_user_table(self):
-        cmd = """    
-                CREATE TABLE IF NOT EXISTS users
-                (
-                    name TEXT NOT NULL,
-                    user_id TEXT NOT NULL,
-                    discriminator TEXT,
-                    avatar TEXT,
-                    bot BOOLEAN,
-                    avatar_url TEXT,
-                    default_avatar TEXT,
-                    default_avatar_url TEXT,
-                    mention TEXT,
-                    created_at INTEGER
-                )"""
-        self.cur.execute(cmd)
-        await self.commit()
 
 
     async def table_exists(self, table_name):
