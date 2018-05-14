@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-import os
 import argparse
-import sys
+import os
 
 from .code.Client import Client
 from .code.GameEngine import GameEngine
@@ -23,7 +22,7 @@ parser.add_argument('--env',
                     help='Current environment')
 
 parser.add_argument('--log-level',
-                    choices = ['INFO', 'DEBUG'],
+                    choices=['INFO', 'DEBUG'],
                     default='INFO',
                     help='Token to use to login')
 
@@ -37,15 +36,15 @@ x = Client()
 
 x.register(SQL("poke.db"))
 
-#################################
-### Register all modules here ###
-#################################
+#############################
+# Register all modules here #
+#############################
 
 x.register(GameEngine())
 
-#################################
-### Register all modules here ###
-#################################
+#############################
+# Register all modules here #
+#############################
 
 
 if args.token:
