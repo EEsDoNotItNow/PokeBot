@@ -10,22 +10,20 @@ from ..SQL import SQL
 
 from ..Pokemon import MonsterSpawner, Pokemon, Move, MoveSlot
 from ..World import World
+from ..Session import SessionManager
 
 class GameEngine:
 
     def __init__(self):
         self.log = Log()
         self.client = Client()
+        self.session_manager = SessionManager()
         pass
 
 
     async def on_message(self, message):        
 
         self.log.info(f"Saw message: {message.content}")
-
-        match_obj = re.match("<@!?(?P<id>\d+)>", message.content)
-        if match_obj and match_obj.group('id')==self.client.user.id:
-            self.log.info("Saw a command, handle it!")
 
         match_obj = re.match("^>", message.content)
         if match_obj :
@@ -45,6 +43,8 @@ class GameEngine:
 
 
     async def command_proc(self, message):
+        """Handle specific commands, or pass to the session_manager
+        """
 
         match_obj = re.match("> *register *$", message.content)
         if match_obj:
@@ -75,45 +75,16 @@ class GameEngine:
 
             return
 
-        match_obj = re.match("> *spawn ?(\d+)?$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            spawner = MonsterSpawner()
-            poke = await spawner.spawn_random()
-            self.log.info(poke)
-            await poke.save()
-
-            await self.client.send_message(message.channel, "Demo Spawn Example (very random)", embed=await poke.em(debug=True))
-
-            return
-
 
         match_obj = re.match(">test$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
 
-            await self.client.send_message(message.channel, "Demo of move sets!")
-
-            for i in range(0,15+1):
-                move = MoveSlot(i)
-                await move.load()
-                em = await move.em()
-                # self.log.info(dir(em))
-                # self.log.info(em.fields)
-                await self.client.send_message(message.channel, embed=em)
-
+            await self.client.send_message(message.channel, "Enum testing...")
 
             self.log.info("Finished test command")
 
             return
 
-
-        match_obj = re.match(">map$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            world = World()
-            await world.load()
-            await world.debug(message.channel)
-
-            return
-
+        # If we failed to trigger a command, we need to ask the session manager to handle it!
+        await self.session_manager.command_proc(message)
