@@ -30,7 +30,6 @@ class Trainer:
         """Given known state, attmpt to load. If unable to find trainer, create one!
         """
 
-
         cmd = "SELECT * FROM trainers WHERE trainer_id = :trainer_id"
         values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
 
