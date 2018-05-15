@@ -15,10 +15,13 @@ class GameEngine:
         self.log = Log()
         self.client = Client()
         self.session_manager = SessionManager()
+        self.ready = False
         pass
 
 
     async def on_message(self, message):
+        if not self.ready:
+            return
 
         self.log.info(f"Saw message: {message.content}")
 
@@ -32,6 +35,7 @@ class GameEngine:
         self.log.info("GameEngine, ready to recieve commands!")
         bot_spam = self.client.get_channel('443892226486042638')
         await self.client.send_message(bot_spam, "ready!")
+        self.ready = True
 
 
     async def on_resumed(self):
