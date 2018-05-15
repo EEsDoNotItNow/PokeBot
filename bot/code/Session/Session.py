@@ -2,6 +2,7 @@
 import uuid
 
 from .States import GameSessionStates
+from ..Log import Log
 
 
 
@@ -11,7 +12,8 @@ class Session:
 
     def __init__(self, trainer, session_uuid=None):
         self.trainer = trainer
-        
+
+        self.log = Log()
 
         self.state = GameSessionStates.IDLE
 
@@ -25,3 +27,4 @@ class Session:
         """Player in a session has issued a command, handle it.
         """
         self.log.info(f"Command from player seen: {message.content}")
+        self.log.info(f"Session ID: {self.session_uuid}")

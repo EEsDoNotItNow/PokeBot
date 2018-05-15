@@ -34,6 +34,22 @@ class Trainer:
 
         self.stats = dict(values)
 
+        self.is_zombie = False
+
+
+    def __eq__(self, other):
+        if type(other) != Trainer:
+            raise NotImplimentedError()
+
+        return str(self.trainer_id) == str(other.trainer_id)
+
+
+    def __ne__(self, other):
+        if type(other) != Trainer:
+            raise NotImplimentedError()
+        
+        return str(self.trainer_id) != str(other.trainer_id)
+
 
     @classmethod
     async def generate_trainer_tables(cls, user_id, server_id):

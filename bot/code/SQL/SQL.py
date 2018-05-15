@@ -67,9 +67,10 @@ class SQL(metaclass=Singleton):
     async def commit(self, now=False):
         # Schedule a commit in the future
         # Get loop from the client, schedule a call to _commit and return
-        # self.log.info("Start a commit()")
-        asyncio.ensure_future(self._commit(now))
-        # self.log.info("Finsihed a commit()")
+        if now:
+            await self._commit(now)
+        else:
+            asyncio.ensure_future(self._commit(now))
 
 
     async def _commit(self, now=False):

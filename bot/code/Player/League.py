@@ -58,7 +58,11 @@ class League:
             self.log.info(f"Found trainer dict: {trainer_dicts}")
 
             for trainer in trainer_dicts:
-                trainer_list.append(Trainer(trainer['trainer_id']))
+                trainer = Trainer(trainer['trainer_id'])
+                # Do not re add the trainer if we already found them in cache!
+                if trainer in trainer_list:
+                    continue
+                trainer_list.append(trainer)
                 self.trainers.append(trainer_list[-1])
 
             if len(trainer_list) == 0:
@@ -89,6 +93,13 @@ class League:
         # Sorry dude, you are getting BALETED
         cmd = "DELETE FROM trainers WHERE server_id=:server_id AND user_id=:user_id"
         cur.execute(cmd, locals())
-        await self.sql.commit()
+        await self.sql.commit(now=True)
+
+        zombie_trainer = await self.get_trainer(user_id, server_id)
+        if zombie_trainer:
+            # Prune that bad boy!
+            zombie_trainer.is_zombie = True
+            self.trainers = [x for x in self.trainers if x != zombie_trainer]
+
 
         return True

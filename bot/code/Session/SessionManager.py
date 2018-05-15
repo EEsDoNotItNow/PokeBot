@@ -25,9 +25,12 @@ class SessionManager(metaclass=Singleton):
         session = await self.get_session(message)
 
         if session == None:
+            self.log.warning(f"No session found! What?!")
             return
 
         self.log.info(f"Got session: {session}")
+
+        await session.command_proc(message)
 
         return
 
@@ -48,11 +51,16 @@ class SessionManager(metaclass=Singleton):
             for session in self.sessions:
                 if session.trainer == trainer:
                     return session
+                else:
+                    self.log.info(f"{session.trainer} != {trainer}")
 
         # Active sessions didn't work, check the inactive ones!
         pass
 
         # Inactive session not found, return a NEW session
         if len(trainers) == 1:
-            return Session(trainers[-1])
+            self.log.info("No session found, create a new one")
+            session = Session(trainers[-1])
+            self.sessions.append(session)
+            return session
         pass
