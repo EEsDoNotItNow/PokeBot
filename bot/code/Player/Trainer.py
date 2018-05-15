@@ -78,7 +78,6 @@ class Trainer:
         sql.cur.execute(cmd, locals())
         await sql.commit()
 
-        self.log.info(f"Test before trainer write: {locals()}")
         cmd = """INSERT INTO trainer_stats
         (trainer_id)
         VALUES
@@ -89,6 +88,10 @@ class Trainer:
 
 
     async def log_stats(self, stats_dict):
+        """Merge the stats_dict with the SQL DB entry, adding where able
+
+        @raises ValueError when stats_dict contains an invalid key
+        """
 
         cmd = "PRAGMA table_info(trainer_stats)"
         cur = self.sql.cur

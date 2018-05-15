@@ -51,6 +51,50 @@ async def table_setup():
         await sql.commit()
 
 
+    log.info("Check to see if trainer_data exists.")
+    if not await sql.table_exists("trainer_data"):
+        log.info("Create trainer_data table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE trainer_data
+            (
+                trainer_id TEXT NOT NULL,
+
+                /* Track where we are.*/
+                current_region_id TEXT,
+                current_zone_id TEXT, 
+                current_building_id TEXT,
+
+                /* Track where we want to be, if we are traveling */
+                destination_region_id TEXT DEFAULT NULL,
+                destination_zone_id TEXT DEFAULT NULL, 
+                destination_building_id TEXT DEFAULT NULL
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
+    log.info("Check to see if trainer_party exists.")
+    if not await sql.table_exists("trainer_party"):
+        log.info("Create trainer_party table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE trainer_party
+            (
+                trainer_id TEXT NOT NULL,
+                monster_id_0 TEXT DEFAULT NULL,
+                monster_id_1 TEXT DEFAULT NULL,
+                monster_id_2 TEXT DEFAULT NULL,
+                monster_id_3 TEXT DEFAULT NULL,
+                monster_id_4 TEXT DEFAULT NULL,
+                monster_id_5 TEXT DEFAULT NULL,
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
     log.info("Check to see if trainer_stats exists.")
     if not await sql.table_exists("trainer_stats"):
         log.info("Create trainer_stats table")
