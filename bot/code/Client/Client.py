@@ -390,3 +390,70 @@ class Client(discord.Client):
             return None
         self.log.error("Got to an invalid return location!")
         raise RuntimeError("Unsure of how we got here")
+
+    async def select_prompt(self, channel, prompt_question, prompt_list, user=None, timeout=30, clean_up=True):
+        """ Ask user to respond and pick from a list of strings.
+        Args:
+            channel (discord Obj): Channel to send to (This could be a user, and result in a DM!
+            prompt_list (list/tuple): List of options to give the user
+            user (discord Obj): Valid responder (Set to None to accept any)
+            timeout (int/float): Seconds to wait for user response
+            clean_up: Should we cleanup after
+
+        """
+        digits = [b'1\xe2\x83\xa3',
+                  b'2\xe2\x83\xa3',
+                  b'3\xe2\x83\xa3',
+                  b'4\xe2\x83\xa3',
+                  b'5\xe2\x83\xa3',
+                  b'6\xe2\x83\xa3',
+                  b'7\xe2\x83\xa3',
+                  b'8\xe2\x83\xa3',
+                  b'9\xe2\x83\xa3',
+                  b'\xf0\x9f\x94\x9f',
+                  ]
+
+        digits = [x.decode() for x in digits[:len(prompt_list)]]
+
+        embed = discord.Embed(
+            color=discord.Color.default(),
+            description=prompt_question,
+        )
+
+        for idx, question in enumerate(prompt_list):
+            embed.add_field(name=f"{digits[idx]}",
+                            value=question,
+                            inline=False)
+
+        embed.set_footer(text="Note: Previous responses before now are ignored!")
+
+        msg_obj = await self.send_message(channel,
+                                          "Populating message options... Please wait!",
+                                          )
+
+        for i in range(len(prompt_list)):
+            await self.add_reaction(msg_obj, digits[i])
+
+        await self.edit_message(msg_obj, embed=embed)
+        if user:
+            await self.edit_message(msg_obj, new_content=f"<@{user.id}>")
+        else:
+            await self.edit_message(msg_obj, new_content=" ")
+
+        ret_val = await self.wait_for_reaction(digits,
+                                               message=msg_obj,
+                                               user=user,
+                                               timeout=timeout
+                                               )
+
+        if clean_up:
+            await self.delete_message(msg_obj)
+
+        if ret_val is None:
+            return None
+
+        for idx, val in enumerate(digits):
+            if ret_val[0].emoji == val:
+                return idx
+
+        return None
