@@ -1,6 +1,6 @@
 
 
-# .creds file should look like this 
+# .creds file should look like this
 # export CLIENT_TOKEN="LOTS OF NUMBERS THAT MAKE A TOKEN GO HERE"
 
 git pull

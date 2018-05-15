@@ -4,12 +4,13 @@ import discord
 import numpy as np
 import uuid
 
-from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
 
 from .Pokemon import Pokemon
 from . import EnumStatus
+
+
 
 class Monster(Pokemon):
 
@@ -55,14 +56,14 @@ class Monster(Pokemon):
         self.ev_sp_attack = 0
         self.ev_sp_defense = 0
         self.ev_speed = 0
-        
+
         self.hp = 0
         self.attack = 0
         self.defense = 0
         self.sp_attack = 0
         self.sp_defense = 0
         self.speed = 0
-        
+
 
     def __repr__(self):
         return f"Monster({self.pokemon_id})"
@@ -77,7 +78,7 @@ class Monster(Pokemon):
         em = discord.Embed()
         em.title = self.identifier.title()
 
-        em.add_field(name="Level", value=self.level )
+        em.add_field(name="Level", value=self.level)
 
 
         if self.type2:
@@ -100,23 +101,23 @@ class Monster(Pokemon):
         em.add_field(name="Status", value=self.status)
 
         if debug:
-            evs = {      
-                "ev_hp":self.ev_hp,
-                "ev_attack":self.ev_attack,
-                "ev_defense":self.ev_defense,
-                "ev_sp_attack":self.ev_sp_attack,
-                "ev_sp_defense":self.ev_sp_defense,
-                "ev_speed":self.ev_speed,
+            evs = {
+                "ev_hp": self.ev_hp,
+                "ev_attack": self.ev_attack,
+                "ev_defense": self.ev_defense,
+                "ev_sp_attack": self.ev_sp_attack,
+                "ev_sp_defense": self.ev_sp_defense,
+                "ev_speed": self.ev_speed,
             }
             em.add_field(name="EVs", value=evs)
 
-            ivs = {      
-                "iv_hp":self.iv_hp,
-                "iv_attack":self.iv_attack,
-                "iv_defense":self.iv_defense,
-                "iv_sp_attack":self.iv_sp_attack,
-                "iv_sp_defense":self.iv_sp_defense,
-                "iv_speed":self.iv_speed,
+            ivs = {
+                "iv_hp": self.iv_hp,
+                "iv_attack": self.iv_attack,
+                "iv_defense": self.iv_defense,
+                "iv_sp_attack": self.iv_sp_attack,
+                "iv_sp_defense": self.iv_sp_defense,
+                "iv_speed": self.iv_speed,
             }
             em.add_field(name="IVs", value=ivs)
 
@@ -125,18 +126,18 @@ class Monster(Pokemon):
 
     @staticmethod
     def calc_stat(base, iv, ev, level, nature=1):
-        return  int(np.floor( ( np.floor( ( ( 2*base + iv + np.floor(ev/4) )*level)/100 ) + 5 )*nature))
+        return int(np.floor((np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + 5) * nature))
 
 
     @staticmethod
     def calc_hp(base, iv, ev, level):
-        result = int(np.floor( ( ( 2 * base + iv + np.floor(ev/4))*level )/100 ) + level + 10)
+        result = int(np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + level + 10)
         return result
 
 
     async def calc_level(self):
-        return int(np.floor( self.xp**(1/3) ))
-    
+        return int(np.floor(self.xp ** (1 / 3)))
+
 
     async def load(self):
         await super().load()
@@ -153,7 +154,7 @@ class Monster(Pokemon):
         else:
             self.monster_id = str(uuid.uuid4())
 
-        # TODO: We also need to load from the SQL 
+        # TODO: We also need to load from the SQL
 
 
     async def save(self):
@@ -172,7 +173,7 @@ class Monster(Pokemon):
                 speed,
                 defense,
                 xp,
-                ability, 
+                ability,
                 hidden_ability,
                 gender,
                 iv_hp,
@@ -199,7 +200,7 @@ class Monster(Pokemon):
                 :speed,
                 :defense,
                 :xp,
-                :ability, 
+                :ability,
                 :hidden_ability,
                 :gender,
                 :iv_hp,
@@ -223,7 +224,7 @@ class Monster(Pokemon):
         for entry in ret:
             local_keys[entry['name']] = getattr(self, entry['name'])
 
-        cur.execute(cmd,local_keys)
+        cur.execute(cmd, local_keys)
         await self.sql.commit()
 
 
@@ -243,7 +244,7 @@ class Monster(Pokemon):
     async def heal(self, amount=None):
         """Add given amount of HP
 
-        @param 
+        @param
         """
 
         if amount:

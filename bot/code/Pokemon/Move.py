@@ -14,23 +14,23 @@ class Move:
         self.move_id = move_id
 
         # Init simple placeholder values
-        self.identifier=None
-        self.generation_id=None
-        self.type_id=None
-        self.power=None
-        self.pp_max=None
-        self.accuracy=None
-        self.priority=None
-        self.target_id=None
-        self.damage_class_id=None
-        self.effect_id=None
-        self.effect_chance=None
-        self.contest_type_id=None
-        self.contest_effect_id=None
-        self.super_contest_effect_id=None
+        self.identifier = None
+        self.generation_id = None
+        self.type_id = None
+        self.power = None
+        self.pp_max = None
+        self.accuracy = None
+        self.priority = None
+        self.target_id = None
+        self.damage_class_id = None
+        self.effect_id = None
+        self.effect_chance = None
+        self.contest_type_id = None
+        self.contest_effect_id = None
+        self.super_contest_effect_id = None
 
-        self.short_effect=None
-        self.effect=None
+        self.short_effect = None
+        self.effect = None
 
 
     def __repr__(self):
@@ -62,18 +62,18 @@ class Move:
         cmd = f"SELECT * FROM moves WHERE move_id={self.move_id}"
         cur = self.sql.cur
         data = cur.execute(cmd).fetchone()
-        if data == None:
+        if data is None:
             raise ValueError(f"move_id {self.move_id} was not found in the db!")
         for key in data:
-            if data[key] is not "" and hasattr(self,key):
-                setattr(self,key,data[key])
+            if data[key] is not "" and hasattr(self, key):
+                setattr(self, key, data[key])
 
         cmd = f"SELECT * FROM move_effect_prose WHERE effect_id={self.effect_id}"
         cur = self.sql.cur
         data = cur.execute(cmd).fetchone()
         for key in data:
-            if data[key] is not "" and hasattr(self,key):
-                setattr(self,key,data[key])
+            if data[key] is not "" and hasattr(self, key):
+                setattr(self, key, data[key])
 
 
 
@@ -85,8 +85,9 @@ class MoveSlot(Move):
 
         @param move_id [REQUIRED] Id of the move, used to look up information in the DB
         @param move_uuid Unique ID of the move. If not given before being saved, will be generated
-        @param slot_number Slot number (1-4) that a move sits in. Can be -1 to indicate it is temporary (When picking a new more, for instance)
-        @param pp 
+        @param slot_number Slot number (1-4) that a move sits in. Can be -1 to indicate it is temporary
+            (When picking a new more, for instance)
+        @param pp
         """
 
         super().__init__(move_id)
@@ -128,7 +129,7 @@ class MoveSlot(Move):
 
         await super().load()
 
-        if self.move_uuid == None:
+        if self.move_uuid is None:
             # Generate a new UUID
             self.move_uuid = uuid.uuid4()
             self.pp = self.pp_max
@@ -138,5 +139,5 @@ class MoveSlot(Move):
             data = cur.execute(cmd).fetchone()
 
             for key in data:
-                if data[key] is not "" and hasattr(self,key):
-                    setattr(self,key,data[key])
+                if data[key] is not "" and hasattr(self, key):
+                    setattr(self, key, data[key])
