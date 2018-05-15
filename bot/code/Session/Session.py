@@ -32,12 +32,13 @@ class Session:
     async def command_proc(self, message):
         """Player in a session has issued a command, handle it.
         """
-        self.log.info(f"Command from player seen: {message.content}")
+        self.log.info(f"Command from player seen: '{message.content}'")
         self.log.info(f"Session ID: {self.session_uuid}")
 
-        match_obj = re.match("> ?card$", message.content)
+        match_obj = re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?", message.content) or re.match("> ?trainer ?$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
+            self.log.info(match_obj.group(mention))
 
             await self.client.send_message(message.channel, embed=await self.trainer.em())
 
