@@ -38,6 +38,8 @@ class Trainer:
     @classmethod
     async def generate_trainer_tables(cls, user_id, server_id):
 
+        # TODO: This needs to get moved to the Trainer class
+
         user = Client().get_server(server_id).get_member(user_id)
 
         sql = SQL()

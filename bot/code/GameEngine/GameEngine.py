@@ -50,13 +50,13 @@ class GameEngine:
         match_obj = re.match("> *register *$", message.content)
         if match_obj:
             # Create a basic trainer object
-            trainer = await League(message.server.id).get_trainer(message.author.id, message.server.id)
+            trainer = await League().get_trainer(message.author.id, message.server.id)
             if trainer is not None:
                 await self.client.send_message(message.channel, "Error, I cannot re-register you!")
                 return
 
             # We are good to register them!
-            trainer = await League(message.server.id).register(message.author.id, message.server.id)
+            trainer = await League().register(message.author.id, message.server.id)
 
             em = await trainer.get_trainer_card()
             # await self.client.send_message(message.channel, f"Registered: {trainer}")

@@ -1,8 +1,10 @@
 
+from ..Client import Client
 from ..Log import Log
+from ..Player import League
 from ..Singleton import Singleton
 
-
+from .Session import Session
 
 class SessionManager(metaclass=Singleton):
     """Given information, return active or new sessions
@@ -12,6 +14,7 @@ class SessionManager(metaclass=Singleton):
 
     def __init__(self):
         self.log = Log()
+        self.client = Client()
 
 
     async def command_proc(self, message):
@@ -19,13 +22,37 @@ class SessionManager(metaclass=Singleton):
         """
         self.log.info(f"Saw command to process: {message.content}")
 
-        # Check our active sessions
-        pass
+        session = await self.get_session(message)
 
-        # Check our inaction sessions
-        pass
+        if session == None:
+            return
 
-        # Create a new session
-        pass
+        self.log.info(f"Got session: {session}")
 
         return
+
+
+    async def get_session(self, message):
+
+        trainers = await League().get_trainer(message.author.id)
+        self.log.info(f"Got trainer list: {trainers}")
+
+        if trainers == None:
+            await self.client.send_message(message.channel, "I'm sorry, I don't seem to have you marked as a trainer! Perhaps you need to `>register`?")
+            return None
+
+        # Lookup Trainer
+        # We don't always know if we have a server ID, so just lookup everyone and we will find the only active session
+
+        for trainer in trainers:
+            for session in self.sessions:
+                if session.trainer == trainer:
+                    return session
+
+        # Active sessions didn't work, check the inactive ones!
+        pass
+
+        # Inactive session not found, return a NEW session
+        if len(trainers) == 1:
+            return Session(trainers[-1])
+        pass

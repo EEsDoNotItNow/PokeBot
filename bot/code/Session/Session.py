@@ -9,8 +9,12 @@ class Session:
     """Game play session to manage player interactions
     """
 
-    def __init__(self, trainer_id, session_uuid=None):
+    def __init__(self, trainer, session_uuid=None):
+        self.trainer = trainer
+        
+
         self.state = GameSessionStates.IDLE
+
         if session_uuid is None:
             self.session_uuid = uuid.uuid4()
         else:
