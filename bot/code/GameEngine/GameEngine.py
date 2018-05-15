@@ -78,16 +78,24 @@ class GameEngine:
 
             return
 
-        match_obj = re.match(">test$", message.content)
+        match_obj = re.match(">test (.*)$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
 
-
-            await self.client.send_message(message.channel, "Enum testing...")
-
+            for character in match_obj.group(1):
+                print(character, ord(character))
+            print(match_obj.group(1).encode('unicode_escape'))
 
             self.log.info("Finished test command")
 
+            return
+
+        match_obj = re.match("> ?emojidecode (.*)$", message.content)
+        if match_obj:
+            self.log.info(match_obj.groups())
+
+            string = match_obj.group(1).encode('unicode_escape')
+            await self.client.send_message(message.channel, f"{string}: {string.decode('unicode-escape')}")
             return
 
         # If we failed to trigger a command, we need to ask the session manager to handle it!
