@@ -281,7 +281,7 @@ class Client(discord.Client):
 
     async def on_socket_raw_receive(self, msg):
 
-        self.log.debug("on_socket_raw_receive")
+        # self.log.debug("on_socket_raw_receive")
         for module in self.registry:
             if hasattr(module, 'on_socket_raw_receive'):
                 await module.on_socket_raw_receive(msg)
@@ -290,7 +290,7 @@ class Client(discord.Client):
 
     async def on_socket_raw_send(self, payload):
 
-        self.log.debug("on_socket_raw_send")
+        # self.log.debug("on_socket_raw_send")
         for module in self.registry:
             if hasattr(module, 'on_socket_raw_send'):
                 await module.on_socket_raw_send(payload)
