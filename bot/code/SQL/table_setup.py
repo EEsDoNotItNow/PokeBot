@@ -88,7 +88,7 @@ async def table_setup():
                 monster_id_2 TEXT DEFAULT NULL,
                 monster_id_3 TEXT DEFAULT NULL,
                 monster_id_4 TEXT DEFAULT NULL,
-                monster_id_5 TEXT DEFAULT NULL,
+                monster_id_5 TEXT DEFAULT NULL
             )
         """
         cur.execute(cmd)
