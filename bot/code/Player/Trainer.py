@@ -30,6 +30,7 @@ class Trainer:
         """Given known state, attmpt to load. If unable to find trainer, create one!
         """
 
+        self.log.info(f"Loading trainer {self.trainer_id}")
         cmd = "SELECT * FROM trainers WHERE trainer_id = :trainer_id"
         values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
 
@@ -144,6 +145,10 @@ class Trainer:
             cur.execute(cmd, locals())
         await self.sql.commit(now=True)
         self.log.info("log completed")
+
+
+    async def em(self):
+        return await self.get_trainer_card()
 
 
     async def get_trainer_card(self):

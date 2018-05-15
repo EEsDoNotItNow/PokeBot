@@ -62,6 +62,7 @@ class League:
                 # Do not re add the trainer if we already found them in cache!
                 if trainer in trainer_list:
                     continue
+                await trainer.load()
                 trainer_list.append(trainer)
                 self.trainers.append(trainer_list[-1])
 
