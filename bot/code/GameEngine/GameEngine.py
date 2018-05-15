@@ -68,7 +68,7 @@ class GameEngine:
         match_obj = re.match("> *deregister *$", message.content)
         if match_obj:
             # Create a basic trainer object
-            result = await League(message.server.id).deregister(message.author.id, message.server.id)
+            result = await League().deregister(message.author.id, message.server.id)
             if result:
                 await self.client.send_message(message.channel,
                                                f"The Discord League is sorry to see you go, <@!{message.author.id}>")  # noqa: E501

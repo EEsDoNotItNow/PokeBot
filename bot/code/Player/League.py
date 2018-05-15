@@ -75,9 +75,10 @@ class League:
         """Register with the league!
         """
 
-        await Trainer.generate_trainer_tables(user_id, server_id)
+        trainer = Trainer(user_id=user_id, server_id=server_id)
+        await trainer.load(create_ok=True)
 
-        return await self.get_trainer(user_id, server_id)
+        return trainer
 
 
     async def deregister(self, user_id, server_id):

@@ -13,28 +13,96 @@ from ..SQL import SQL
 
 class Trainer:
 
-    def __init__(self, trainer_id):
+    def __init__(self, trainer_id=None, user_id=None, server_id=None):
         self.client = Client()
         self.log = Log()
         self.sql = SQL()
 
         self.trainer_id = trainer_id
 
-        # Load info from SQL
+        self.user_id = user_id 
+        self.server_id = server_id
+
+        self.is_zombie = False
+
+
+    async def load(self, create_ok=False):
+        """Given known state, attmpt to load. If unable to find trainer, create one!
+        """
+
+
         cmd = "SELECT * FROM trainers WHERE trainer_id = :trainer_id"
-        values = self.sql.cur.execute(cmd, locals()).fetchone()
+        values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
 
-        self.nickname = values['nickname']
+        if values is None:
+            if create_ok:
+                await self.create()
+                cmd = "SELECT * FROM trainers WHERE user_id=:user_id AND server_id=:server_id"
+                values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
+            else:
+                # We don't exist yet?! AHHHH! 
+                raise ValueError("Attempted to load Trainer that doesn't exist yet")
+
         self.created_on = dateutil.parser.parse(values['created_on'])
-        self.user_id = values['user_id']
+        self.nickname = values['nickname']
         self.server_id = values['server_id']
+        self.trainer_id = values['trainer_id']
+        self.user_id = values['user_id']
 
-        cmd = "SELECT * FROM trainer_stats WHERE trainer_id = :trainer_id"
-        values = self.sql.cur.execute(cmd, locals()).fetchone()
+        cmd = f"SELECT * FROM trainer_stats WHERE trainer_id=:trainer_id"
+        self.log.info(cmd)
+        values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
 
         self.stats = dict(values)
 
-        self.is_zombie = False
+
+    async def create(self):
+        """Create self, and all basic tables needed to exist
+        """
+        cur = self.sql.cur
+
+        user = Client().get_server(self.server_id).get_member(self.user_id)
+
+        self.nickname = user.nick if user.nick else user.name
+
+        nickname = self.nickname
+        trainer_id = str(uuid.uuid4())
+        now = datetime.datetime.now()
+        user_id = self.user_id
+        server_id = self.server_id
+
+        self.log.critical(locals())
+
+        cmd = """INSERT INTO trainers
+            (trainer_id,
+            user_id,
+            server_id,
+            nickname,
+            created_on)
+            VALUES
+            (:trainer_id, :user_id, :server_id, :nickname, :now)"""
+        cur.execute(cmd, locals())
+
+        cmd = """INSERT INTO trainer_stats
+        (trainer_id)
+        VALUES
+        (:trainer_id)"""
+        cur.execute(cmd, locals())
+
+        cmd = """INSERT INTO trainer_data
+        (trainer_id)
+        VALUES
+        (:trainer_id)"""
+        cur.execute(cmd, locals())
+
+        cmd = """INSERT INTO trainer_party
+        (trainer_id)
+        VALUES
+        (:trainer_id)"""
+        cur.execute(cmd, locals())
+
+        await self.sql.commit(now=True)
+        self.log.info(f"New trainer has been born! Welcome {trainer_id}")
 
 
     def __eq__(self, other):
@@ -49,42 +117,6 @@ class Trainer:
             raise NotImplimentedError()
         
         return str(self.trainer_id) != str(other.trainer_id)
-
-
-    @classmethod
-    async def generate_trainer_tables(cls, user_id, server_id):
-
-        # TODO: This needs to get moved to the Trainer class
-
-        user = Client().get_server(server_id).get_member(user_id)
-
-        log = Log()
-        sql = SQL()
-
-        name = user.nick if user.nick else user.name
-
-        cmd = """INSERT INTO trainers
-            (trainer_id,
-            user_id,
-            server_id,
-            nickname,
-            created_on)
-            VALUES
-            (:trainer_id, :user_id, :server_id, :name, :now)"""
-
-        trainer_id = str(uuid.uuid4())
-        now = datetime.datetime.now()
-
-        sql.cur.execute(cmd, locals())
-        await sql.commit()
-
-        cmd = """INSERT INTO trainer_stats
-        (trainer_id)
-        VALUES
-        (:trainer_id)"""
-        sql.cur.execute(cmd, locals())
-        await sql.commit(now=True)
-    
 
 
     async def log_stats(self, stats_dict):
