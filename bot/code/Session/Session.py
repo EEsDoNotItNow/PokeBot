@@ -28,6 +28,9 @@ class Session:
         else:
             self.session_uuid = session_uuid
 
+        # Mark ourselves as alive. This Session will self terminate if conditions are met.
+        self.alive = True
+
 
     async def command_proc(self, message):
         """Player in a session has issued a command, handle it.
@@ -35,7 +38,7 @@ class Session:
         self.log.info(f"Command from player seen: '{message.content}'")
         self.log.info(f"Session ID: {self.session_uuid}")
 
-        match_obj = re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?", message.content) or re.match("> ?trainer ?$", message.content)
+        match_obj = re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?", message.content) or re.match("> ?trainer( <@!?(?P<mention>[0-9]+)>)?", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
             self.log.info(match_obj.group(mention))
