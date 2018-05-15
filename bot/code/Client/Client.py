@@ -457,3 +457,37 @@ class Client(discord.Client):
                 return idx
 
         return None
+
+
+    async def text_prompt(self, channel, prompt_question, user=None, timeout=30, clean_up=False):
+        """ Ask user to respond and then returns the value to the caling function
+        Args:
+            channel (discord Obj): Channel to send to (This could be a user, and result in a DM!
+            prompt_question (str): Question asked of the user
+            user (discord Obj): Valid responder (Set to None to accept any)
+            timeout (int/float): Seconds to wait for user response
+            clean_up: Should we cleanup after
+        """
+        embed = discord.Embed(
+            color=discord.Color.default(),
+            description=prompt_question,
+        )
+
+        footer_text = "Type 'STOP' to cancel this prompt."
+        if timeout:
+            footer_text += f" You have {timeout:.0f} seconds to answer"
+        embed.set_footer(text=footer_text)
+
+        await self.send_message(channel, embed=embed)
+
+        msg_obj = await self.wait_for_message(
+            channel=channel,
+            author=user,
+            timeout=timeout)
+
+        if msg_obj is None:
+            return None
+        if msg_obj.content == "STOP":
+            return False
+
+        return msg_obj.content

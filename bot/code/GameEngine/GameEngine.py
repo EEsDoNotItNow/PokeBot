@@ -85,11 +85,14 @@ class GameEngine:
             # prompt = "Do you like pie?"
 
             # response = await self.client.confirm_prompt(message.channel, prompt, user=message.author)
-            response = await self.client.select_prompt(message.channel,
-                                                       "Which is 5?",
-                                                       [1, 2, 3, 4, 5],
-                                                       user=message.author)
+            # response = await self.client.select_prompt(message.channel,
+            #                                            "Which is 5?",
+            #                                            [1, 2, 3, 4, 5],
+            #                                            user=message.author)
 
+            response = await self.client.text_prompt(message.channel,
+                                                     "Do you like pie?",
+                                                     user=message.author)
             self.log.info(response)
 
             self.log.info("Finished test command")
