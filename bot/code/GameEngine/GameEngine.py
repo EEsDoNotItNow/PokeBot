@@ -78,13 +78,15 @@ class GameEngine:
 
             return
 
-        match_obj = re.match(">test (.*)$", message.content)
+        match_obj = re.match(">test", message.content)
         if match_obj:
-            self.log.info(match_obj.groups())
+            # self.log.info(match_obj.groups())
 
-            for character in match_obj.group(1):
-                print(character, ord(character))
-            print(match_obj.group(1).encode('unicode_escape'))
+            prompt = "Do you like pie?"
+
+            response = await self.client.confirm_prompt(message.channel, prompt, user=message.author)
+
+            self.log.info(response)
 
             self.log.info("Finished test command")
 

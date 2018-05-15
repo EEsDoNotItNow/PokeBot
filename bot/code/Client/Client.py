@@ -312,3 +312,81 @@ class Client(discord.Client):
         for module in self.registry:
             if hasattr(module, 'on_voice_state_update'):
                 await module.on_voice_state_update(before, after)
+
+
+    async def confirm_prompt(self, channel, prompt, user=None, timeout=20, prompt_set=0, clean_up=True):
+        """ Prompt user with Yes/No reactions
+        @param message_target (discord.channel): Channel/DM Object
+        @param message (str): Message to post
+        @param duration (float): Time to leave message up before deletion
+        @param message_type (str): Type of embed to use. See format_embed() for details
+        @param embed (discord.embed): Embed object to display
+
+        @returns True on yes, False on no, None if canceled
+
+        @raises TimeoutError if timeout exceeded without a reply.
+        """
+
+        prompt_sets = (
+            (u'\u2705', u'\u274E', u'\U0001F6AB'),
+            # (u"\U0001F44D", u"\U0001F44E"),
+            # (u"\U0001F44C",     u"\u274C"),
+            # (u"\U0001F1FE", u"\U0001F1F3"),
+        )
+
+        yes_emoji = prompt_sets[prompt_set][0]
+        no_emoji = prompt_sets[prompt_set][1]
+        cancel_emoji = prompt_sets[prompt_set][2]
+
+
+        # Post prompt
+        # embed = await format_embed(prompt, "prompt")
+        embed = discord.Embed(description=prompt)
+        embed.set_footer(text=f"{yes_emoji}: Yes, {no_emoji}: No, {cancel_emoji}: Cancel")
+
+        try:
+            msg_obj = await self.send_message(channel,
+                                              "Populating message options... Please wait!"
+                                              " Any reactions you post now will be ignored!",
+                                              )
+
+        except discord.Forbidden:
+            self.log.exception("Failed to send message, Forbidden?")
+            raise
+
+        except discord.NotFound:
+            self.log.exception("Failed to send message, NotFound?")
+            raise
+
+
+        # Add Reactions for vote
+        await self.add_reaction(msg_obj, yes_emoji)
+        await self.add_reaction(msg_obj, no_emoji)
+        await self.add_reaction(msg_obj, cancel_emoji)
+
+        await self.edit_message(msg_obj, new_content=" ", embed=embed)
+
+        # Wait for reactions
+        ret = await self.wait_for_reaction([yes_emoji, no_emoji, cancel_emoji],
+                                           user=user,
+                                           timeout=timeout,
+                                           message=msg_obj,
+                                           )
+
+        # This is our own prompt, so we really don't care if we delete here
+        if clean_up:
+            await self.delete_message(msg_obj)
+
+        # If None, return false
+        if ret is None:
+            raise TimeoutError("User didn't respond within time limit")
+
+        # If we got reactions, awesome!
+        if str(ret.reaction.emoji) == yes_emoji:
+            return True
+        elif str(ret.reaction.emoji) == no_emoji:
+            return False
+        elif str(ret.reaction.emoji) == cancel_emoji:
+            return None
+        self.log.error("Got to an invalid return location!")
+        raise RuntimeError("Unsure of how we got here")
