@@ -62,12 +62,12 @@ async def table_setup():
 
                 /* Track where we are.*/
                 current_region_id TEXT,
-                current_zone_id TEXT, 
+                current_zone_id TEXT,
                 current_building_id TEXT,
 
                 /* Track where we want to be, if we are traveling */
                 destination_region_id TEXT DEFAULT NULL,
-                destination_zone_id TEXT DEFAULT NULL, 
+                destination_zone_id TEXT DEFAULT NULL,
                 destination_building_id TEXT DEFAULT NULL
             )
         """

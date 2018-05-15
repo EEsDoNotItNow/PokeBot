@@ -6,6 +6,8 @@ from ..Singleton import Singleton
 
 from .Session import Session
 
+
+
 class SessionManager(metaclass=Singleton):
     """Given information, return active or new sessions
     """
@@ -24,7 +26,7 @@ class SessionManager(metaclass=Singleton):
 
         session = await self.get_session(message)
 
-        if session == None:
+        if session is None:
             self.log.warning(f"No session found! What?!")
             return
 
@@ -40,8 +42,10 @@ class SessionManager(metaclass=Singleton):
         trainers = await League().get_trainer(message.author.id)
         self.log.info(f"Got trainer list: {trainers}")
 
-        if trainers == None:
-            await self.client.send_message(message.channel, "I'm sorry, I don't seem to have you marked as a trainer! Perhaps you need to `>register`?")
+        if trainers is None:
+            await self.client.send_message(message.channel,
+                                           "I'm sorry, I don't seem to have you marked as a trainer! "
+                                           "Perhaps you need to `>register`?")
             return None
 
         # Lookup Trainer

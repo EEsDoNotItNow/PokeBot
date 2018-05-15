@@ -20,7 +20,7 @@ class Trainer:
 
         self.trainer_id = trainer_id
 
-        self.user_id = user_id 
+        self.user_id = user_id
         self.server_id = server_id
 
         self.is_zombie = False
@@ -39,7 +39,7 @@ class Trainer:
                 cmd = "SELECT * FROM trainers WHERE user_id=:user_id AND server_id=:server_id"
                 values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
             else:
-                # We don't exist yet?! AHHHH! 
+                # We don't exist yet?! AHHHH!
                 raise ValueError("Attempted to load Trainer that doesn't exist yet")
 
         self.created_on = dateutil.parser.parse(values['created_on'])
@@ -106,15 +106,15 @@ class Trainer:
 
     def __eq__(self, other):
         if type(other) != Trainer:
-            raise NotImplimentedError()
+            raise NotImplementedError()
 
         return str(self.trainer_id) == str(other.trainer_id)
 
 
     def __ne__(self, other):
         if type(other) != Trainer:
-            raise NotImplimentedError()
-        
+            raise NotImplementedError()
+
         return str(self.trainer_id) != str(other.trainer_id)
 
 
