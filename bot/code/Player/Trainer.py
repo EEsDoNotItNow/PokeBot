@@ -58,6 +58,7 @@ class Trainer:
 
         user = Client().get_server(server_id).get_member(user_id)
 
+        log = Log()
         sql = SQL()
 
         name = user.nick if user.nick else user.name
@@ -77,12 +78,14 @@ class Trainer:
         sql.cur.execute(cmd, locals())
         await sql.commit()
 
+        self.log.info(f"Test before trainer write: {locals()}")
         cmd = """INSERT INTO trainer_stats
         (trainer_id)
         VALUES
         (:trainer_id)"""
         sql.cur.execute(cmd, locals())
-        await sql.commit()
+        await sql.commit(now=True)
+    
 
 
     async def log_stats(self, stats_dict):
@@ -105,7 +108,7 @@ class Trainer:
                       SET {key} = {key} + :value
                       WHERE trainer_id = :trainer_id"""
             cur.execute(cmd, locals())
-        await self.sql.commit()
+        await self.sql.commit(now=True)
         self.log.info("log completed")
 
 
