@@ -29,23 +29,33 @@ pipeline {
         }
         stage('Post Analysis') {
             steps{
-                sh 'flake8 --exit-zero'
-				step(    [$class: 'WarningsPublisher',
-								canRunOnFailed: true,
-								consoleParsers: [
-									[parserName: 'pep8']
-								],
-								defaultEncoding: '',
-								excludePattern: '',
-								failedNewAll: '',
-								failedTotalAll: '',
-								healthy: '',
-								includePattern: '',
-								messagesPattern: '',
-								unHealthy: '',
-								useDeltaValues: true,
-								useStableBuildAsReference: true
-							])
+                script {
+                    sh 'flake8 --exit-zero'
+                    if ( GIT_BRANCH == 'master' ){
+                        echo 'We are on the master branch'
+                        maxPepFails = '0'
+                    } else {
+                        echo 'We are on a developer branch'
+                        maxPepFails = ''
+                    } 
+
+                    step([$class: 'WarningsPublisher',
+                        canRunOnFailed: true,
+                        consoleParsers: [
+                            [parserName: 'pep8']
+                        ],
+                        defaultEncoding: '',
+                        excludePattern: '',
+                        failedNewAll: '',
+                        failedTotalAll: maxPepFails,
+                        healthy: '',
+                        includePattern: '',
+                        messagesPattern: '',
+                        unHealthy: '',
+                        useDeltaValues: true,
+                        useStableBuildAsReference: true
+                    ])
+                }
 	
                 script {
                     if (env.GIT_COMMIT != env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
