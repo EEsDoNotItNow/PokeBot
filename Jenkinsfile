@@ -29,8 +29,34 @@ pipeline {
         }
         stage('Post Analysis') {
             steps{
-                sh 'flake8 > flake-results.txt || true'
-                step([$class: 'WarningsPublisher', parserConfigurations: [[parserName: 'pep8', pattern:'flake-results.txt']]])
+                script {
+                    sh 'flake8 --exit-zero'
+                    if ( GIT_BRANCH == 'master' ){
+                        echo 'We are on the master branch'
+                        maxPepFails = '0'
+                    } else {
+                        echo 'We are on a developer branch'
+                        maxPepFails = ''
+                    } 
+
+                    step([$class: 'WarningsPublisher',
+                        canRunOnFailed: true,
+                        consoleParsers: [
+                            [parserName: 'pep8']
+                        ],
+                        defaultEncoding: '',
+                        excludePattern: '',
+                        failedNewAll: '',
+                        failedTotalAll: maxPepFails,
+                        healthy: '',
+                        includePattern: '',
+                        messagesPattern: '',
+                        unHealthy: '',
+                        useDeltaValues: true,
+                        useStableBuildAsReference: true
+                    ])
+                }
+	
                 script {
                     if (env.GIT_COMMIT != env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
                         discordSend description: "Jenkins Pipeline Build: ${GIT_BRANCH}#${env.BUILD_ID}\n\nResult: ${currentBuild.currentResult}", link: "${myGitURL}", footer: 'Have a nice build!', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: "${GIT_COMMIT}", webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
