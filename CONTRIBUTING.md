@@ -27,6 +27,7 @@
 * When only changing documentation, include `[ci skip]` in the commit title
 * Consider starting the commit message with an applicable emoji:
     * :art: `:art:` when improving the format/structure of the code
+    * :wrench: `:wrench:` when fixing things 'under the hood'
     * :racehorse: `:racehorse:` when improving performance
     * :non-potable_water: `:non-potable_water:` when plugging memory leaks
     * :memo: `:memo:` when writing docs
