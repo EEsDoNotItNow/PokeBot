@@ -391,6 +391,7 @@ class Client(discord.Client):
         self.log.error("Got to an invalid return location!")
         raise RuntimeError("Unsure of how we got here")
 
+
     async def select_prompt(self, channel, prompt_question, prompt_list, user=None, timeout=30, clean_up=True):
         """ Ask user to respond and pick from a list of strings.
         Args:
