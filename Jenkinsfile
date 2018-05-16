@@ -31,11 +31,11 @@ pipeline {
             steps{
                 script {
                     sh 'flake8 --exit-zero'
-                    if ( GIT_BRANCH == 'master' ){
-                        echo 'We are on the master branch'
+                    if ( GIT_BRANCH == 'master' || GIT_BRANCH == 'development' ){
+                        echo 'We are on ${GIT_BRANCH}, and will accept _zero_ pep8 errors!'
                         maxPepFails = '0'
                     } else {
-                        echo 'We are on a developer branch'
+                        echo 'We are on ${GIT_BRANCH}, allow pep errors'
                         maxPepFails = ''
                     } 
 
