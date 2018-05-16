@@ -61,6 +61,7 @@ class Session:
         """Player in a session has issued a command, handle it.
         """
         if self.processing_command:
+            self.log.warning(f"Saw a command ({message.content}) while we were already processing!")
             return
 
         self.log.info(f"Command from player seen: '{message.content}'")
@@ -84,6 +85,8 @@ class Session:
 
             await self.client.send_message(message.channel,
                                            msg)
+
+            self.log.info("Command Complete")
             self.processing_command = False
             return
 
@@ -191,3 +194,6 @@ class Session:
                                            )
             self.processing_command = False
             return
+
+            self.log.warning(f"Saw a command ({message.content}), which did not match any current commands.")
+        self.processing_command = False
