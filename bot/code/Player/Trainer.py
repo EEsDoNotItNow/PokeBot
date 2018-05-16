@@ -21,6 +21,8 @@ class Trainer:
 
         self.trainer_id = trainer_id
 
+        self.nickname = "NOT LOADED"
+
         self.user_id = user_id
         self.server_id = server_id
 

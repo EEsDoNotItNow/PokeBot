@@ -38,13 +38,20 @@ class Session:
         self.log.info(f"Command from player seen: '{message.content}'")
         self.log.info(f"Session ID: {self.session_uuid}")
 
-        match_obj = re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?", message.content) or \
-            re.match("> ?trainer( <@!?(?P<mention>[0-9]+)>)?", message.content)
-
+        match_obj = re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?$", message.content) or \
+            re.match("> ?trainer( <@!?(?P<mention>[0-9]+)>)?$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
             self.log.info(match_obj.group('mention'))
 
             await self.client.send_message(message.channel, embed=await self.trainer.em())
+
+            return
+
+        match_obj = re.match("> ?loc(?:ation)?$", message.content)
+        if match_obj:
+            self.log.info(match_obj.groups())
+
+            await self.client.send_message(message.channel, f"Location test for {self.trainer.nickname}")
 
             return
