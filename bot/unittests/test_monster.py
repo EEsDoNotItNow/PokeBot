@@ -69,5 +69,6 @@ class Basic(unittest.TestCase):
             poke2 = Monster(pokemon_id=i, monster_id=example_id)
 
             _run(poke2.load())
-            
+
             self.assertEqual(poke.monster_id, poke2.monster_id)
+
