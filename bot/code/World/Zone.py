@@ -19,9 +19,12 @@ class Zone:
         self.sql = SQL()
         self.log = Log()
 
+    def __repr__(self):
+        return f"Zone({self.zone_id})"
+
 
     def __str__(self):
-        return f"Zone<name: {self.name}, zone_id: {self.zone_id}>"
+        return f"{self.name.title()} (id:{self.zone_id})"
 
 
     async def link(self, other_id, distance):

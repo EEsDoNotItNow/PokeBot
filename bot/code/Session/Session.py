@@ -78,13 +78,10 @@ class Session:
 
                 # Safe to update, lets see where we are!
                 await self.trainer.tick()
-                msg = "```\nYou are walking!\n"
-                msg += f"   You have about {self.trainer.destination_distance:,.0f} to go!"
-                msg += "```"
+                msg = f"You are walking! You have about {self.trainer.destination_distance:,.0f} to go!"
 
             if self.trainer.state == TrainerStates.IDLE:
-                msg = "```\nYou are idle.\nMaybe you could try >walk?!\n"
-                msg += "```"
+                msg = "You are `idle`. Maybe you could try `>walk`?"
 
             await self.client.send_message(message.channel,
                                            msg)
