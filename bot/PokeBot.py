@@ -42,8 +42,8 @@ x.register(SQL("poke.db"))
 # Register all modules here #
 #############################
 
-x.register(World())
 x.register(SessionManager())
+x.register(World())
 
 # This should be the LAST object to load, all command pathing relies on it!
 x.register(GameEngine())
