@@ -55,8 +55,7 @@ class Session:
             location_tuple = await self.trainer.get_location()
             current_zone = await World().get_zone(location_tuple[1])
             await self.client.send_message(message.channel,
-                                           f"Location test for {self.trainer.nickname}. "
-                                           f"They are in {current_zone}"
+                                           f"You are in {current_zone}"
                                            )
 
             return
@@ -110,7 +109,7 @@ class Session:
                 zone = await world.get_zone(linked_zone_id)
                 linked_zones.append(zone)
 
-            prompt_question = "Which zone do you want to travel too?"
+            prompt_question = f"You are in {current_zone}. Which zone do you want to travel too?"
             prompt_list = linked_zones
             selection = await self.client.select_prompt(message.channel,
                                                         prompt_question,
@@ -121,4 +120,10 @@ class Session:
 
             self.trainer.current_zone_id = linked_zone_ids[selection]
             await self.trainer.save()
+
+            location_tuple = await self.trainer.get_location()
+            current_zone = await World().get_zone(location_tuple[1])
+            await self.client.send_message(message.channel,
+                                           f"You are in {current_zone}"
+                                           )
             return
