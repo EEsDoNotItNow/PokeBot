@@ -124,21 +124,6 @@ class Monster(Pokemon):
         return em
 
 
-    @staticmethod
-    def calc_stat(base, iv, ev, level, nature=1):
-        return int(np.floor((np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + 5) * nature))
-
-
-    @staticmethod
-    def calc_hp(base, iv, ev, level):
-        result = int(np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + level + 10)
-        return result
-
-
-    async def calc_level(self):
-        return int(np.floor(self.xp ** (1 / 3)))
-
-
     async def load(self):
         cur = self.sql.cur
         await super().load()
@@ -229,16 +214,31 @@ class Monster(Pokemon):
         """Update state given current stats
         """
         self.level = await self.calc_level()
-        self.attack = self.calc_stat(self.base_attack, self.iv_attack, self.ev_attack, self.level, 1)
-        self.defense = self.calc_stat(self.base_defense, self.iv_defense, self.ev_defense, self.level, 1)
-        self.sp_attack = self.calc_stat(self.base_sp_attack, self.iv_sp_attack, self.ev_sp_attack, self.level, 1)
-        self.sp_defense = self.calc_stat(self.base_sp_defense, self.iv_sp_defense, self.ev_sp_defense, self.level, 1)
-        self.speed = self.calc_stat(self.base_speed, self.iv_speed, self.ev_speed, self.level, 1)
+        self.attack = self._calc_stat(self.base_attack, self.iv_attack, self.ev_attack, self.level, 1)
+        self.defense = self._calc_stat(self.base_defense, self.iv_defense, self.ev_defense, self.level, 1)
+        self.sp_attack = self._calc_stat(self.base_sp_attack, self.iv_sp_attack, self.ev_sp_attack, self.level, 1)
+        self.sp_defense = self._calc_stat(self.base_sp_defense, self.iv_sp_defense, self.ev_sp_defense, self.level, 1)
+        self.speed = self._calc_stat(self.base_speed, self.iv_speed, self.ev_speed, self.level, 1)
 
         # HP must be handled with care!
         old_hp = self.hp
-        self.hp = self.calc_stat(self.base_hp, self.iv_hp, self.ev_hp, self.level, 1)
+        self.hp = self._calc_hp(self.base_hp, self.iv_hp, self.ev_hp, self.level)
         await self.heal(amount=self.hp - old_hp)
+
+
+    @staticmethod
+    def _calc_stat(base, iv, ev, level, nature=1):
+        return int(np.floor((np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + 5) * nature))
+
+
+    @staticmethod
+    def _calc_hp(base, iv, ev, level):
+        result = int(np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + level + 10)
+        return result
+
+
+    async def calc_level(self):
+        return int(np.floor(self.xp ** (1 / 3)))
 
 
     async def heal(self, amount=None):
