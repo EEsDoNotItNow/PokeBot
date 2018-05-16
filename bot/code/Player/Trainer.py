@@ -198,7 +198,7 @@ class Trainer:
         if self.state == TrainerStates.WALKING:
             self.log.info("Walking!")
             if self.current_zone_id != self.destination_zone_id:
-                self.destination_distance -= delta_t * 120
+                self.destination_distance -= delta_t * 2.2352 # mph walking
                 if self.destination_distance < 0:
                     self.current_zone_id = self.destination_zone_id
                     self.state = TrainerStates.IDLE
