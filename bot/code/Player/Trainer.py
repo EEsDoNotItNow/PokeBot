@@ -198,13 +198,22 @@ class Trainer:
         if self.state == TrainerStates.WALKING:
             self.log.info("Walking!")
             if self.current_zone_id != self.destination_zone_id:
+
+                old_distance = self.destination_distance
                 self.destination_distance -= delta_t * 2.2352 # mph walking
+
                 if self.destination_distance < 0:
                     self.current_zone_id = self.destination_zone_id
                     self.state = TrainerStates.IDLE
                     user = await self.client.get_user_info(self.user_id)
                     self.log.info(f"Reached destination! Tell {self.user_id} ({user})")
                     await self.client.send_message(user, "You have reached you destination!")
+
+                    data = {"steps_taken": int(1.666 * old_distance)}
+                else:
+                    data = {"steps_taken": int(1.666 * (old_distance - self.destination_distance))}
+
+                await self.log_stats(data)
 
                 await self.save()
 
@@ -223,7 +232,6 @@ class Trainer:
         valid_keys = []
         for entry in data:
             valid_keys.append(entry['name'])
-        self.log.info(valid_keys)
 
         for key in stats_dict:
             if key not in valid_keys:
