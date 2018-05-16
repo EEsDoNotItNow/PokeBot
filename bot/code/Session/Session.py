@@ -53,10 +53,72 @@ class Session:
         if match_obj:
             self.log.info(match_obj.groups())
             location_tuple = await self.trainer.get_location()
-            zone = await World().get_zone(location_tuple[1])
+            current_zone = await World().get_zone(location_tuple[1])
             await self.client.send_message(message.channel,
                                            f"Location test for {self.trainer.nickname}. "
-                                           f"They are in {zone}"
+                                           f"They are in {current_zone}"
                                            )
 
+            return
+
+        match_obj = re.match("> ?map$", message.content)
+        if match_obj:
+            self.log.info(match_obj.groups())
+            world = World()
+            location_tuple = await self.trainer.get_location()
+            current_zone = await world.get_zone(location_tuple[1])
+
+            _map = f"```\nYou are currently in {current_zone}. From here, you can get to the following locations:\n"
+            for linked_zone_id in current_zone.links:
+                zone = await world.get_zone(linked_zone_id)
+                _map += f"   {zone}\n"
+            _map += "```"
+            await self.client.send_message(message.channel, _map)
+
+            return
+
+        match_obj = re.match("> ?worldmap$", message.content)
+        if match_obj:
+            self.log.info(match_obj.groups())
+            location_tuple = await self.trainer.get_location()
+
+            await self.client.send_message(message.channel, "This feature isn't implemented yet!")
+
+            return
+
+        match_obj = re.match("> ?regionmap$", message.content)
+        if match_obj:
+            self.log.info(match_obj.groups())
+            location_tuple = await self.trainer.get_location()
+
+            await self.client.send_message(message.channel, "This feature isn't implemented yet!")
+
+            return
+
+
+        match_obj = re.match("> ?walk$", message.content)
+        if match_obj:
+            self.log.info(match_obj.groups())
+            world = World()
+            location_tuple = await self.trainer.get_location()
+            current_zone = await world.get_zone(location_tuple[1])
+
+            linked_zone_ids = []
+            linked_zones = []
+            for linked_zone_id in current_zone.links:
+                linked_zone_ids.append(linked_zone_id)
+                zone = await world.get_zone(linked_zone_id)
+                linked_zones.append(zone)
+
+            prompt_question = "Which zone do you want to travel too?"
+            prompt_list = linked_zones
+            selection = await self.client.select_prompt(message.channel,
+                                                        prompt_question,
+                                                        prompt_list,
+                                                        user=message.author,
+                                                        timeout=30,
+                                                        clean_up=False)
+
+            self.trainer.current_zone_id = linked_zone_ids[selection]
+            await self.trainer.save()
             return
