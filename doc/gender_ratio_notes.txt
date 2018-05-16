@@ -3,7 +3,6 @@ magnemite
     gender_rate -1
     genderless
 
-
 tyrogue
     gr 0
     male only

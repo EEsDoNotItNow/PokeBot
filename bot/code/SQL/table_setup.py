@@ -40,11 +40,11 @@ async def table_setup():
         cmd = """
             CREATE TABLE trainers
             (
-                trainer_id TEXT NOT NULL,
+                trainer_id TEXT NOT NULL UNIQUE,
                 user_id TEXT NOT NULL,
                 server_id TEXT NOT NULL,
                 nickname TEXT,
-                created_on TEXT DEFAULT CURRENT_TIMESTAMP
+                created_on TEXT
             )
         """
         cur.execute(cmd)
@@ -58,7 +58,7 @@ async def table_setup():
         cmd = """
             CREATE TABLE trainer_data
             (
-                trainer_id TEXT NOT NULL,
+                trainer_id TEXT NOT NULL UNIQUE,
 
                 /* Track where we are.*/
                 current_region_id TEXT,
@@ -82,7 +82,7 @@ async def table_setup():
         cmd = """
             CREATE TABLE trainer_party
             (
-                trainer_id TEXT NOT NULL,
+                trainer_id TEXT NOT NULL UNIQUE,
                 monster_id_0 TEXT DEFAULT NULL,
                 monster_id_1 TEXT DEFAULT NULL,
                 monster_id_2 TEXT DEFAULT NULL,
@@ -152,7 +152,7 @@ async def table_setup():
         cmd = """
             CREATE TABLE trainer_pokedex
             (
-                trainer_id TEXT NOT NULL,
+                trainer_id TEXT NOT NULL UNIQUE,
                 pokemon_id TEXT NOT NULL,
                 seen INTEGER DEFAULT 0,
                 battled INTEGER DEFAULT 0,
@@ -414,7 +414,8 @@ async def table_setup():
             (
                 location_id_1 TEXT NOT NULL,
                 location_id_2 TEXT NOT NULL,
-                distance REAL NOT NULL
+                distance_forward REAL DEFAULT NULL,
+                distance_backward REAL DEFAULT NULL
             )
         """
         cur.execute(cmd)
