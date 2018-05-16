@@ -9,7 +9,7 @@ import numpy
 from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
-# from ..World import Zone
+from ..World import World
 
 
 class Trainer:
@@ -55,10 +55,39 @@ class Trainer:
         self.user_id = values['user_id']
 
         cmd = f"SELECT * FROM trainer_stats WHERE trainer_id=:trainer_id"
-        self.log.info(cmd)
         values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
-
         self.stats = dict(values)
+
+        cmd = "SELECT * FROM trainer_data WHERE trainer_id=:trainer_id"
+        values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
+        self.current_zone_id = values['current_zone_id']
+        self.current_building_id = values['current_building_id']
+        self.current_region_id = values['current_region_id']
+
+
+    async def save(self, create_ok=False):
+        """Save self to disk
+        """
+
+        cur = self.sql.cur
+
+        cmd = """INSERT OR REPLACE INTO trainer_data
+        (trainer_id,
+         current_region_id,
+         current_zone_id,
+         current_building_id)
+        VALUES
+        (:trainer_id,
+         :current_region_id,
+         :current_zone_id,
+         :current_building_id)"""
+        cur.execute(cmd, self.__dict__)
+
+        cmd = """INSERT OR REPLACE INTO trainer_party
+        (trainer_id)
+        VALUES
+        (:trainer_id)"""
+        cur.execute(cmd, self.__dict__)
 
 
     async def create(self):
@@ -182,6 +211,10 @@ class Trainer:
         em.add_field(name="Pokecoin", value=f"{self.stats['pokecoin']:,.2f}")
 
         em.add_field(name="Level", value=f"{self.level:,d}")
+
+        if self.current_zone_id:
+            zone_name = (await World().get_zone(self.current_zone_id)).name.title()
+            em.add_field(name="Zone", value=zone_name)
 
         em.timestamp = self.created_on
 

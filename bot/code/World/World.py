@@ -5,11 +5,13 @@ from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
 
+from ..Singleton import Singleton
+
 from .Zone import Zone
 
 
 
-class World:
+class World(metaclass=Singleton):
 
 
     def __init__(self):
@@ -21,6 +23,12 @@ class World:
         self.client = Client()
 
 
+    async def on_ready(self):
+        self.log.info("World loading")
+        await self.load()
+        self.log.info("World loaded")
+
+
     async def load(self):
 
         cur = self.sql.cur
@@ -28,7 +36,7 @@ class World:
         zone_connections = cur.execute(cmd).fetchall()
 
         for connection in zone_connections:
-            self.log.info(connection)
+            self.log.info(f"Handle connections for {connection}")
 
             zone1_id = connection['location_id_1']
             zone2_id = connection['location_id_2']
@@ -41,8 +49,18 @@ class World:
                 self.zones[zone2_id] = Zone(zone2_id)
                 await self.zones[zone2_id].load()
 
-            self.zones[connection['location_id_1']].link(connection['location_id_2'], connection['distance'])
-            self.zones[connection['location_id_2']].link(connection['location_id_1'], connection['distance'])
+            self.zones[connection['location_id_1']].link(connection['location_id_2'], connection['distance_forward'])
+            self.zones[connection['location_id_2']].link(connection['location_id_1'], connection['distance_backward'])
+
+
+    async def get_zone(self, zone_id):
+        zone_id = str(zone_id)
+        for key in self.zones:
+            zone = self.zones[key]
+            if str(zone.zone_id) == zone_id:
+                self.log.info(f"Got zone {zone}")
+                return zone
+        raise ValueError(f"Invalid zone_id: {zone_id}")
 
 
     async def debug(self, channel):
