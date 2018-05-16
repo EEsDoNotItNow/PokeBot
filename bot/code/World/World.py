@@ -36,7 +36,7 @@ class World(metaclass=Singleton):
         zone_connections = cur.execute(cmd).fetchall()
 
         for connection in zone_connections:
-            self.log.info(f"Handle connections for {connection}")
+            self.log.debug(f"Handle connections for {connection}")
 
             zone1_id = connection['location_id_1']
             zone2_id = connection['location_id_2']

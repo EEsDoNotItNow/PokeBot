@@ -34,6 +34,6 @@ class Zone:
         cmd = f"SELECT * FROM locations WHERE location_id={self.zone_id}"
         values = cur.execute(cmd).fetchone()
 
-        self.log.info(f"Loaded: {values}")
+        self.log.debug(f"Loaded: {values}")
 
         self.name = values['name']
