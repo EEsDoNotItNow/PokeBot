@@ -21,7 +21,7 @@ class Zone:
 
 
     def __str__(self):
-        return f"Zone<{self.name},{self.zone_id}>"
+        return f"Zone<name: {self.name}, zone_id: {self.zone_id}>"
 
 
     async def link(self, other_id, distance):

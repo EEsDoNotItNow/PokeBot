@@ -198,11 +198,14 @@ class Trainer:
         if self.state == TrainerStates.WALKING:
             self.log.info("Walking!")
             if self.current_zone_id != self.destination_zone_id:
-                self.destination_distance -= delta_t * 1.2
+                self.destination_distance -= delta_t * 120
                 if self.destination_distance < 0:
                     self.current_zone_id = self.destination_zone_id
                     self.state = TrainerStates.IDLE
-                    self.log.info("Reached destination!")
+                    user = await self.client.get_user_info(self.user_id)
+                    self.log.info(f"Reached destination! Tell {self.user_id} ({user})")
+                    await self.client.send_message(user, "You have reached you destination!")
+
                 await self.save()
 
         self.last_tick = datetime.datetime.now()
