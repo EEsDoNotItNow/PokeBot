@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Post Analysis') {
             steps{
-                sh 'flake8 > flake-results.txt'
+                sh 'flake8 --exit-zero'
 				step(    [$class: 'WarningsPublisher',
 								canRunOnFailed: true,
 								consoleParsers: [
