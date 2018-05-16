@@ -33,7 +33,14 @@ class Trainer:
         self.current_building_id = None
         self.current_region_id = None
 
+        self.destination_zone_id = None
+        self.destination_building_id = None
+        self.destination_region_id = None
+        self.destination_distance = None
+
         self.is_zombie = False
+
+        self.last_tick = datetime.datetime.now()
 
 
     async def load(self, create_ok=False):
@@ -65,9 +72,8 @@ class Trainer:
 
         cmd = "SELECT * FROM trainer_data WHERE trainer_id=:trainer_id"
         values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
-        self.current_zone_id = values['current_zone_id']
-        self.current_building_id = values['current_building_id']
-        self.current_region_id = values['current_region_id']
+        for key in values:
+            setattr(self, key, values[key])
 
 
     async def save(self, create_ok=False):
@@ -78,14 +84,24 @@ class Trainer:
 
         cmd = """INSERT OR REPLACE INTO trainer_data
         (trainer_id,
+         state,
          current_region_id,
          current_zone_id,
-         current_building_id)
+         current_building_id,
+         destination_zone_id,
+         destination_building_id,
+         destination_region_id,
+         destination_distance)
         VALUES
         (:trainer_id,
+         :state,
          :current_region_id,
          :current_zone_id,
-         :current_building_id)"""
+         :current_building_id,
+         :destination_zone_id,
+         :destination_building_id,
+         :destination_region_id,
+         :destination_distance)"""
         cur.execute(cmd, self.__dict__)
 
         cmd = """INSERT OR REPLACE INTO trainer_party
@@ -138,11 +154,13 @@ class Trainer:
 
         cmd = """INSERT INTO trainer_data
         (trainer_id,
+         state,
          current_region_id,
          current_zone_id,
          current_building_id)
         VALUES
         (:trainer_id,
+         :state,
          :current_region_id,
          :current_zone_id,
          :current_building_id)"""
@@ -170,6 +188,24 @@ class Trainer:
             raise NotImplementedError()
 
         return str(self.trainer_id) != str(other.trainer_id)
+
+
+    async def tick(self):
+
+        # Number of seconds since we last got to tick!
+        delta_t = (datetime.datetime.now() - self.last_tick).total_seconds()
+
+        if self.state == TrainerStates.WALKING:
+            self.log.info("Walking!")
+            if self.current_zone_id != self.destination_zone_id:
+                self.destination_distance -= delta_t * 1.2
+                if self.destination_distance < 0:
+                    self.current_zone_id = self.destination_zone_id
+                    self.state = TrainerStates.IDLE
+                    self.log.info("Reached destination!")
+                await self.save()
+
+        self.last_tick = datetime.datetime.now()
 
 
     async def log_stats(self, stats_dict):

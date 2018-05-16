@@ -3,8 +3,9 @@ import datetime
 import re
 import uuid
 
-from ..Log import Log
 from ..Client import Client
+from ..Log import Log
+from ..Player import TrainerStates
 from ..World import World
 
 
@@ -30,6 +31,7 @@ class Session:
         # Mark ourselves as alive. This Session will self terminate if conditions are met.
         self.alive = True
         self.last_command = datetime.datetime.now()
+        self.processing_command = False
 
 
     def __repr__(self):
@@ -49,6 +51,8 @@ class Session:
 
         self.log.debug(f"Session {self.session_uuid}, ticking.")
 
+        await self.trainer.tick()
+
         if datetime.datetime.now() - self.last_command > datetime.timedelta(minutes=15):
             self.alive = False
 
@@ -56,11 +60,35 @@ class Session:
     async def command_proc(self, message):
         """Player in a session has issued a command, handle it.
         """
+        if self.processing_command:
+            return
+
         self.log.info(f"Command from player seen: '{message.content}'")
         self.log.info(f"Session ID: {self.session_uuid}")
         self.last_command = datetime.datetime.now()
+        self.processing_command = True
 
-        match_obj = re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?$", message.content) or \
+        # Information printing commands can always be run
+
+        match_obj = re.match("> ?s(?:atus)?$", message.content)
+        if match_obj:
+
+            if self.trainer.state == TrainerStates.WALKING:
+                msg = "```\nYou are walking!\n"
+                msg += f"   You have about {self.trainer.destination_distance} to go!"
+                msg += "```"
+
+            if self.trainer.state == TrainerStates.IDLE:
+                msg = "```\nYou are idle.\nMaybe you could try >walk?!\n"
+                msg += "```"
+
+            await self.client.send_message(message.channel,
+                                           msg)
+            self.processing_command = False
+            return
+
+        match_obj = \
+            re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?$", message.content) or \
             re.match("> ?trainer( <@!?(?P<mention>[0-9]+)>)?$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
@@ -68,6 +96,7 @@ class Session:
 
             await self.client.send_message(message.channel, embed=await self.trainer.em())
 
+            self.processing_command = False
             return
 
         match_obj = re.match("> ?loc(?:ation)?$", message.content)
@@ -79,6 +108,7 @@ class Session:
                                            f"You are in {current_zone}"
                                            )
 
+            self.processing_command = False
             return
 
         match_obj = re.match("> ?map$", message.content)
@@ -95,6 +125,7 @@ class Session:
             _map += "```"
             await self.client.send_message(message.channel, _map)
 
+            self.processing_command = False
             return
 
         match_obj = re.match("> ?worldmap$", message.content)
@@ -104,6 +135,7 @@ class Session:
 
             await self.client.send_message(message.channel, "This feature isn't implemented yet!")
 
+            self.processing_command = False
             return
 
         match_obj = re.match("> ?regionmap$", message.content)
@@ -113,12 +145,21 @@ class Session:
 
             await self.client.send_message(message.channel, "This feature isn't implemented yet!")
 
+            self.processing_command = False
             return
 
 
         match_obj = re.match("> ?walk$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
+
+            # Can we walk?
+            if self.trainer.state not in [TrainerStates.IDLE, ]:
+                msg = f"You cannot do that right now! You are {TrainerStates(self.trainer.state).name}"
+                await self.client.send_message(message.channel, msg)
+                self.processing_command = False
+                return
+
             world = World()
             location_tuple = await self.trainer.get_location()
             current_zone = await world.get_zone(location_tuple[1])
@@ -139,12 +180,14 @@ class Session:
                                                         timeout=30,
                                                         clean_up=False)
 
-            self.trainer.current_zone_id = linked_zone_ids[selection]
+            self.trainer.destination_zone_id = linked_zone_ids[selection]
+            self.trainer.destination_distance = current_zone.links[linked_zone_ids[selection]]
+            self.trainer.state = TrainerStates.WALKING
+            self.log.info("Begin walking!")
             await self.trainer.save()
 
-            location_tuple = await self.trainer.get_location()
-            current_zone = await World().get_zone(location_tuple[1])
             await self.client.send_message(message.channel,
-                                           f"You are in {current_zone}"
+                                           f"<@!{message.author.id}> began to walk to {linked_zones[selection]}"
                                            )
+            self.processing_command = False
             return

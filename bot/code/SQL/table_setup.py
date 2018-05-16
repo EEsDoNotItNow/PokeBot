@@ -60,6 +60,8 @@ async def table_setup():
             (
                 trainer_id TEXT NOT NULL UNIQUE,
 
+                state INTEGER DEFAULT 0,
+
                 /* Track where we are.*/
                 current_region_id TEXT,
                 current_zone_id TEXT,
@@ -68,7 +70,8 @@ async def table_setup():
                 /* Track where we want to be, if we are traveling */
                 destination_region_id TEXT DEFAULT NULL,
                 destination_zone_id TEXT DEFAULT NULL,
-                destination_building_id TEXT DEFAULT NULL
+                destination_building_id TEXT DEFAULT NULL,
+                destination_distance REAL DEFAULT NULL
             )
         """
         cur.execute(cmd)
