@@ -27,7 +27,7 @@ class GameEngine:
 
         match_obj = re.match("^>", message.content)
         if match_obj:
-            self.log.info("Saw a play command, handle it!")
+            self.log.info("Saw a command, handle it!")
             await self.command_proc(message)
 
 
