@@ -140,6 +140,7 @@ class Monster(Pokemon):
 
 
     async def load(self):
+        cur = self.sql.cur
         await super().load()
 
         self.name = self.identifier
@@ -148,13 +149,15 @@ class Monster(Pokemon):
 
         self.level = await self.calc_level()
 
-
-        if self.monster_id:
-            raise NotImplementedError()
-        else:
+        if not self.monster_id:
             self.monster_id = str(uuid.uuid4())
+            return
 
-        # TODO: We also need to load from the SQL
+        cmd = "SELECT * FROM monsters WHERE pokemon_id=:pokemon_id AND monster_id=:monster_id"
+        values = cur.execute(cmd, self.__dict__).fetchone()
+
+        for key in values:
+            setattr(self, key, values[key])
 
 
     async def save(self):
@@ -218,27 +221,24 @@ class Monster(Pokemon):
             )
         """
         # Build data table
-        local_keys = {}
-        ret = cur.execute("PRAGMA table_info(monsters)").fetchall()
-        print(ret)
-        for entry in ret:
-            local_keys[entry['name']] = getattr(self, entry['name'])
-
-        cur.execute(cmd, local_keys)
-        await self.sql.commit()
+        cur.execute(cmd, self.__dict__)
+        await self.sql.commit(now=True)
 
 
     async def update_state(self):
         """Update state given current stats
         """
-
         self.level = await self.calc_level()
-        self.hp = self.calc_stat(self.base_hp, self.iv_hp, self.ev_hp, self.level, 1)
         self.attack = self.calc_stat(self.base_attack, self.iv_attack, self.ev_attack, self.level, 1)
         self.defense = self.calc_stat(self.base_defense, self.iv_defense, self.ev_defense, self.level, 1)
         self.sp_attack = self.calc_stat(self.base_sp_attack, self.iv_sp_attack, self.ev_sp_attack, self.level, 1)
         self.sp_defense = self.calc_stat(self.base_sp_defense, self.iv_sp_defense, self.ev_sp_defense, self.level, 1)
         self.speed = self.calc_stat(self.base_speed, self.iv_speed, self.ev_speed, self.level, 1)
+
+        # HP must be handled with care!
+        old_hp = self.hp
+        self.hp = self.calc_stat(self.base_hp, self.iv_hp, self.ev_hp, self.level, 1)
+        await self.heal(amount=self.hp - old_hp)
 
 
     async def heal(self, amount=None):

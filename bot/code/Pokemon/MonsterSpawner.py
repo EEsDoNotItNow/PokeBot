@@ -38,6 +38,5 @@ class MonsterSpawner:
         poke.iv_speed = np.random.randint(0, 31)
 
         await poke.update_state()
-        await poke.heal()
 
         return poke
