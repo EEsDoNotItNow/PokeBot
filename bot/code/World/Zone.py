@@ -12,6 +12,8 @@ class Zone:
         self.zone_id = zone_id
         self.links = {}
 
+        self._loaded = False
+
         self.name = None
 
         self.sql = SQL()
@@ -22,13 +24,15 @@ class Zone:
         return f"Zone<{self.name},{self.zone_id}>"
 
 
-    def link(self, other_id, distance):
+    async def link(self, other_id, distance):
         self.links[other_id] = distance
 
 
     async def load(self):
         """Load data from DB
         """
+        if self._loaded:
+            return
 
         cur = self.sql.cur
         cmd = f"SELECT * FROM locations WHERE location_id={self.zone_id}"
@@ -37,3 +41,5 @@ class Zone:
         self.log.debug(f"Loaded: {values}")
 
         self.name = values['name']
+
+        self._loaded = True

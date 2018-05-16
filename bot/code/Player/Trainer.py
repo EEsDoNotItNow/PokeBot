@@ -223,6 +223,13 @@ class Trainer:
         return em
 
 
+    async def get_location(self):
+        """
+        @return (region_id, zone_id, building_id) of the Trainer
+        """
+        return (self.current_region_id, self.current_zone_id, self.current_building_id)
+
+
     @property
     def level(self):
         return int(numpy.sqrt(self.stats['xp']))

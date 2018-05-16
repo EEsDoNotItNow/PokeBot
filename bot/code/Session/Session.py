@@ -5,6 +5,7 @@ import uuid
 from .States import GameSessionStates
 from ..Log import Log
 from ..Client import Client
+from ..World import World
 
 
 
@@ -51,7 +52,11 @@ class Session:
         match_obj = re.match("> ?loc(?:ation)?$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
-
-            await self.client.send_message(message.channel, f"Location test for {self.trainer.nickname}")
+            location_tuple = await self.trainer.get_location()
+            zone = await World().get_zone(location_tuple[1])
+            await self.client.send_message(message.channel,
+                                           f"Location test for {self.trainer.nickname}. "
+                                           f"They are in {zone}"
+                                           )
 
             return
