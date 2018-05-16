@@ -50,6 +50,10 @@ class GameEngine:
         match_obj = re.match("> *register *$", message.content)
         if match_obj:
             # Create a basic trainer object
+            if message.server == None:
+                await self.client.send_message(message.channel, "Sorry, you must register in a server! I cannot register you over DMs!")
+                return
+
             trainer = await League().get_trainer(message.author.id, message.server.id)
             if trainer is not None:
                 await self.client.send_message(message.channel, "Error, I cannot re-register you!")
@@ -75,6 +79,18 @@ class GameEngine:
             else:
                 await self.client.send_message(message.channel,
                                                f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")  # noqa: E501
+
+            return
+
+        match_obj = re.match(">spawn", message.content)
+        if match_obj:
+            from ..Pokemon import MonsterSpawner
+
+            poke = await MonsterSpawner().spawn_random()
+
+            await self.client.send_message(message.channel,
+                                     embed=await poke.em())
+            self.log.info("Finished spawn command")
 
             return
 
