@@ -241,16 +241,39 @@ class Monster(Pokemon):
         return int(np.floor(self.xp ** (1 / 3)))
 
 
-    async def heal(self, amount=None):
-        """Add given amount of HP
+    async def damage(self, amount, _type=None):
+        """Add given amount of HP.
 
-        @param
+        @details Might set status to EnumStatus.DEAD if damage exceeds current hp!
+
+        @param amount Amount to damage. Must be positive. Will not lower hp below zero.
+        @param _type [OPTIONAL] Type of damage being dealt.
         """
+        amount = int(amount)
+        if amount <= 0:
+            return
 
-        if amount:
+        self.hp_current -= amount
+
+        if self.hp_current <= 0:
+            # This will clear all 
+            self.status = EnumStatus.DEAD
+            self.hp_current = 0
+
+
+    async def heal(self, amount=None):
+        """Add given amount of HP.
+
+        @param amount Amount to heal. If 'None', heal to full. Negative values are ignored, overflow is capped at max hp.
+        """
+        amount = int(amount)
+        if amount > 0:
             if self.hp_current + amount > self.hp:
                 self.hp_current = self.hp
             else:
                 self.hp_current += amount
-        else:
+        elif amount <= 0:
+            # Do nothing, you cannot heal by a negative amount!
+            pass
+        elif amount is None:
             self.hp_current = self.hp
