@@ -71,4 +71,3 @@ class Basic(unittest.TestCase):
             _run(poke2.load())
 
             self.assertEqual(poke.monster_id, poke2.monster_id)
-

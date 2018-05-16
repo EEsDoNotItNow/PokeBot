@@ -31,4 +31,3 @@ class Basic(unittest.TestCase):
             poke.__repr__()
             _run(poke.em())
             self.assertEqual(str(poke.pokemon_id), str(i))
-
