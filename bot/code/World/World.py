@@ -63,7 +63,7 @@ class World(metaclass=Singleton):
         for key in self.zones:
             zone = self.zones[key]
             if str(zone.zone_id) == zone_id:
-                self.log.info(f"Got zone {zone}")
+                self.log.debug(f"Got zone {zone}")
                 await zone.load()
                 return zone
         return None

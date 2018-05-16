@@ -23,7 +23,7 @@ class GameEngine:
         if not self.ready:
             return
 
-        self.log.info(f"Saw message: {message.content}")
+        self.log.debug(f"Saw message: {message.content}")
 
         match_obj = re.match("^>", message.content)
         if match_obj:

@@ -10,6 +10,7 @@ from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
 from ..World import World
+from .States import TrainerStates
 
 
 class Trainer:
@@ -20,6 +21,8 @@ class Trainer:
         self.sql = SQL()
 
         self.trainer_id = trainer_id
+
+        self.state = TrainerStates.IDLE
 
         self.nickname = "NOT LOADED"
 

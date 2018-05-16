@@ -2,7 +2,7 @@
 import enum
 
 
-class GameSessionStates(enum.IntEnum):
+class TrainerStates(enum.IntEnum):
     """
     """
 

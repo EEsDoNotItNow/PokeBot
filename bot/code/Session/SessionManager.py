@@ -1,4 +1,6 @@
 
+import asyncio
+
 from ..Client import Client
 from ..Log import Log
 from ..Player import League
@@ -17,6 +19,29 @@ class SessionManager(metaclass=Singleton):
     def __init__(self):
         self.log = Log()
         self.client = Client()
+
+
+    async def on_ready(self):
+        self.log.info("Starting the tick loop!")
+        asyncio.ensure_future(self.tick())
+        self.log.info("tick loop started")
+        pass
+
+
+    async def tick(self):
+        """Tick current game state
+        """
+        while 1:
+            await asyncio.sleep(15)
+            self.log.debug("Tick")
+            for session in self.sessions:
+                await session.tick()
+
+            pruned_sessions = [x for x in SessionManager.sessions if not x.alive]
+            for session in pruned_sessions:
+                await session.save()
+                self.log.debug(f"Pruned session: {session}")
+            SessionManager.sessions = [x for x in SessionManager.sessions if x.alive]
 
 
     async def command_proc(self, message):
@@ -40,7 +65,6 @@ class SessionManager(metaclass=Singleton):
     async def get_session(self, message):
 
         trainers = await League().get_trainer(message.author.id)
-        self.log.info(f"Got trainer list: {trainers}")
 
         if trainers is None:
             await self.client.send_message(message.channel,
@@ -55,8 +79,6 @@ class SessionManager(metaclass=Singleton):
             for session in self.sessions:
                 if session.trainer == trainer:
                     return session
-                else:
-                    self.log.info(f"{session.trainer} != {trainer}")
 
         # Active sessions didn't work, check the inactive ones!
         pass

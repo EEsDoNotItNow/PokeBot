@@ -1,8 +1,8 @@
 
+import datetime
 import re
 import uuid
 
-from .States import GameSessionStates
 from ..Log import Log
 from ..Client import Client
 from ..World import World
@@ -20,8 +20,6 @@ class Session:
         self.log = Log()
         self.client = Client()
 
-        self.state = GameSessionStates.IDLE
-
         self.trainer = trainer
 
         if session_uuid is None:
@@ -31,6 +29,28 @@ class Session:
 
         # Mark ourselves as alive. This Session will self terminate if conditions are met.
         self.alive = True
+        self.last_command = datetime.datetime.now()
+
+
+    def __repr__(self):
+        return f"Session({self.session_uuid})"
+
+
+    async def save(self):
+        await self.trainer.save()
+
+
+    async def tick(self):
+        """Tick current game state
+        """
+
+        if not self.alive:
+            return
+
+        self.log.debug(f"Session {self.session_uuid}, ticking.")
+
+        if datetime.datetime.now() - self.last_command > datetime.timedelta(minutes=15):
+            self.alive = False
 
 
     async def command_proc(self, message):
@@ -38,6 +58,7 @@ class Session:
         """
         self.log.info(f"Command from player seen: '{message.content}'")
         self.log.info(f"Session ID: {self.session_uuid}")
+        self.last_command = datetime.datetime.now()
 
         match_obj = re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?$", message.content) or \
             re.match("> ?trainer( <@!?(?P<mention>[0-9]+)>)?$", message.content)

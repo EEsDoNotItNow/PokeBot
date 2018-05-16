@@ -5,9 +5,10 @@ import os
 
 from .code.Client import Client
 from .code.GameEngine import GameEngine
-from .code.World import World
 from .code.Log import Log
+from .code.Session import SessionManager
 from .code.SQL import SQL
+from .code.World import World
 
 
 parser = argparse.ArgumentParser(description='Basic Bot Demo')
@@ -42,6 +43,7 @@ x.register(SQL("poke.db"))
 #############################
 
 x.register(World())
+x.register(SessionManager())
 
 # This should be the LAST object to load, all command pathing relies on it!
 x.register(GameEngine())

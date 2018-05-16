@@ -26,7 +26,7 @@ class League:
         cur = self.sql.cur
 
         if server_id is not None:
-            self.log.info("Getting trainer with server_id")
+            self.log.debug("Getting trainer with server_id")
             # Check to see if we have this cached
             for trainer in self.trainers:
                 if trainer.user_id == user_id and trainer.server_id == server_id:
@@ -45,17 +45,17 @@ class League:
             return Trainer(value['trainer_id'])
 
         else:
-            self.log.info("Getting trainer without server_id")
+            self.log.debug("Getting trainer without server_id")
             # Check to see if we have this cached
             trainer_list = []
             for trainer in self.trainers:
                 if trainer.user_id == user_id:
                     trainer_list.append(trainer)
-                    self.log.info(f"Found trainer {trainer}")
+                    self.log.debug(f"Found trainer {trainer}")
 
             cmd = f"SELECT trainer_id FROM trainers WHERE user_id={user_id}"
             trainer_dicts = cur.execute(cmd).fetchall()
-            self.log.info(f"Found trainer dict: {trainer_dicts}")
+            self.log.debug(f"Found trainer dict: {trainer_dicts}")
 
             for trainer in trainer_dicts:
                 trainer = Trainer(trainer['trainer_id'])
