@@ -12,8 +12,14 @@ class Zone:
         self.zone_id = zone_id
         self.links = {}
 
+        self.name = None
+
         self.sql = SQL()
         self.log = Log()
+
+
+    def __str__(self):
+        return f"Zone<{self.name},{self.zone_id}>"
 
 
     def link(self, other_id, distance):
@@ -25,7 +31,9 @@ class Zone:
         """
 
         cur = self.sql.cur
-        cmd = "SELECT * FROM locations"
-        cur.execute(cmd).fetchone()
+        cmd = f"SELECT * FROM locations WHERE location_id={self.zone_id}"
+        values = cur.execute(cmd).fetchone()
 
-        self.log.info("Loaded data")
+        self.log.info(f"Loaded: {values}")
+
+        self.name = values['name']

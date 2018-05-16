@@ -5,6 +5,7 @@ import os
 
 from .code.Client import Client
 from .code.GameEngine import GameEngine
+from .code.World import World
 from .code.Log import Log
 from .code.SQL import SQL
 
@@ -40,6 +41,9 @@ x.register(SQL("poke.db"))
 # Register all modules here #
 #############################
 
+x.register(World())
+
+# This should be the LAST object to load, all command pathing relies on it!
 x.register(GameEngine())
 
 #############################

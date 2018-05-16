@@ -560,11 +560,13 @@ async def populate():
         (
             location_id_1,
             location_id_2,
-            distance
+            distance_forward,
+            distance_backward
         ) VALUES (
             :location_id_1,
             :location_id_2,
-            :distance
+            :distance_forward,
+            :distance_backward
         )"""
         cur.execute(cmd, entry)
     log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")

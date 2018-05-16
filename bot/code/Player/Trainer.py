@@ -9,6 +9,7 @@ import numpy
 from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
+from ..World import World
 
 
 class Trainer:
@@ -23,11 +24,15 @@ class Trainer:
         self.user_id = user_id
         self.server_id = server_id
 
+        self.current_zone_id = None
+        self.current_building_id = None
+        self.current_region_id = None
+
         self.is_zombie = False
 
 
     async def load(self, create_ok=False):
-        """Given known state, attmpt to load. If unable to find trainer, create one!
+        """Given known state, attempt to load. If unable to find trainer, create one!
         """
 
         self.log.info(f"Loading trainer {self.trainer_id}")
@@ -50,10 +55,39 @@ class Trainer:
         self.user_id = values['user_id']
 
         cmd = f"SELECT * FROM trainer_stats WHERE trainer_id=:trainer_id"
-        self.log.info(cmd)
         values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
-
         self.stats = dict(values)
+
+        cmd = "SELECT * FROM trainer_data WHERE trainer_id=:trainer_id"
+        values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
+        self.current_zone_id = values['current_zone_id']
+        self.current_building_id = values['current_building_id']
+        self.current_region_id = values['current_region_id']
+
+
+    async def save(self, create_ok=False):
+        """Save self to disk
+        """
+
+        cur = self.sql.cur
+
+        cmd = """INSERT OR REPLACE INTO trainer_data
+        (trainer_id,
+         current_region_id,
+         current_zone_id,
+         current_building_id)
+        VALUES
+        (:trainer_id,
+         :current_region_id,
+         :current_zone_id,
+         :current_building_id)"""
+        cur.execute(cmd, self.__dict__)
+
+        cmd = """INSERT OR REPLACE INTO trainer_party
+        (trainer_id)
+        VALUES
+        (:trainer_id)"""
+        cur.execute(cmd, self.__dict__)
 
 
     async def create(self):
@@ -67,11 +101,14 @@ class Trainer:
 
         nickname = self.nickname
         trainer_id = str(uuid.uuid4())
+        self.trainer_id = trainer_id
         now = datetime.datetime.now()
         user_id = self.user_id
         server_id = self.server_id
 
-        self.log.critical(locals())
+        self.current_zone_id = '86'
+        self.current_building_id = None
+        self.current_region_id = None
 
         cmd = """INSERT INTO trainers
             (trainer_id,
@@ -80,7 +117,11 @@ class Trainer:
             nickname,
             created_on)
             VALUES
-            (:trainer_id, :user_id, :server_id, :nickname, :now)"""
+            (:trainer_id,
+            :user_id,
+            :server_id,
+            :nickname,
+            :now)"""
         cur.execute(cmd, locals())
 
         cmd = """INSERT INTO trainer_stats
@@ -90,10 +131,16 @@ class Trainer:
         cur.execute(cmd, locals())
 
         cmd = """INSERT INTO trainer_data
-        (trainer_id)
+        (trainer_id,
+         current_region_id,
+         current_zone_id,
+         current_building_id)
         VALUES
-        (:trainer_id)"""
-        cur.execute(cmd, locals())
+        (:trainer_id,
+         :current_region_id,
+         :current_zone_id,
+         :current_building_id)"""
+        cur.execute(cmd, self.__dict__)
 
         cmd = """INSERT INTO trainer_party
         (trainer_id)
@@ -164,6 +211,10 @@ class Trainer:
         em.add_field(name="Pokecoin", value=f"{self.stats['pokecoin']:,.2f}")
 
         em.add_field(name="Level", value=f"{self.level:,d}")
+
+        if self.current_zone_id:
+            zone_name = (await World().get_zone(self.current_zone_id)).name.title()
+            em.add_field(name="Zone", value=zone_name)
 
         em.timestamp = self.created_on
 
