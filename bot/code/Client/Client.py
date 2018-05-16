@@ -394,12 +394,12 @@ class Client(discord.Client):
 
     async def select_prompt(self, channel, prompt_question, prompt_list, user=None, timeout=30, clean_up=True):
         """ Ask user to respond and pick from a list of strings.
-        Args:
-            channel (discord Obj): Channel to send to (This could be a user, and result in a DM!
-            prompt_list (list/tuple): List of options to give the user
-            user (discord Obj): Valid responder (Set to None to accept any)
-            timeout (int/float): Seconds to wait for user response
-            clean_up: Should we cleanup after
+
+        @param channel (discord Obj): Channel to send to (This could be a user, and result in a DM!
+        @param prompt_list (list/tuple): List of options to give the user
+        @param user (discord Obj): Valid responder (Set to None to accept any)
+        @param timeout (int/float): Seconds to wait for user response
+        @param clean_up: Should we cleanup after
 
         """
         digits = [b'1\xe2\x83\xa3',
@@ -462,21 +462,24 @@ class Client(discord.Client):
 
     async def text_prompt(self, channel, prompt_question, user=None, timeout=30, clean_up=False):
         """ Ask user to respond and then returns the value to the caling function
-        Args:
-            channel (discord Obj): Channel to send to (This could be a user, and result in a DM!
-            prompt_question (str): Question asked of the user
-            user (discord Obj): Valid responder (Set to None to accept any)
-            timeout (int/float): Seconds to wait for user response
-            clean_up: Should we cleanup after
+        @param channel (discord Obj): Channel to send to (This could be a user, and result in a DM!
+        @param prompt_question (str): Question asked of the user
+        @param user (discord Obj): Valid responder (Set to None to accept any)
+        @param timeout (int/float): Seconds to wait for user response
+        @param clean_up: Should we cleanup after
+
+        @return Text message user replied with
+
+        @throws TimeoutError when user fails to respond in time
         """
         embed = discord.Embed(
             color=discord.Color.default(),
             description=prompt_question,
         )
 
-        footer_text = "Type 'STOP' to cancel this prompt."
-        if timeout:
-            footer_text += f" You have {timeout:.0f} seconds to answer"
+        # footer_text = "Type 'STOP' to cancel this prompt."
+        # if timeout:
+        footer_text = f"You have {timeout:.0f} seconds to answer"
         embed.set_footer(text=footer_text)
 
         await self.send_message(channel, embed=embed)

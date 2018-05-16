@@ -414,7 +414,8 @@ async def table_setup():
             (
                 location_id_1 TEXT NOT NULL,
                 location_id_2 TEXT NOT NULL,
-                distance REAL NOT NULL
+                distance_forward REAL DEFAULT NULL,
+                distance_backward REAL DEFAULT NULL
             )
         """
         cur.execute(cmd)

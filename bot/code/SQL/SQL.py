@@ -68,7 +68,7 @@ class SQL(metaclass=Singleton):
         # Schedule a commit in the future
         # Get loop from the client, schedule a call to _commit and return
         if now:
-            await self._commit(now)
+            self.conn.commit()
         else:
             asyncio.ensure_future(self._commit(now))
 

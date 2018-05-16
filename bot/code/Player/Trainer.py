@@ -9,6 +9,7 @@ import numpy
 from ..Client import Client
 from ..Log import Log
 from ..SQL import SQL
+# from ..World import Zone
 
 
 class Trainer:
@@ -23,11 +24,15 @@ class Trainer:
         self.user_id = user_id
         self.server_id = server_id
 
+        self.current_zone_id = None
+        self.current_building_id = None
+        self.current_region_id = None
+
         self.is_zombie = False
 
 
     async def load(self, create_ok=False):
-        """Given known state, attmpt to load. If unable to find trainer, create one!
+        """Given known state, attempt to load. If unable to find trainer, create one!
         """
 
         self.log.info(f"Loading trainer {self.trainer_id}")
@@ -67,11 +72,14 @@ class Trainer:
 
         nickname = self.nickname
         trainer_id = str(uuid.uuid4())
+        self.trainer_id = trainer_id
         now = datetime.datetime.now()
         user_id = self.user_id
         server_id = self.server_id
 
-        self.log.critical(locals())
+        self.current_zone_id = '86'
+        self.current_building_id = None
+        self.current_region_id = None
 
         cmd = """INSERT INTO trainers
             (trainer_id,
@@ -80,7 +88,11 @@ class Trainer:
             nickname,
             created_on)
             VALUES
-            (:trainer_id, :user_id, :server_id, :nickname, :now)"""
+            (:trainer_id,
+            :user_id,
+            :server_id,
+            :nickname,
+            :now)"""
         cur.execute(cmd, locals())
 
         cmd = """INSERT INTO trainer_stats
@@ -90,10 +102,16 @@ class Trainer:
         cur.execute(cmd, locals())
 
         cmd = """INSERT INTO trainer_data
-        (trainer_id)
+        (trainer_id,
+         current_region_id,
+         current_zone_id,
+         current_building_id)
         VALUES
-        (:trainer_id)"""
-        cur.execute(cmd, locals())
+        (:trainer_id,
+         :current_region_id,
+         :current_zone_id,
+         :current_building_id)"""
+        cur.execute(cmd, self.__dict__)
 
         cmd = """INSERT INTO trainer_party
         (trainer_id)
