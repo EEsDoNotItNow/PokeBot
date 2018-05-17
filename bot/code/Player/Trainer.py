@@ -203,7 +203,7 @@ class Trainer:
                 self.destination_distance -= delta_t * 2.2352  # mph walking
 
                 if self.destination_distance < 0:
-                    self.destination_distance = 0:
+                    self.destination_distance = 0
                     self.current_zone_id = self.destination_zone_id
                     self.state = TrainerStates.IDLE
                     user = await self.client.get_user_info(self.user_id)
