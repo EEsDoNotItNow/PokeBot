@@ -99,6 +99,7 @@ class GameEngine:
         if match_obj:
             from ..CommandProcessor import DiscordArgumentParser
             import shlex
+
             parser = DiscordArgumentParser()
             try:
                 results = parser.parse_args(shlex.split(match_obj.group(1)))
