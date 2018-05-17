@@ -95,23 +95,29 @@ class GameEngine:
 
             return
 
-        match_obj = re.match(">test (.*)", message.content)
-        if match_obj:
-            from ..CommandProcessor import DiscordArgumentParser
-            import shlex
+        from ..CommandProcessor import DiscordArgumentParser
+        import shlex
 
-            parser = DiscordArgumentParser()
-            try:
-                results = parser.parse_args(shlex.split(match_obj.group(1)))
-            except Exception as e:
-                await self.client.send_message(message.channel, e)
-                return
-
+        parser = DiscordArgumentParser(description="A Test Command", prog=">test", add_help=False)
+        sub_parsers = parser.add_subparsers()
+        parser_a = sub_parsers.add_parser('>test', help='a help', add_help=True)
+        parser_a.set_defaults(subCMD='>test')
+        parser_b = sub_parsers.add_parser('>test2', help='b help', add_help=True)
+        parser_b.set_defaults(subCMD='>test2')
+        try:
+            self.log.info("Parse Arguments")
+            results = parser.parse_args(shlex.split(message.content))
+            self.log.info("Got normal return, printing and returning")
+            self.log.info(type(results))
             await self.client.send_message(message.channel, results)
-
-            self.log.info("Finished test command")
-
             return
+        except ValueError as e:
+            pass
+
+
+        self.log.info("Finished test command")
+
+        # return
 
         match_obj = re.match("> ?emojidecode (.*)$", message.content)
         if match_obj:
