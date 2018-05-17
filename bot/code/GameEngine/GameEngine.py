@@ -1,15 +1,17 @@
 
 import re
+import shlex
 
-from ..Log import Log
 from ..Client import Client
+from ..CommandProcessor import DiscordArgumentParser
+from ..Log import Log
 from ..Player import League
-
 from ..Session import SessionManager
 
 
 
 class GameEngine:
+
 
     def __init__(self):
         self.log = Log()
@@ -46,82 +48,113 @@ class GameEngine:
     async def command_proc(self, message):
         """Handle specific commands, or pass to the session_manager
         """
-
-        match_obj = re.match("> *register *$", message.content)
-        if match_obj:
-            # Create a basic trainer object
-            if message.server is None:
-                await self.client.send_message(message.channel,
-                                               "Sorry, you must register in a server! I cannot register you over DMs!")
-                return
-
-            trainer = await League().get_trainer(message.author.id, message.server.id)
-            if trainer is not None:
-                await self.client.send_message(message.channel, "Error, I cannot re-register you!")
-                return
-
-            # We are good to register them!
-            trainer = await League().register(message.author.id, message.server.id)
-
-            em = await trainer.get_trainer_card()
-            # await self.client.send_message(message.channel, f"Registered: {trainer}")
-
-            await self.client.send_message(message.channel, embed=em)
-
-            return
-
-        match_obj = re.match("> *deregister *$", message.content)
-        if match_obj:
-            # Create a basic trainer object
-            result = await League().deregister(message.author.id, message.server.id)
-            if result:
-                await self.client.send_message(message.channel,
-                                               f"The Discord League is sorry to see you go, <@!{message.author.id}>")  # noqa: E501
-            else:
-                await self.client.send_message(message.channel,
-                                               f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")  # noqa: E501
-
-            return
-
-        match_obj = re.match(">spawn", message.content)
-        if match_obj:
-            from ..Pokemon import MonsterSpawner
-
-            poke = await MonsterSpawner().spawn_random()
-
-            await self.client.send_message(message.channel,
-                                           embed=await poke.em())
-            self.log.info("Finished spawn command")
-
-            return
-
-        from ..CommandProcessor import DiscordArgumentParser
-        import shlex
-
         parser = DiscordArgumentParser(description="A Test Command", prog="", add_help=False)
+        parser.set_defaults(message=message)
         sub_parsers = parser.add_subparsers()
-        parser_a = sub_parsers.add_parser('>test', help='a help', add_help=True, prog=">test")
-        parser_a.set_defaults(subCMD='>test')
-        parser_b = sub_parsers.add_parser('>test2', help='b help', add_help=True, prog=">test2")
-        parser_b.set_defaults(subCMD='>test2')
+
+        sub_parser = sub_parsers.add_parser('>test', help='a help', add_help=True, prog=">test")
+        sub_parser.set_defaults(subCMD='>test')
+
+        sub_parser = sub_parsers.add_parser('>test2', help='a help', add_help=True, prog=">test2")
+        sub_parser.set_defaults(subCMD='>test2')
+        sub_parser.add_argument("foo", type=int, choices=[1, 2, 3])
+
+        sub_parser = sub_parsers.add_parser('>register', help='a help', add_help=True)
+        sub_parser.set_defaults(subCMD='>register',
+                                cmd=self._cmd_register)
+
+        sub_parser = sub_parsers.add_parser('>deregister', help='a help', add_help=True)
+        sub_parser.set_defaults(subCMD='>deregister',
+                                cmd=self._cmd_deregister)
+
+        sub_parser = sub_parsers.add_parser('>spawn', help='a help', add_help=True)
+        sub_parser.set_defaults(subCMD='>spawn',
+                                cmd=self._cmd_spawn)
+
+        sub_parser = sub_parsers.add_parser('>emojidecode', help='a help', add_help=True)
+        sub_parser.add_argument("emoji", nargs='+')
+        sub_parser.set_defaults(subCMD='>emojidecode',
+                                cmd=self._cmd_emojidecode)
+
         try:
             self.log.info("Parse Arguments")
             results = parser.parse_args(shlex.split(message.content))
-            self.log.info("Got normal return, printing and returning")
-            self.log.info(type(results))
-            await self.client.send_message(message.channel, results)
-            return
+            if type(results) == str:
+                self.log.info("Got normal return, printing and returning")
+                self.log.info(type(results))
+                await self.client.send_message(message.channel, results)
+                return
+            elif hasattr(results, 'cmd'):
+                # await self.client.send_message(message.channel, results)
+                await results.cmd(message)
+                return
+            else:
+                await self.client.send_message(message.channel, results)
+                msg = "Well that's funny, I don't know wha to do!"
+                await self.client.send_message(message.channel, msg)
+                return
         except ValueError as e:
-            self.log.info("ValueError Pass")
+            # We didn't get a subcommand, let someone else deal with this mess!
+            self.log.error("???")
             pass
         except TypeError as e:
-            self.log.info("TypeError Pass")
+            self.log.info("TypeError Return")
+            self.log.info(e)
+            msg = f"{e}. You can add `-h` or `--help` to any command to get help!"
+            await self.client.send_message(message.channel, msg)
+            return
             pass
 
+        self.log.critical("Command path is being refactored, commands were skipped!")
+        # If we failed to trigger a command, we need to ask the session manager to handle it!
+        await self.session_manager.command_proc(message)
+        return
 
-        self.log.info("Finished test command")
+    async def _cmd_register(self, message):
+        # Create a basic trainer object
+        if message.server is None:
+            await self.client.send_message(message.channel,
+                                           "Sorry, you must register in a server! I cannot register you over DMs!")
+            return
 
-        # return
+        trainer = await League().get_trainer(message.author.id, message.server.id)
+        if trainer is not None:
+            await self.client.send_message(message.channel, "Error, I cannot re-register you!")
+            return
+
+        # We are good to register them!
+        trainer = await League().register(message.author.id, message.server.id)
+
+        em = await trainer.get_trainer_card()
+        # await self.client.send_message(message.channel, f"Registered: {trainer}")
+
+        await self.client.send_message(message.channel, embed=em)
+
+        return
+
+    async def _cmd_deregister(self, message):
+        # Create a basic trainer object
+        result = await League().deregister(message.author.id, message.server.id)
+        if result:
+            await self.client.send_message(message.channel,
+                                           f"The Discord League is sorry to see you go, <@!{message.author.id}>")  # noqa: E501
+        else:
+            await self.client.send_message(message.channel,
+                                           f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")  # noqa: E501
+        return
+
+    async def _cmd_spawn(self, message):
+        from ..Pokemon import MonsterSpawner
+
+        poke = await MonsterSpawner().spawn_random()
+
+        await self.client.send_message(message.channel,
+                                       embed=await poke.em())
+        self.log.info("Finished spawn command")
+
+        return
+
+    async def _cmd_emojidecode(self, message):
 
         match_obj = re.match("> ?emojidecode (.*)$", message.content)
         if match_obj:
@@ -130,6 +163,3 @@ class GameEngine:
             string = match_obj.group(1).encode('unicode_escape')
             await self.client.send_message(message.channel, f"{string}: {string.decode('unicode-escape')}")
             return
-
-        # If we failed to trigger a command, we need to ask the session manager to handle it!
-        await self.session_manager.command_proc(message)

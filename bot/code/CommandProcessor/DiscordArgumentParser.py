@@ -18,6 +18,15 @@ class DiscordArgumentParser(argparse.ArgumentParser):
                 Log().info("Sys Exit Capture")
                 return f.getvalue()
 
+    # def exit(self, status=0, message=None):
+    #     raise TypeError(message)
+    #     return None
 
     def error(self, message):
-        raise ValueError(message)
+        Log().info(type(message))
+        if message.startswith("invalid choice:"):
+            # This isn't a valid command, just continue
+            raise ValueError(message)
+        else:
+            raise TypeError(message)
+        return
