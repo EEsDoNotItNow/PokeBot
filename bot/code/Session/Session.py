@@ -5,6 +5,7 @@ import uuid
 
 from ..Client import Client
 from ..Log import Log
+from ..SQL import SQL
 from ..Player import TrainerStates
 from ..World import World
 
@@ -18,8 +19,9 @@ class Session:
     def __init__(self, trainer, session_uuid=None):
         self.trainer = trainer
 
-        self.log = Log()
         self.client = Client()
+        self.log = Log()
+        self.sql = SQL()
 
         self.trainer = trainer
 
@@ -98,6 +100,25 @@ class Session:
             self.log.info(match_obj.group('mention'))
 
             await self.client.send_message(message.channel, embed=await self.trainer.em())
+
+            self.processing_command = False
+            return
+
+        match_obj = re.match("> ?stat(?:s)?(?: (?P<stat>\w+))?$", message.content)
+        if match_obj:
+            self.log.info(match_obj.groups())
+            self.log.info(match_obj.group('stat'))
+            
+            cur = self.sql.cur
+
+            cmd = f"SELECT * FROM trainer_stats WHERE trainer_id=:trainer_id"
+            values = cur.execute(cmd,self.trainer.__dict__).fetchone()
+
+            msg = "```\n"
+            msg += f"Steps Taken: {values['steps_taken']:,d}\n"
+            msg += "```"
+
+            await self.client.send_message(message.channel, msg)
 
             self.processing_command = False
             return
