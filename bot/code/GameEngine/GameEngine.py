@@ -52,26 +52,24 @@ class GameEngine:
         parser.set_defaults(message=message)
         sub_parsers = parser.add_subparsers()
 
-        sub_parser = sub_parsers.add_parser('>test', help='a help', add_help=True, prog=">test")
-        sub_parser.set_defaults(subCMD='>test')
-
-        sub_parser = sub_parsers.add_parser('>test2', help='a help', add_help=True, prog=">test2")
-        sub_parser.set_defaults(subCMD='>test2')
-        sub_parser.add_argument("foo", type=int, choices=[1, 2, 3])
-
-        sub_parser = sub_parsers.add_parser('>register', help='a help', add_help=True)
+        sub_parser = sub_parsers.add_parser('>register',
+                                            description='Register self with the Pokemon League',
+                                            add_help=True)
         sub_parser.set_defaults(subCMD='>register',
                                 cmd=self._cmd_register)
 
-        sub_parser = sub_parsers.add_parser('>deregister', help='a help', add_help=True)
+        sub_parser = sub_parsers.add_parser('>deregister',
+                                            description='Deregister self with the Pokemon League')
         sub_parser.set_defaults(subCMD='>deregister',
                                 cmd=self._cmd_deregister)
 
-        sub_parser = sub_parsers.add_parser('>spawn', help='a help', add_help=True)
+        sub_parser = sub_parsers.add_parser('>spawn',
+                                            description="Spawn a random Poke")
         sub_parser.set_defaults(subCMD='>spawn',
                                 cmd=self._cmd_spawn)
 
-        sub_parser = sub_parsers.add_parser('>emojidecode', help='a help', add_help=True)
+        sub_parser = sub_parsers.add_parser('>emojidecode',
+                                            description="Decode an emoji")
         sub_parser.add_argument("emoji", nargs='+')
         sub_parser.set_defaults(subCMD='>emojidecode',
                                 cmd=self._cmd_emojidecode)
@@ -110,6 +108,7 @@ class GameEngine:
         await self.session_manager.command_proc(message)
         return
 
+
     async def _cmd_register(self, message):
         # Create a basic trainer object
         if message.server is None:
@@ -132,6 +131,7 @@ class GameEngine:
 
         return
 
+
     async def _cmd_deregister(self, message):
         # Create a basic trainer object
         result = await League().deregister(message.author.id, message.server.id)
@@ -143,6 +143,7 @@ class GameEngine:
                                            f"The Discord League doesn't seem to have you registered, <@!{message.author.id}>")  # noqa: E501
         return
 
+
     async def _cmd_spawn(self, message):
         from ..Pokemon import MonsterSpawner
 
@@ -153,6 +154,7 @@ class GameEngine:
         self.log.info("Finished spawn command")
 
         return
+
 
     async def _cmd_emojidecode(self, message):
 
