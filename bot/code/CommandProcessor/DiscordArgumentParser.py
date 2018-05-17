@@ -4,6 +4,8 @@ import argparse
 
 from ..Log import Log
 
+
+
 class DiscordArgumentParser(argparse.ArgumentParser):
 
     def error(self, message):

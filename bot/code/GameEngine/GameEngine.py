@@ -97,7 +97,6 @@ class GameEngine:
 
         match_obj = re.match(">test (.*)", message.content)
         if match_obj:
-            import argparse
             from ..CommandProcessor import DiscordArgumentParser
             import shlex
             parser = DiscordArgumentParser()

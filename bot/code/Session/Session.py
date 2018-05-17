@@ -93,7 +93,8 @@ class Session:
                 msg = "You are `idle`. Maybe you could try `>walk`?"
 
             else:
-                msg = f"You are in a state I don't know about yet! Please file a bug report! State: {TS(self.trainer.state).name}"
+                msg = f"You are in a state I don't know about yet!"\
+                    f" Please file a bug report! State: {TS(self.trainer.state).name}"
 
 
             await self.client.send_message(message.channel,
