@@ -98,11 +98,11 @@ class GameEngine:
         from ..CommandProcessor import DiscordArgumentParser
         import shlex
 
-        parser = DiscordArgumentParser(description="A Test Command", prog=">test", add_help=False)
+        parser = DiscordArgumentParser(description="A Test Command", prog="", add_help=False)
         sub_parsers = parser.add_subparsers()
-        parser_a = sub_parsers.add_parser('>test', help='a help', add_help=True)
+        parser_a = sub_parsers.add_parser('>test', help='a help', add_help=True, prog=">test")
         parser_a.set_defaults(subCMD='>test')
-        parser_b = sub_parsers.add_parser('>test2', help='b help', add_help=True)
+        parser_b = sub_parsers.add_parser('>test2', help='b help', add_help=True, prog=">test2")
         parser_b.set_defaults(subCMD='>test2')
         try:
             self.log.info("Parse Arguments")
@@ -112,6 +112,10 @@ class GameEngine:
             await self.client.send_message(message.channel, results)
             return
         except ValueError as e:
+            self.log.info("ValueError Pass")
+            pass
+        except TypeError as e:
+            self.log.info("TypeError Pass")
             pass
 
 
