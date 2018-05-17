@@ -95,22 +95,14 @@ class GameEngine:
 
             return
 
-        match_obj = re.match(">test", message.content)
+        match_obj = re.match(">test (.*)", message.content)
         if match_obj:
-            # self.log.info(match_obj.groups())
+            import argparse
+            import shlex
+            parser = argparse.ArgumentParser()
+            results = parser.parse_args(shlex.split(match_obj.group(1)))
 
-            # prompt = "Do you like pie?"
-
-            # response = await self.client.confirm_prompt(message.channel, prompt, user=message.author)
-            # response = await self.client.select_prompt(message.channel,
-            #                                            "Which is 5?",
-            #                                            [1, 2, 3, 4, 5],
-            #                                            user=message.author)
-
-            response = await self.client.text_prompt(message.channel,
-                                                     "Do you like pie?",
-                                                     user=message.author)
-            self.log.info(response)
+            await self.client.send_message(message.channel, results)
 
             self.log.info("Finished test command")
 
