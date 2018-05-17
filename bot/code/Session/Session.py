@@ -108,11 +108,11 @@ class Session:
         if match_obj:
             self.log.info(match_obj.groups())
             self.log.info(match_obj.group('stat'))
-            
+
             cur = self.sql.cur
 
             cmd = f"SELECT * FROM trainer_stats WHERE trainer_id=:trainer_id"
-            values = cur.execute(cmd,self.trainer.__dict__).fetchone()
+            values = cur.execute(cmd, self.trainer.__dict__).fetchone()
 
             msg = "```\n"
             msg += f"Steps Taken: {values['steps_taken']:,d}\n"

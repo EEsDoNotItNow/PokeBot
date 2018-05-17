@@ -200,7 +200,7 @@ class Trainer:
             if self.current_zone_id != self.destination_zone_id:
 
                 old_distance = self.destination_distance
-                self.destination_distance -= delta_t * 2.2352 # mph walking
+                self.destination_distance -= delta_t * 2.2352  # mph walking
 
                 if self.destination_distance < 0:
                     self.current_zone_id = self.destination_zone_id

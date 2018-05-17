@@ -50,8 +50,9 @@ class GameEngine:
         match_obj = re.match("> *register *$", message.content)
         if match_obj:
             # Create a basic trainer object
-            if message.server == None:
-                await self.client.send_message(message.channel, "Sorry, you must register in a server! I cannot register you over DMs!")
+            if message.server is None:
+                await self.client.send_message(message.channel,
+                                               "Sorry, you must register in a server! I cannot register you over DMs!")
                 return
 
             trainer = await League().get_trainer(message.author.id, message.server.id)
@@ -89,7 +90,7 @@ class GameEngine:
             poke = await MonsterSpawner().spawn_random()
 
             await self.client.send_message(message.channel,
-                                     embed=await poke.em())
+                                           embed=await poke.em())
             self.log.info("Finished spawn command")
 
             return
