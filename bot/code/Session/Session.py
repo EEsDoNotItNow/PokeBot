@@ -195,5 +195,5 @@ class Session:
             self.processing_command = False
             return
 
-            self.log.warning(f"Saw a command ({message.content}), which did not match any current commands.")
+        self.log.warning(f"Saw a command ({message.content}), which did not match any current commands.")
         self.processing_command = False
