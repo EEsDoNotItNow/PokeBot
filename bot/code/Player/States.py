@@ -20,9 +20,10 @@ class TrainerStates(enum.IntEnum):
     FLYING = 200
     TELEPORTING = 201
     WALKING = 202
-    BIKING = 203
-    RUNNING = 204
-    REGIONAL_TRANSITION = 205
+    WALKING_IN_GRASS = 203
+    BIKING = 204
+    RUNNING = 205
+    REGIONAL_TRANSITION = 206
 
     # Battle states
     ENCOUNTER = 300
