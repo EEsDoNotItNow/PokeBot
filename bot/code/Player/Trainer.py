@@ -196,7 +196,7 @@ class Trainer:
         delta_t = (datetime.datetime.now() - self.last_tick).total_seconds()
 
         if self.state == TrainerStates.WALKING:
-            self.log.info("Walking!")
+            self.log.debug("Walking!")
             if self.current_zone_id != self.destination_zone_id:
 
                 old_distance = self.destination_distance
@@ -244,7 +244,7 @@ class Trainer:
                       WHERE trainer_id = :trainer_id"""
             cur.execute(cmd, locals())
         await self.sql.commit(now=True)
-        self.log.info("log completed")
+        self.log.debug("log completed")
 
 
     async def em(self):

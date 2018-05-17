@@ -451,7 +451,7 @@ class Client(discord.Client):
             await self.delete_message(msg_obj)
 
         if ret_val is None:
-            return None
+            raise TimeoutError("No user selection")
 
         for idx, val in enumerate(digits):
             if ret_val[0].emoji == val:
