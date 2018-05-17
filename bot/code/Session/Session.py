@@ -80,7 +80,7 @@ class Session:
 
         # Information printing commands can always be run
 
-        match_obj = re.match("> ?s(?:atus)?$", message.content)
+        match_obj = re.match("> ?s(?:tatus)?$", message.content)
         if match_obj:
 
             if self.trainer.state == TS.WALKING:
