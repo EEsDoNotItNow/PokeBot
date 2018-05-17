@@ -98,9 +98,14 @@ class GameEngine:
         match_obj = re.match(">test (.*)", message.content)
         if match_obj:
             import argparse
+            from ..CommandProcessor import DiscordArgumentParser
             import shlex
-            parser = argparse.ArgumentParser()
-            results = parser.parse_args(shlex.split(match_obj.group(1)))
+            parser = DiscordArgumentParser()
+            try:
+                results = parser.parse_args(shlex.split(match_obj.group(1)))
+            except Exception as e:
+                await self.client.send_message(message.channel, e)
+                return
 
             await self.client.send_message(message.channel, results)
 
