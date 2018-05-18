@@ -29,9 +29,9 @@ async def ingest_csv(csv_dir):
     for entry in raw_dex:
         pokemon_id = entry['id']
         dex[pokemon_id] = {}
-        dex[pokemon_id]['gender_ratio'] = None
-        dex[pokemon_id]['catch_rate'] = None
-        dex[pokemon_id]['hatch_time'] = None
+        dex[pokemon_id]['gender_rate'] = None
+        dex[pokemon_id]['capture_rate'] = None
+        dex[pokemon_id]['hatch_counter'] = None
         dex[pokemon_id]['base_happiness'] = None
         dex[pokemon_id]['type2'] = None
 
@@ -83,11 +83,9 @@ async def ingest_csv(csv_dir):
                     pass
 
     for entry in species_stats:
-        pokemon_id = entry['id']
-        dex[pokemon_id]['gender_ratio'] = entry['gender_rate']
-        dex[pokemon_id]['catch_rate'] = entry['capture_rate']
-        dex[pokemon_id]['hatch_time'] = entry['hatch_counter']
-        dex[pokemon_id]['base_happiness'] = entry['base_happiness']
+        entry['pokemon_id'] = entry['id']
+        del entry['id']
+        dex[pokemon_id].update(entry)
     log.info(f"pokemon_species loaded in {time.time()-t_step:.3f}s")
 
 
@@ -324,9 +322,9 @@ async def populate():
             effort_sp_attack,
             effort_sp_defense,
             effort_speed,
-            gender_ratio,
-            catch_rate,
-            hatch_time,
+            gender_rate,
+            capture_rate,
+            hatch_counter,
             type1,
             type2
         ) VALUES (
@@ -347,9 +345,9 @@ async def populate():
             :effort_sp_attack,
             :effort_sp_defense,
             :effort_speed,
-            :gender_ratio,
-            :catch_rate,
-            :hatch_time,
+            :gender_rate,
+            :capture_rate,
+            :hatch_counter,
             :type1,
             :type2
         )"""

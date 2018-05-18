@@ -69,6 +69,18 @@ class Monster(Pokemon):
         return f"Monster({self.pokemon_id})"
 
 
+    def __eq__(self, other):
+        if type(other) is Monster:
+            return self.monster_id == other.monster_id and self.pokemon_id == other.pokemon_id
+        if type(other) is Pokemon:
+            return self.pokemon_id == other.pokemon_id
+        raise NotImplementedError
+
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+
     async def em(self, debug=False):
         """Return an embed object to display this class
 

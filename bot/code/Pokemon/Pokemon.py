@@ -73,9 +73,9 @@ class Pokemon:
         self.effort_speed = data['effort_speed']
 
         self.abilities = data['abilities']
-        self.catch_rate = data['catch_rate']
-        self.gender_ratio = data['gender_ratio']
-        self.hatch_time = data['hatch_time']
+        self.capture_rate = data['capture_rate']
+        self.gender_rate = data['gender_rate']
+        self.hatch_counter = data['hatch_counter']
         self.height = data['height']
         self.hidden_abilities = data['hidden_abilities']
         self.type1 = data['type1']
