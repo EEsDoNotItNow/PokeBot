@@ -101,3 +101,16 @@ class SQL(metaclass=Singleton):
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
         return d
+
+
+"""
+Neat trick for ranks
+select  p1.*
+,       (
+        select  count(*)
+        from    People as p2
+        where   p2.age > p1.age
+        ) as AgeRank
+from    People as p1
+where   p1.Name = 'Juju bear'
+"""
