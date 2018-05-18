@@ -86,7 +86,8 @@ class Session:
             if self.trainer.state == TS.WALKING:
                 # Safe to update, lets see where we are!
                 await self.trainer.tick()
-                msg = f"<@!{message.author.id}> You are walking! You have about {self.trainer.destination_distance:,.0f} to go!"
+                msg = f"<@!{message.author.id}> You are walking!"\
+                    " You have about {self.trainer.destination_distance:,.0f} to go!"
 
             elif self.trainer.state == TS.WALKING_IN_GRASS:
                 # Safe to update, lets see where we are!
@@ -153,7 +154,8 @@ class Session:
             location_tuple = await self.trainer.get_location()
             current_zone = await world.get_zone(location_tuple[1])
 
-            _map = f"<@!{message.author.id}> You are currently in {current_zone}. From here, you can get to the following locations:\n```\n"
+            _map = f"<@!{message.author.id}> You are currently in {current_zone}."\
+                " From here, you can get to the following locations:\n```\n"
             for linked_zone_id in current_zone.links:
                 zone = await world.get_zone(linked_zone_id)
                 _map += f"   {zone}\n"
@@ -219,7 +221,7 @@ class Session:
 
             # Can we walk?
             valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
-                                       TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.SHOPPING, 
+                                       TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.SHOPPING,
                                        TS.SOMEONES_PC]
             if self.trainer.state not in valid_transition_states:
                 msg = f"<@!{message.author.id}> You cannot do that right now! You are {TS(self.trainer.state).name}!"
@@ -237,7 +239,8 @@ class Session:
                 zone = await world.get_zone(linked_zone_id)
                 linked_zones.append(zone)
 
-            prompt_question = f"<@!{message.author.id}> You are in {current_zone}. Which zone do you want to travel too?"
+            prompt_question = f"<@!{message.author.id}> You are in {current_zone}."\
+                " Which zone do you want to travel too?"
             prompt_list = linked_zones
             selection = await self.client.select_prompt(message.channel,
                                                         prompt_question,
