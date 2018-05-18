@@ -84,16 +84,20 @@ class Session:
         if match_obj:
 
             if self.trainer.state == TS.WALKING:
-
                 # Safe to update, lets see where we are!
                 await self.trainer.tick()
-                msg = f"You are walking! You have about {self.trainer.destination_distance:,.0f} to go!"
+                msg = f"<@!{message.author.id}> You are walking! You have about {self.trainer.destination_distance:,.0f} to go!"
+
+            elif self.trainer.state == TS.WALKING_IN_GRASS:
+                # Safe to update, lets see where we are!
+                await self.trainer.tick()
+                msg = f"<@!{message.author.id}> You are looking for local Pokemon. Good luck!"
 
             elif self.trainer.state == TS.IDLE:
-                msg = "You are `idle`. Maybe you could try `>walk`?"
+                msg = f"<@!{message.author.id}> You are *Idle*. Maybe you could try `>walk`?"
 
             else:
-                msg = f"You are in a state I don't know about yet!"\
+                msg = f"<@!{message.author.id}> You are in a state I don't know about yet!"\
                     f" Please file a bug report! State: {TS(self.trainer.state).name}"
 
 
@@ -114,17 +118,16 @@ class Session:
 
             return
 
-        match_obj = re.match("> ?stat(?:s)?(?: (?P<stat>\w+))?$", message.content)
+        match_obj = re.match("> ?stat(?:s)?$", message.content)
         if match_obj:
             self.log.info(match_obj.groups())
-            self.log.info(match_obj.group('stat'))
 
             cur = self.sql.cur
 
             cmd = f"SELECT * FROM trainer_stats WHERE trainer_id=:trainer_id"
             values = cur.execute(cmd, self.trainer.__dict__).fetchone()
 
-            msg = "```\n"
+            msg = "<@!{message.author.id}> \n```\n"
             msg += f"Steps Taken: {values['steps_taken']:,d}\n"
             msg += "```"
 
@@ -138,7 +141,7 @@ class Session:
             location_tuple = await self.trainer.get_location()
             current_zone = await World().get_zone(location_tuple[1])
             await self.client.send_message(message.channel,
-                                           f"You are in {current_zone}"
+                                           f"<@!{message.author.id}> You are in {current_zone}"
                                            )
 
             return
@@ -150,7 +153,7 @@ class Session:
             location_tuple = await self.trainer.get_location()
             current_zone = await world.get_zone(location_tuple[1])
 
-            _map = f"```\nYou are currently in {current_zone}. From here, you can get to the following locations:\n"
+            _map = f"<@!{message.author.id}> You are currently in {current_zone}. From here, you can get to the following locations:\n```\n"
             for linked_zone_id in current_zone.links:
                 zone = await world.get_zone(linked_zone_id)
                 _map += f"   {zone}\n"
@@ -181,11 +184,14 @@ class Session:
         if match_obj:
             self.log.info(match_obj.groups())
             # Check for valid states that we can stop from
-            valid_stopable_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
-                                     TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.TRADING,
-                                     TS.SHOPPING, TS.SOMEONES_PC]
-            if TS(self.trainer.state) in valid_stopable_states:
+            valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
+                                       TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.TRADING,
+                                       TS.SHOPPING, TS.SOMEONES_PC]
+            if TS(self.trainer.state) in valid_transition_states:
                 self.trainer.state = TS.IDLE
+                await self.trainer.save()
+                msg = f"<@!{message.author.id}> You stop and wait."
+                await self.client.send_message(message.channel, msg)
                 # TODO: This is an ugly ugly hack, we need to cleanup everything else
                 # that MIGHT be going on first!
 
@@ -195,11 +201,13 @@ class Session:
         if match_obj:
             self.log.info(match_obj.groups())
             # Check for valid states that we can stop from
-            valid_stopable_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
-                                     TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.TRADING,
-                                     TS.SHOPPING, TS.SOMEONES_PC]
-            if TS(self.trainer.state) in valid_stopable_states:
-                self.trainer.state = TS.IDLE
+            valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
+                                       TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.TRADING,
+                                       TS.SHOPPING, TS.SOMEONES_PC]
+            if TS(self.trainer.state) in valid_transition_states:
+                msg = f"<@!{message.author.id}> You cannot do that right now! This command doesn't work!"
+                await self.client.send_message(message.channel, msg)
+
                 # TODO: This is an ugly ugly hack, we need to cleanup everything else
                 # that MIGHT be going on first!
 
@@ -210,8 +218,11 @@ class Session:
             self.log.info(match_obj.groups())
 
             # Can we walk?
-            if self.trainer.state not in [TS.IDLE, ]:
-                msg = f"You cannot do that right now! You are {TS(self.trainer.state).name}"
+            valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
+                                       TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.SHOPPING, 
+                                       TS.SOMEONES_PC]
+            if self.trainer.state not in valid_transition_states:
+                msg = f"<@!{message.author.id}> You cannot do that right now! You are {TS(self.trainer.state).name}!"
                 await self.client.send_message(message.channel, msg)
                 return
 
@@ -226,7 +237,7 @@ class Session:
                 zone = await world.get_zone(linked_zone_id)
                 linked_zones.append(zone)
 
-            prompt_question = f"You are in {current_zone}. Which zone do you want to travel too?"
+            prompt_question = f"<@!{message.author.id}> You are in {current_zone}. Which zone do you want to travel too?"
             prompt_list = linked_zones
             selection = await self.client.select_prompt(message.channel,
                                                         prompt_question,
@@ -245,7 +256,7 @@ class Session:
             await self.trainer.save()
 
             await self.client.send_message(message.channel,
-                                           f"<@!{message.author.id}> began to walk to {linked_zones[selection]}"
+                                           f"<@!{message.author.id}> You begin to walk to {linked_zones[selection]}"
                                            )
             return
 
