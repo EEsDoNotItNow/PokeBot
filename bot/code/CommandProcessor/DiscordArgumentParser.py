@@ -4,7 +4,7 @@ import argparse
 import io
 
 from ..Log import Log
-
+from .exceptions import NoValidCommands, HelpNeeded
 
 
 class DiscordArgumentParser(argparse.ArgumentParser):
@@ -23,10 +23,10 @@ class DiscordArgumentParser(argparse.ArgumentParser):
     #     return None
 
     def error(self, message):
-        Log().info(type(message))
+        # Log().info(type(message))
         if message.startswith("invalid choice:"):
             # This isn't a valid command, just continue
-            raise ValueError(message)
+            raise NoValidCommands(message)
         else:
-            raise TypeError(message)
+            raise HelpNeeded(message)
         return

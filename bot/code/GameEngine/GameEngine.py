@@ -4,6 +4,7 @@ import shlex
 
 from ..Client import Client
 from ..CommandProcessor import DiscordArgumentParser
+from ..CommandProcessor.exceptions import NoValidCommands, HelpNeeded
 from ..Log import Log
 from ..Player import League
 from ..Session import SessionManager
@@ -50,26 +51,30 @@ class GameEngine:
         """
         parser = DiscordArgumentParser(description="A Test Command", prog="", add_help=False)
         parser.set_defaults(message=message)
-        sub_parsers = parser.add_subparsers()
+        sp = parser.add_subparsers()
 
-        sub_parser = sub_parsers.add_parser('>register',
-                                            description='Register self with the Pokemon League',
-                                            add_help=True)
+
+        sub_parser = sp.add_parser('>register',
+                                   description='Register self with the Pokemon League',
+                                   add_help=True)
         sub_parser.set_defaults(subCMD='>register',
                                 cmd=self._cmd_register)
 
-        sub_parser = sub_parsers.add_parser('>deregister',
-                                            description='Deregister self with the Pokemon League')
+
+        sub_parser = sp.add_parser('>deregister',
+                                   description='Deregister self with the Pokemon League')
         sub_parser.set_defaults(subCMD='>deregister',
                                 cmd=self._cmd_deregister)
 
-        sub_parser = sub_parsers.add_parser('>spawn',
-                                            description="Spawn a random Poke")
+
+        sub_parser = sp.add_parser('>spawn',
+                                   description="Spawn a random Poke")
         sub_parser.set_defaults(subCMD='>spawn',
                                 cmd=self._cmd_spawn)
 
-        sub_parser = sub_parsers.add_parser('>emojidecode',
-                                            description="Decode an emoji")
+
+        sub_parser = sp.add_parser('>emojidecode',
+                                   description="Decode an emoji")
         sub_parser.add_argument("emoji", nargs='+')
         sub_parser.set_defaults(subCMD='>emojidecode',
                                 cmd=self._cmd_emojidecode)
@@ -91,11 +96,11 @@ class GameEngine:
                 msg = "Well that's funny, I don't know wha to do!"
                 await self.client.send_message(message.channel, msg)
                 return
-        except ValueError as e:
+        except NoValidCommands as e:
             # We didn't get a subcommand, let someone else deal with this mess!
             self.log.error("???")
             pass
-        except TypeError as e:
+        except HelpNeeded as e:
             self.log.info("TypeError Return")
             self.log.info(e)
             msg = f"{e}. You can add `-h` or `--help` to any command to get help!"
