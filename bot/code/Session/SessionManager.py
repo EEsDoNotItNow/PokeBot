@@ -34,7 +34,7 @@ class SessionManager(metaclass=Singleton):
         """
         while 1:
             await asyncio.sleep(15)
-            self.log.info("Tick")
+            self.log.debug("Tick")
             for session in self.sessions:
                 await session.tick()
 
