@@ -5,6 +5,7 @@ from ..Client import Client
 from ..Log import Log
 from ..Player import League
 from ..Singleton import Singleton
+from ..StateMachines import NewPlayerStateMachine
 
 from .Session import Session
 
@@ -33,7 +34,7 @@ class SessionManager(metaclass=Singleton):
         """
         while 1:
             await asyncio.sleep(15)
-            self.log.debug("Tick")
+            self.log.info("Tick")
             for session in self.sessions:
                 await session.tick()
 
@@ -60,6 +61,29 @@ class SessionManager(metaclass=Singleton):
         await session.command_proc(message)
 
         return
+
+
+    async def delete_session(self, message):
+
+        trainers = await League().get_trainer(message.author.id)
+
+        if trainers is None:
+            await self.client.send_message(message.channel,
+                                           "I'm sorry, I don't seem to have you marked as a trainer! "
+                                           "Perhaps you need to `>register`?")
+            return False
+
+        # Lookup Trainer
+        # We don't always know if we have a server ID, so just lookup everyone and we will find the only active session
+
+        for trainer in trainers:
+            for session in self.sessions:
+                if session.trainer == trainer:
+                    self.log.info(f"Deleted session {session}")
+                    self.sessions.remove(session)
+                    del session
+                    return True
+        return False
 
 
     async def get_session(self, message):
@@ -90,3 +114,22 @@ class SessionManager(metaclass=Singleton):
             self.sessions.append(session)
             return session
         pass
+
+
+    async def spawn_registration_session(self, message):
+        # Create a basic trainer object
+
+        trainer = await League().get_trainer(message.author.id, message.server.id)
+        if trainer is not None:
+            await self.client.send_message(message.channel, "Error, I cannot re-register you!")
+            return
+
+        # We are good to register them!
+        trainer = await League().register(message.author.id, message.server.id)
+
+        # I assume that we do not have an active session already, as this player isn't registered.
+        session = Session(trainer)
+        session.state_machine = NewPlayerStateMachine(trainer)
+        self.sessions.append(session)
+
+        return

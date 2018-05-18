@@ -82,6 +82,7 @@ class GameEngine:
         try:
             self.log.info("Parse Arguments")
             results = parser.parse_args(shlex.split(message.content))
+            self.log.info(results)
             if type(results) == str:
                 self.log.info("Got normal return, printing and returning")
                 self.log.info(type(results))
@@ -115,32 +116,22 @@ class GameEngine:
 
 
     async def _cmd_register(self, message):
-        # Create a basic trainer object
         if message.server is None:
             await self.client.send_message(message.channel,
                                            "Sorry, you must register in a server! I cannot register you over DMs!")
-            return
-
-        trainer = await League().get_trainer(message.author.id, message.server.id)
-        if trainer is not None:
-            await self.client.send_message(message.channel, "Error, I cannot re-register you!")
-            return
-
-        # We are good to register them!
-        trainer = await League().register(message.author.id, message.server.id)
-
-        em = await trainer.get_trainer_card()
-        # await self.client.send_message(message.channel, f"Registered: {trainer}")
-
-        await self.client.send_message(message.channel, embed=em)
-
+        self.log.info("Spawn a player registration.")
+        await self.session_manager.spawn_registration_session(message)
+        self.log.info("Fin spawn a player registration.")
         return
 
 
     async def _cmd_deregister(self, message):
         # Create a basic trainer object
+        await self.session_manager.delecte_session(message)
         result = await League().deregister(message.author.id, message.server.id)
         if result:
+            # Remove any sessions with this trainer.
+
             await self.client.send_message(message.channel,
                                            f"The Discord League is sorry to see you go, <@!{message.author.id}>")  # noqa: E501
         else:

@@ -37,6 +37,9 @@ class Session:
         self.last_command = datetime.datetime.now()
         self.processing_command = False
 
+        # State Machines handle odd events like battles, player creation, etc
+        self.state_machine = None
+
 
     def __repr__(self):
         return f"Session({self.session_uuid})"
@@ -54,6 +57,18 @@ class Session:
             return
 
         self.log.debug(f"Session {self.session_uuid}, ticking.")
+
+        if self.state_machine is not None:
+            self.log.debug("Found a state machine")
+            if not self.state_machine.started:
+                self.log.debug("Run it.")
+                await self.state_machine.run()
+            if not self.state_machine.alive:
+                self.log.debug("Machine dead, prune it")
+                self.state_machine = None
+            else:
+                self.log.debug("Tick it.")
+                await self.state_machine.tick()
 
         await self.trainer.tick()
 
