@@ -314,7 +314,7 @@ class Client(discord.Client):
                 await module.on_voice_state_update(before, after)
 
 
-    async def confirm_prompt(self, channel, prompt, user=None, timeout=20, prompt_set=0, clean_up=True):
+    async def confirm_prompt(self, channel, prompt, user=None, timeout=30, prompt_set=0, clean_up=True):
         """ Prompt user with Yes/No reactions
         @param message_target (discord.channel): Channel/DM Object
         @param message (str): Message to post
@@ -401,6 +401,7 @@ class Client(discord.Client):
         @param timeout (int/float): Seconds to wait for user response
         @param clean_up: Should we cleanup after
 
+        @throws TimeoutError If no response is given it time.
         """
         digits = [b'1\xe2\x83\xa3',
                   b'2\xe2\x83\xa3',
