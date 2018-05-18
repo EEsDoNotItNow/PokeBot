@@ -81,7 +81,7 @@ class Session:
         """
         parser = DiscordArgumentParser(description="Session Command Processor", prog="")
         parser.set_defaults(message=message)
-        sps = parser.add_subparsers(title="commands", dest="subCMD")
+        sps = parser.add_subparsers(title="commands")
 
 
         sp = sps.add_parser('>status',
@@ -89,50 +89,59 @@ class Session:
                             aliases=['>s'],
                             prog=">status",
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_status)
+        sp.set_defaults(cmd=self._cmd_status,
+                        subCMD='>status',)
 
 
         sp = sps.add_parser('>card',
                             description='Print your trainer card',
                             aliases=['>trainer'],
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_card)
+        sp.set_defaults(cmd=self._cmd_card,
+                        subCMD='>card',)
 
 
         sp = sps.add_parser('>stats',
                             description='Current game stats (generic)',
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_stats)
+        sp.set_defaults(cmd=self._cmd_stats,
+                        subCMD='>stats',)
 
 
         sp = sps.add_parser('>location',
+                            aliases=['>loc'],
                             description='Show info about this location',
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_location)
+        sp.set_defaults(cmd=self._cmd_location,
+                        subCMD='>location',)
 
 
         sp = sps.add_parser('>map',
                             description='Print the local map',
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_map)
+        sp.set_defaults(cmd=self._cmd_map,
+                        subCMD='>map',)
 
 
         sp = sps.add_parser('>stop',
                             description='Stop what you are doing',
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_stop)
+        sp.set_defaults(cmd=self._cmd_stop,
+                        subCMD='>stop',)
 
 
         sp = sps.add_parser('>find',
                             description='WIP',
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_find)
+        sp.set_defaults(cmd=self._cmd_find,
+                        subCMD='>find',)
 
 
         sp = sps.add_parser('>walk',
                             description='Walk to a zone',
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_walk)
+        sp.set_defaults(cmd=self._cmd_walk,
+                        subCMD='>walk',)
 
 
         try:
