@@ -22,7 +22,7 @@ pipeline {
                 }
                 sh 'python3 --version'
                 sh 'rm poke.db || true'
-                sh 'python3 -m unittest -v'
+                sh './run_unittests.sh'
             }
         }
         stage('Post Analysis') {
