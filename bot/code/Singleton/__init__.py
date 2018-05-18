@@ -1,4 +1,4 @@
 
-from .Singleton import Singleton
+from .Singleton import Singleton, SingletonArgs
 
-__all__ = [Singleton, ]
+__all__ = [Singleton, SingletonArgs]
