@@ -9,4 +9,4 @@ RUN cd /root; mkdir Downloads; cd Downloads ; wget --quiet https://www.python.or
 RUN ls; cd /root/Downloads; ls; tar xvf Python-3.6.5.tgz; ls
 RUN cd /root/Downloads/Python-3.6.5/; ./configure; make -j8; make install
 # RUN ./configure --enable-optimizations
-RUN /usr/local/bin/pip3 install discord python-dateutil numpy flake8 pipenv
+RUN /usr/local/bin/pip3 install discord python-dateutil numpy flake8 nose nose-timer
