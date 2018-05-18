@@ -131,5 +131,7 @@ class SessionManager(metaclass=Singleton):
         session = Session(trainer)
         session.state_machine = NewPlayerStateMachine(trainer)
         self.sessions.append(session)
+        msg = "Your request for registration is in the mail! Please wait 6 to 8 weeks for delivery!"
+        await self.client.send_message(message.channel, msg)
 
         return

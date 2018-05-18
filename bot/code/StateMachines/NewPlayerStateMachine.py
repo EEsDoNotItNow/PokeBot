@@ -51,6 +51,9 @@ class NewPlayerStateMachine(BaseStateMachine):
         msg = "Welcome to the Pokemon League!"
         await self.client.send_message(channel, msg)
 
+        prompt = f"Are you ready to begin?"
+        response = await self.client.confirm_prompt(channel, prompt, user=user, timeout=60 * 5, clean_up=False)
+
         await asyncio.sleep(1)
         await self.client.send_typing(channel)
         await asyncio.sleep(3)

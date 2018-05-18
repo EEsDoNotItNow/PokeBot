@@ -491,7 +491,7 @@ class Client(discord.Client):
             timeout=timeout)
 
         if msg_obj is None:
-            return None
+            raise TimeoutError()
         if msg_obj.content == "STOP":
             return False
 
