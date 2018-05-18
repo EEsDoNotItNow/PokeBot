@@ -29,6 +29,8 @@ class Trainer:
         self.user_id = user_id
         self.server_id = server_id
 
+        self.party = []
+
         self.current_zone_id = None
         self.current_building_id = None
         self.current_region_id = None
