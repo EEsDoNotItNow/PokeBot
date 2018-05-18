@@ -79,65 +79,60 @@ class Session:
     async def _command_proc(self, message):
         """Player in a session has issued a command, handle it.
         """
-        parser = DiscordArgumentParser(description="Session Command Processor", prog="", add_help=False)
+        parser = DiscordArgumentParser(description="Session Command Processor", prog="")
         parser.set_defaults(message=message)
-        sps = parser.add_subparsers()
+        sps = parser.add_subparsers(title="commands", dest="subCMD")
 
 
         sp = sps.add_parser('>status',
                             description='Current game status (generic)',
+                            aliases=['>s'],
+                            prog=">status",
                             add_help=True)
-        sp.set_defaults(subCMD='>status',
-                        cmd=self._cmd_status)
+        sp.set_defaults(cmd=self._cmd_status)
 
 
         sp = sps.add_parser('>card',
-                            description='Current game card (generic)',
+                            description='Print your trainer card',
+                            aliases=['>trainer'],
                             add_help=True)
-        sp.set_defaults(subCMD='>card',
-                        cmd=self._cmd_card)
+        sp.set_defaults(cmd=self._cmd_card)
 
 
         sp = sps.add_parser('>stats',
                             description='Current game stats (generic)',
                             add_help=True)
-        sp.set_defaults(subCMD='>stats',
-                        cmd=self._cmd_stats)
+        sp.set_defaults(cmd=self._cmd_stats)
 
 
         sp = sps.add_parser('>location',
-                            description='Current game location (generic)',
+                            description='Show info about this location',
                             add_help=True)
-        sp.set_defaults(subCMD='>location',
-                        cmd=self._cmd_location)
+        sp.set_defaults(cmd=self._cmd_location)
 
 
         sp = sps.add_parser('>map',
-                            description='Current game map (generic)',
+                            description='Print the local map',
                             add_help=True)
-        sp.set_defaults(subCMD='>map',
-                        cmd=self._cmd_map)
+        sp.set_defaults(cmd=self._cmd_map)
 
 
         sp = sps.add_parser('>stop',
-                            description='Current game stop (generic)',
+                            description='Stop what you are doing',
                             add_help=True)
-        sp.set_defaults(subCMD='>stop',
-                        cmd=self._cmd_stop)
+        sp.set_defaults(cmd=self._cmd_stop)
 
 
         sp = sps.add_parser('>find',
-                            description='Current game find (generic)',
+                            description='WIP',
                             add_help=True)
-        sp.set_defaults(subCMD='>find',
-                        cmd=self._cmd_find)
+        sp.set_defaults(cmd=self._cmd_find)
 
 
         sp = sps.add_parser('>walk',
-                            description='Current game walk (generic)',
+                            description='Walk to a zone',
                             add_help=True)
-        sp.set_defaults(subCMD='>walk',
-                        cmd=self._cmd_walk)
+        sp.set_defaults(cmd=self._cmd_walk)
 
 
         try:
@@ -148,6 +143,7 @@ class Session:
                 return
             elif hasattr(results, 'cmd'):
                 # await self.client.send_message(message.channel, results)
+                self.log.info(results)
                 await results.cmd(message)
                 return
             else:
@@ -160,12 +156,10 @@ class Session:
             self.log.error("???")
             pass
         except HelpNeeded as e:
-            self.log.info("TypeError Return")
-            self.log.info(e)
-            msg = f"{e}. You can add `-h` or `--help` to any command to get help!"
+            self.log.warning(f"Saw bad user input: {message.content}. Notifying user of '{e}'.")
+            msg = f"{e}. You can add `-h` or `--help` to any command to get more help!"
             await self.client.send_message(message.channel, msg)
             return
-            pass
 
         # Information printing commands can always be run
         self.log.warning(f"Saw a command ({message.content}), which did not match any current commands.")
