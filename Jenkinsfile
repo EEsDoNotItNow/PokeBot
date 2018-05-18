@@ -22,6 +22,7 @@ pipeline {
                 }
                 sh 'python3 --version'
                 sh 'rm poke.db || true'
+                sh 'ls -la'
                 sh 'run_unittests.sh'
             }
         }
