@@ -278,3 +278,11 @@ class Monster(Pokemon):
             pass
         elif amount is None:
             self.hp_current = self.hp
+
+
+    async def capture(self, trainer_id):
+        """Capture a pokemon. This will register it to the player, and attempt to find a place it the party for it.
+
+        @param trainer_id Trainer that captured this poke. 
+        """
+        raise NotImplementedError()
