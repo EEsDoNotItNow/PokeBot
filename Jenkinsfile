@@ -22,9 +22,6 @@ pipeline {
                 }
                 sh 'python3 --version'
                 sh 'rm poke.db || true'
-                sh 'ls -la'
-                echo "$USER"
-                sh 'pwd'
                 sh './run_unittests.sh'
             }
         }
