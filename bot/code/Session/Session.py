@@ -1,12 +1,14 @@
 
 import datetime
-import re
+import shlex
 import uuid
 
 from ..Client import Client
+from ..CommandProcessor import DiscordArgumentParser
+from ..CommandProcessor.exceptions import NoValidCommands, HelpNeeded
 from ..Log import Log
-from ..SQL import SQL
 from ..Player import TrainerStates as TS
+from ..SQL import SQL
 from ..World import World
 
 
@@ -77,190 +79,276 @@ class Session:
     async def _command_proc(self, message):
         """Player in a session has issued a command, handle it.
         """
+        parser = DiscordArgumentParser(description="Session Command Processor", prog="", add_help=False)
+        parser.set_defaults(message=message)
+        sps = parser.add_subparsers()
 
-        # Information printing commands can always be run
 
-        match_obj = re.match("> ?s(?:tatus)?$", message.content)
-        if match_obj:
+        sp = sps.add_parser('>status',
+                            description='Current game status (generic)',
+                            add_help=True)
+        sp.set_defaults(subCMD='>status',
+                        cmd=self._cmd_status)
 
-            if self.trainer.state == TS.WALKING:
-                # Safe to update, lets see where we are!
-                await self.trainer.tick()
-                msg = f"<@!{message.author.id}> You are walking!"\
-                    " You have about {self.trainer.destination_distance:,.0f} to go!"
 
-            elif self.trainer.state == TS.WALKING_IN_GRASS:
-                # Safe to update, lets see where we are!
-                await self.trainer.tick()
-                msg = f"<@!{message.author.id}> You are looking for local Pokemon. Good luck!"
+        sp = sps.add_parser('>card',
+                            description='Current game card (generic)',
+                            add_help=True)
+        sp.set_defaults(subCMD='>card',
+                        cmd=self._cmd_card)
 
-            elif self.trainer.state == TS.IDLE:
-                msg = f"<@!{message.author.id}> You are *Idle*. Maybe you could try `>walk`?"
 
+        sp = sps.add_parser('>stats',
+                            description='Current game stats (generic)',
+                            add_help=True)
+        sp.set_defaults(subCMD='>stats',
+                        cmd=self._cmd_stats)
+
+
+        sp = sps.add_parser('>location',
+                            description='Current game location (generic)',
+                            add_help=True)
+        sp.set_defaults(subCMD='>location',
+                        cmd=self._cmd_location)
+
+
+        sp = sps.add_parser('>map',
+                            description='Current game map (generic)',
+                            add_help=True)
+        sp.set_defaults(subCMD='>map',
+                        cmd=self._cmd_map)
+
+
+        sp = sps.add_parser('>stop',
+                            description='Current game stop (generic)',
+                            add_help=True)
+        sp.set_defaults(subCMD='>stop',
+                        cmd=self._cmd_stop)
+
+
+        sp = sps.add_parser('>find',
+                            description='Current game find (generic)',
+                            add_help=True)
+        sp.set_defaults(subCMD='>find',
+                        cmd=self._cmd_find)
+
+
+        sp = sps.add_parser('>walk',
+                            description='Current game walk (generic)',
+                            add_help=True)
+        sp.set_defaults(subCMD='>walk',
+                        cmd=self._cmd_walk)
+
+
+        try:
+            self.log.info("Parse Arguments")
+            results = parser.parse_args(shlex.split(message.content))
+            if type(results) == str:
+                await self.client.send_message(message.channel, results)
+                return
+            elif hasattr(results, 'cmd'):
+                # await self.client.send_message(message.channel, results)
+                await results.cmd(message)
+                return
             else:
-                msg = f"<@!{message.author.id}> You are in a state I don't know about yet!"\
-                    f" Please file a bug report! State: {TS(self.trainer.state).name}"
-
-
-            await self.client.send_message(message.channel,
-                                           msg)
-
-            self.log.info("Command Complete")
-            return
-
-        match_obj = \
-            re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?$", message.content) or \
-            re.match("> ?trainer( <@!?(?P<mention>[0-9]+)>)?$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            self.log.info(match_obj.group('mention'))
-
-            await self.client.send_message(message.channel, embed=await self.trainer.em())
-
-            return
-
-        match_obj = re.match("> ?stat(?:s)?$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-
-            cur = self.sql.cur
-
-            cmd = f"SELECT * FROM trainer_stats WHERE trainer_id=:trainer_id"
-            values = cur.execute(cmd, self.trainer.__dict__).fetchone()
-
-            msg = "<@!{message.author.id}> \n```\n"
-            msg += f"Steps Taken: {values['steps_taken']:,d}\n"
-            msg += "```"
-
-            await self.client.send_message(message.channel, msg)
-
-            return
-
-        match_obj = re.match("> ?loc(?:ation)?$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            location_tuple = await self.trainer.get_location()
-            current_zone = await World().get_zone(location_tuple[1])
-            await self.client.send_message(message.channel,
-                                           f"<@!{message.author.id}> You are in {current_zone}"
-                                           )
-
-            return
-
-        match_obj = re.match("> ?map$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            world = World()
-            location_tuple = await self.trainer.get_location()
-            current_zone = await world.get_zone(location_tuple[1])
-
-            _map = f"<@!{message.author.id}> You are currently in {current_zone}."\
-                " From here, you can get to the following locations:\n```\n"
-            for linked_zone_id in current_zone.links:
-                zone = await world.get_zone(linked_zone_id)
-                _map += f"   {zone}\n"
-            _map += "```"
-            await self.client.send_message(message.channel, _map)
-
-            return
-
-        match_obj = re.match("> ?worldmap$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            location_tuple = await self.trainer.get_location()
-
-            await self.client.send_message(message.channel, "This feature isn't implemented yet!")
-
-            return
-
-        match_obj = re.match("> ?regionmap$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            location_tuple = await self.trainer.get_location()
-
-            await self.client.send_message(message.channel, "This feature isn't implemented yet!")
-
-            return
-
-        match_obj = re.match("> ?stop$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            # Check for valid states that we can stop from
-            valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
-                                       TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.TRADING,
-                                       TS.SHOPPING, TS.SOMEONES_PC]
-            if TS(self.trainer.state) in valid_transition_states:
-                self.trainer.state = TS.IDLE
-                await self.trainer.save()
-                msg = f"<@!{message.author.id}> You stop and wait."
-                await self.client.send_message(message.channel, msg)
-                # TODO: This is an ugly ugly hack, we need to cleanup everything else
-                # that MIGHT be going on first!
-
-            return
-
-        match_obj = re.match("> ?find$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-            # Check for valid states that we can stop from
-            valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
-                                       TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.TRADING,
-                                       TS.SHOPPING, TS.SOMEONES_PC]
-            if TS(self.trainer.state) in valid_transition_states:
-                msg = f"<@!{message.author.id}> You cannot do that right now! This command doesn't work!"
-                await self.client.send_message(message.channel, msg)
-
-                # TODO: This is an ugly ugly hack, we need to cleanup everything else
-                # that MIGHT be going on first!
-
-            return
-
-        match_obj = re.match("> ?walk$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
-
-            # Can we walk?
-            valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
-                                       TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.SHOPPING,
-                                       TS.SOMEONES_PC]
-            if self.trainer.state not in valid_transition_states:
-                msg = f"<@!{message.author.id}> You cannot do that right now! You are {TS(self.trainer.state).name}!"
+                await self.client.send_message(message.channel, results)
+                msg = "Well that's funny, I don't know wha to do!"
                 await self.client.send_message(message.channel, msg)
                 return
+        except NoValidCommands as e:
+            # We didn't get a subcommand, let someone else deal with this mess!
+            self.log.error("???")
+            pass
+        except HelpNeeded as e:
+            self.log.info("TypeError Return")
+            self.log.info(e)
+            msg = f"{e}. You can add `-h` or `--help` to any command to get help!"
+            await self.client.send_message(message.channel, msg)
+            return
+            pass
 
-            world = World()
-            location_tuple = await self.trainer.get_location()
-            current_zone = await world.get_zone(location_tuple[1])
+        # Information printing commands can always be run
+        self.log.warning(f"Saw a command ({message.content}), which did not match any current commands.")
+        return
 
-            linked_zone_ids = [None, ]
-            linked_zones = ["Find Pokemon"]
-            for linked_zone_id in current_zone.links:
-                linked_zone_ids.append(linked_zone_id)
-                zone = await world.get_zone(linked_zone_id)
-                linked_zones.append(zone)
 
-            prompt_question = f"<@!{message.author.id}> You are in {current_zone}."\
-                " Which zone do you want to travel too?"
-            prompt_list = linked_zones
-            selection = await self.client.select_prompt(message.channel,
-                                                        prompt_question,
-                                                        prompt_list,
-                                                        user=message.author,
-                                                        timeout=30,
-                                                        clean_up=False)
+    async def _cmd_status(self, message):
+        # TODO: STatus
 
-            if selection == 0:
-                self.trainer.state = TS.WALKING_IN_GRASS
-            else:
-                self.trainer.destination_zone_id = linked_zone_ids[selection]
-                self.trainer.destination_distance = current_zone.links[linked_zone_ids[selection]]
-                self.trainer.state = TS.WALKING
-            self.log.info("Begin walking!")
+        if self.trainer.state == TS.WALKING:
+            # Safe to update, lets see where we are!
+            await self.trainer.tick()
+            msg = f"<@!{message.author.id}> You are walking!"\
+                " You have about {self.trainer.destination_distance:,.0f} to go!"
+
+        elif self.trainer.state == TS.WALKING_IN_GRASS:
+            # Safe to update, lets see where we are!
+            await self.trainer.tick()
+            msg = f"<@!{message.author.id}> You are looking for local Pokemon. Good luck!"
+
+        elif self.trainer.state == TS.IDLE:
+            msg = f"<@!{message.author.id}> You are *Idle*. Maybe you could try `>walk`?"
+
+        else:
+            msg = f"<@!{message.author.id}> You are in a state I don't know about yet!"\
+                f" Please file a bug report! State: {TS(self.trainer.state).name}"
+
+
+        await self.client.send_message(message.channel,
+                                       msg)
+
+        self.log.info("Command Complete")
+        return
+
+
+    async def _cmd_card(self, message):
+        # re.match("> ?card( <@!?(?P<mention>[0-9]+)>)?$", message.content) or \
+        # re.match("> ?trainer( <@!?(?P<mention>[0-9]+)>)?$", message.content)
+
+        await self.client.send_message(message.channel, embed=await self.trainer.em())
+
+        return
+
+
+    async def _cmd_stats(self, message):
+        # match_obj = re.match("> ?stat(?:s)?$", message.content)
+
+        cur = self.sql.cur
+
+        cmd = f"SELECT * FROM trainer_stats WHERE trainer_id=:trainer_id"
+        values = cur.execute(cmd, self.trainer.__dict__).fetchone()
+
+        msg = "<@!{message.author.id}> \n```\n"
+        msg += f"Steps Taken: {values['steps_taken']:,d}\n"
+        msg += "```"
+
+        await self.client.send_message(message.channel, msg)
+
+        return
+
+
+    async def _cmd_location(self, message):
+        # match_obj = re.match("> ?loc(?:ation)?$", message.content)
+        location_tuple = await self.trainer.get_location()
+        current_zone = await World().get_zone(location_tuple[1])
+        await self.client.send_message(message.channel,
+                                       f"<@!{message.author.id}> You are in {current_zone}"
+                                       )
+
+        return
+
+
+    async def _cmd_map(self, message):
+        # match_obj = re.match("> ?map$", message.content)
+        world = World()
+        location_tuple = await self.trainer.get_location()
+        current_zone = await world.get_zone(location_tuple[1])
+
+        _map = f"<@!{message.author.id}> You are currently in {current_zone}."\
+            " From here, you can get to the following locations:\n```\n"
+        for linked_zone_id in current_zone.links:
+            zone = await world.get_zone(linked_zone_id)
+            _map += f"   {zone}\n"
+        _map += "```"
+        await self.client.send_message(message.channel, _map)
+
+        return
+
+
+    async def _cmd_worldmap(self, message):
+        # match_obj = re.match("> ?worldmap$", message.content)
+        # location_tuple = await self.trainer.get_location()
+
+        await self.client.send_message(message.channel, "This feature isn't implemented yet!")
+
+        return
+
+
+    async def _cmd_regionmap(self, message):
+        # match_obj = re.match("> ?regionmap$", message.content)
+        # location_tuple = await self.trainer.get_location()
+
+        await self.client.send_message(message.channel, "This feature isn't implemented yet!")
+
+        return
+
+
+    async def _cmd_stop(self, message):
+        # match_obj = re.match("> ?stop$", message.content)
+        # Check for valid states that we can stop from
+        valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
+                                   TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.TRADING,
+                                   TS.SHOPPING, TS.SOMEONES_PC]
+        if TS(self.trainer.state) in valid_transition_states:
+            self.trainer.state = TS.IDLE
             await self.trainer.save()
+            msg = f"<@!{message.author.id}> You stop and wait."
+            await self.client.send_message(message.channel, msg)
+            # TODO: This is an ugly ugly hack, we need to cleanup everything else
+            # that MIGHT be going on first!
 
-            await self.client.send_message(message.channel,
-                                           f"<@!{message.author.id}> You begin to walk to {linked_zones[selection]}"
-                                           )
+        return
+
+
+    async def _cmd_find(self, message):
+        # match_obj = re.match("> ?find$", message.content)
+
+        # Check for valid states that we can stop from
+        valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
+                                   TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.TRADING,
+                                   TS.SHOPPING, TS.SOMEONES_PC]
+        if TS(self.trainer.state) in valid_transition_states:
+            msg = f"<@!{message.author.id}> You cannot do that right now! This command doesn't work!"
+            await self.client.send_message(message.channel, msg)
+
+            # TODO: This is an ugly ugly hack, we need to cleanup everything else
+            # that MIGHT be going on first!
+
+        return
+
+
+    async def _cmd_walk(self, message):
+        # match_obj = re.match("> ?walk$", message.content)
+        # Can we walk?
+        valid_transition_states = [TS.IDLE, TS.BREEDING, TS.HATCHING, TS.RESTING, TS.TRAINING, TS.WORKING,
+                                   TS.WALKING, TS.WALKING_IN_GRASS, TS.BIKING, TS.RUNNING, TS.SHOPPING,
+                                   TS.SOMEONES_PC]
+        if self.trainer.state not in valid_transition_states:
+            msg = f"<@!{message.author.id}> You cannot do that right now! You are {TS(self.trainer.state).name}!"
+            await self.client.send_message(message.channel, msg)
             return
 
-        self.log.warning(f"Saw a command ({message.content}), which did not match any current commands.")
+        world = World()
+        location_tuple = await self.trainer.get_location()
+        current_zone = await world.get_zone(location_tuple[1])
+
+        linked_zone_ids = [None, ]
+        linked_zones = ["Find Pokemon"]
+        for linked_zone_id in current_zone.links:
+            linked_zone_ids.append(linked_zone_id)
+            zone = await world.get_zone(linked_zone_id)
+            linked_zones.append(zone)
+
+        prompt_question = f"<@!{message.author.id}> You are in {current_zone}."\
+            " Which zone do you want to travel too?"
+        prompt_list = linked_zones
+        selection = await self.client.select_prompt(message.channel,
+                                                    prompt_question,
+                                                    prompt_list,
+                                                    user=message.author,
+                                                    timeout=30,
+                                                    clean_up=False)
+
+        if selection == 0:
+            self.trainer.state = TS.WALKING_IN_GRASS
+        else:
+            self.trainer.destination_zone_id = linked_zone_ids[selection]
+            self.trainer.destination_distance = current_zone.links[linked_zone_ids[selection]]
+            self.trainer.state = TS.WALKING
+        self.log.info("Begin walking!")
+        await self.trainer.save()
+
+        await self.client.send_message(message.channel,
+                                       f"<@!{message.author.id}> You begin to walk to {linked_zones[selection]}"
+                                       )
+        return
