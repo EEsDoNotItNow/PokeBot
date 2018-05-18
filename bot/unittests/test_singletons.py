@@ -1,13 +1,21 @@
 
 import unittest
 
-from ..code.Singleton import SingletonArgs
+from ..code.Singleton import Singleton, SingletonArgs
 
-class Basic(unittest.TestCase):
+
+
+class TestSingletons(unittest.TestCase):
+
+
+    def test_simple_singleton_like(self):
+        class A(object, metaclass=SingletonArgs):
+            FOO = 'bar'
+        assert A() is A()
 
 
     def test_simple_singleton(self):
-        class A(object, metaclass=SingletonArgs):
+        class A(object, metaclass=Singleton):
             FOO = 'bar'
         assert A() is A()
 
