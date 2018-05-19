@@ -37,6 +37,7 @@ class Party:
     async def load(self):
         """Load pokes from DB
         """
+        
         pass
 
 
