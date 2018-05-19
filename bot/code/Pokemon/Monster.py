@@ -16,7 +16,7 @@ class Monster(Pokemon):
 
 
     def __init__(self, monster_id=None, pokemon_id=None):
-        """Create a new Monster (an acutal pokemon in the sim)
+        """Create a new Monster (an actual pokemon in the sim)
 
         @param pokemon_id Id from the pokedex table, stats are based off this value
         @param monster_id if given, load all other values from the DB

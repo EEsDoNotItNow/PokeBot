@@ -73,7 +73,13 @@ class GameEngine:
         sub_parser = sp.add_parser('>spawn',
                                    description="Spawn a random Poke")
         sub_parser.add_argument("pokemon_id", type=int, nargs='?')
-        sub_parser.add_argument("level", type=int, nargs='?')
+        sub_parser.add_argument("level",
+                                type=int,
+                                choices=range(1,101),
+                                metavar="1-100",
+                                help="Level of pokemon to spawn",
+                                default=None,
+                                nargs='?')
         sub_parser.set_defaults(subCMD='>spawn',
                                 cmd=self._cmd_spawn)
 
@@ -156,12 +162,11 @@ class GameEngine:
     async def _cmd_spawn(self, args):
         message = args.message
 
-        if hasattr(args, "pokemon_id"):
-            if hasattr(args, "level"):
+        if hasattr(args, "pokemon_id") and args.pokemon_id is not None:
+            if hasattr(args, "level") and args.level is not None:
                 level = args.level
             else:
                 level = np.random.randint(1, 100)
-            self.log.info(args.pokemon_id)
             poke = await MonsterSpawner().spawn_at_level(args.pokemon_id, level)
         else:
             poke = await MonsterSpawner().spawn_random()
