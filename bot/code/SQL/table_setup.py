@@ -410,7 +410,7 @@ async def table_setup():
 
     log.info("Check to see if zone_connections exists.")
     if not await sql.table_exists("zone_connections"):
-        log.info("Create location table")
+        log.info("Create zone_connections table")
         cur = sql.cur
         cmd = """
             CREATE TABLE zone_connections
@@ -419,6 +419,22 @@ async def table_setup():
                 location_id_2 TEXT NOT NULL,
                 distance_forward REAL DEFAULT NULL,
                 distance_backward REAL DEFAULT NULL
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+        
+
+    log.info("Check to see if experience_lookup exists.")
+    if not await sql.table_exists("experience_lookup"):
+        log.info("Create experience_lookup table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE experience_lookup
+            (
+                growth_rate_id TEXT,
+                level TEXT,
+                experience INTEGER
             )
         """
         cur.execute(cmd)

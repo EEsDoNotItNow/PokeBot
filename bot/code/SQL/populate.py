@@ -569,6 +569,48 @@ async def populate():
         cur.execute(cmd, entry)
     log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")
 
+
+    log.info(f"Must calculate and load experience_lookup rows (600)")
+    t_step = time.time()
+    cur = sql.cur
+
+    def calc_xp(growth_rate_id, level):
+        if level == 1:
+            return 0
+        if growth_rate_id == 1:
+            return 5*level**3/4
+        if growth_rate_id == 2:
+            return 5*level**3/4
+        if growth_rate_id == 3:
+            return 5*level**3/4
+        if growth_rate_id == 4:
+            return 5*level**3/4
+        if growth_rate_id == 5:
+            return 5*level**3/4
+        if growth_rate_id == 6:
+            return 5*level**3/4
+
+
+    for growth_rate_id in [1,2,3,4,5,6]:
+        for level in range(1, 100):
+            # log.info(data[key])
+            experience = int(calc_xp(growth_rate_id, level))
+            cmd = """INSERT INTO experience_lookup
+            (
+                growth_rate_id,
+                level,
+                experience
+            ) VALUES (
+                :growth_rate_id,
+                :level,
+                :experience
+            )"""
+            cur.execute(cmd, locals())
+    log.info(f"experience_lookup loaded in {time.time()-t_step:.3f}s")
+
+
+
+
     log.info(f"SQL Population took {time.time()-t_start_sql:.3f}s")
     log.info(f"Total Population took {time.time()-t_start_csv:.3f}s")
 
