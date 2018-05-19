@@ -57,7 +57,7 @@ class SQL(metaclass=Singleton):
             await populate()
             self.setup_needed = False
 
-        self.log.info("SQL registered to recieve commands!")
+        self.log.info("SQL registered to receive commands!")
 
 
     async def on_message(self, message):
