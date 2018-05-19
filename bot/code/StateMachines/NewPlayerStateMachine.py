@@ -30,12 +30,14 @@ class NewPlayerStateMachine(BaseStateMachine):
         """Run through the player creation process.
         """
         self.started = True
-        self.log.info(f"{self.trainer.trainer_id}  Begin our run")
+        self.log.info(f"{self.trainer.trainer_id} Begin our run of NewPlayerStateMachine")
         try:
             await self._run()
         except Exception:
             self.log.exception(f"{self.trainer.trainer_id} Something went wrong...")
             await League().deregister(self.trainer.user_id, self.trainer.server_id)
+        await self.trainer.save()
+            self.log.exception(f"{self.trainer.trainer_id} Saved status and exited NewPlayerStateMachine")
 
     async def _run(self):
 
@@ -54,6 +56,10 @@ class NewPlayerStateMachine(BaseStateMachine):
         prompt = f"Are you ready to begin?"
         response = await self.client.confirm_prompt(channel, prompt, user=user, timeout=60 * 5, clean_up=False)
         if response is not True:
+            await self.client.send_typing(channel)
+            await asyncio.sleep(4)
+            msg = "`Professor Ironwood`: Okay, if you change you mind, you can try to `>register` again!"
+            await self.client.send_message(channel, msg)
             raise ValueError("User didn't answer that they were ready to go, abort!")
 
         await asyncio.sleep(1.5)
@@ -139,21 +145,18 @@ class NewPlayerStateMachine(BaseStateMachine):
             self.log.info(f"{self.trainer.trainer_id} User selected {prompt_list[selection]},"
                           " but didn't like that selection.")
 
+
         self.log.info(f"{self.trainer.trainer_id} User selected {prompt_list[selection]}.")
-        await asyncio.sleep(1.5)
-        await self.client.send_typing(channel)
-        await asyncio.sleep(2)
-        msg = f"`Professor Ironwood`: Listen, I'm kinda not sure how to give this to you? I'm a bit of a stupid bot"\
-            " right now... Sorry about that..."
-        await self.client.send_message(channel, msg)
+
+        await self.trainer.party.add(poke_list[selection])
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(2)
-        msg = f"`Professor Ironwood`: Either way, I hope you have a good adventure, {name}!"\
-            " (~~God, what a stupid name...~~)"
+        msg = f"`Professor Ironwood`: Here you go! Enjoy your adventures with {poke_list[selection].name}"
         await self.client.send_message(channel, msg)
-        self.log.info(f"{self.trainer.trainer_id} User was insulted and wished on their way.")
+        self.log.info(f"{self.trainer.trainer_id} Was issued their pokemon and saved.")
+
 
         # We are done, die!
         self.alive = False
