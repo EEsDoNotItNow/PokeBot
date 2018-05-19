@@ -56,18 +56,18 @@ class Session:
         if not self.alive:
             return
 
-        self.log.info(f"Session {self.session_uuid}, ticking.")
+        self.log.debug(f"Session {self.session_uuid}, ticking.")
 
         if self.state_machine is not None:
-            self.log.info("Found a state machine")
+            self.log.debug("Found a state machine")
             if not self.state_machine.started:
-                self.log.info("Run it.")
+                self.log.debug("Run it.")
                 await self.state_machine.run()
             if not self.state_machine.alive:
-                self.log.info("Machine dead, prune it")
+                self.log.debug("Machine dead, prune it")
                 self.state_machine = None
             else:
-                self.log.info("Tick it.")
+                self.log.debug("Tick it.")
                 await self.state_machine.tick()
 
         await self.trainer.tick()
