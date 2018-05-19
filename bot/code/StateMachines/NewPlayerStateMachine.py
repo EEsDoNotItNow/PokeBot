@@ -30,17 +30,16 @@ class NewPlayerStateMachine(BaseStateMachine):
         """Run through the player creation process.
         """
         self.started = True
-        self.log.info("Begin our run")
+        self.log.info(f"{self.trainer.trainer_id}  Begin our run")
         try:
             await self._run()
         except Exception:
-            self.log.exception("Something went wrong...")
+            self.log.exception(f"{self.trainer.trainer_id} Something went wrong...")
             await League().deregister(self.trainer.user_id, self.trainer.server_id)
 
     async def _run(self):
 
-        self.log.info("Creating a new player!")
-
+        self.log.info(f"{self.trainer.trainer_id} Creating a new player.")
 
         user = await self.client.get_user_info(self.trainer.user_id)
         await self.client.start_private_message(user)
@@ -49,7 +48,7 @@ class NewPlayerStateMachine(BaseStateMachine):
             if channel.user == user:
                 break
 
-        msg = "Welcome to the Pokemon League!"
+        msg = "`Professor Ironwood`: Hello, and welcome to the Pokemon League!"
         await self.client.send_message(channel, msg)
 
         prompt = f"Are you ready to begin?"
@@ -60,63 +59,65 @@ class NewPlayerStateMachine(BaseStateMachine):
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(4)
-
-        msg = "You are in for such a huge adventure!"
+        msg = "`Professor Ironwood`: You are in for such a huge adventure!"
         await self.client.send_message(channel, msg)
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(4)
-
-        msg = "Before we begin..."
+        msg = "`Professor Ironwood`: Before we begin..."
         await self.client.send_message(channel, msg)
 
+
+        self.log.info(f"{self.trainer.trainer_id} Prompting for a user name.")
         while 1:
             name = await self.client.text_prompt(channel, "What is your name?", user=user)
-            self.log.info(f"Got response of name='{name}'")
+            self.log.info(f"{self.trainer.trainer_id} Got response of name='{name}'")
 
-            prompt = f"You name is {name}, is that right?"
+            prompt = f"You name is '{name}', is that right?"
             response = await self.client.confirm_prompt(channel, prompt, user=user, timeout=30, clean_up=False)
 
             if response:
                 break
+            self.log.info(f"{self.trainer.trainer_id} User rejected with {response}")
 
         self.trainer.nickname = name
+        self.log.info(f"{self.trainer.trainer_id} User selected name of {name}")
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(5)
-        msg = f"Okay {name}, let's get you started!"
+        msg = f"`Professor Ironwood`: Okay {name}, let's get you started!"
         await self.client.send_message(channel, msg)
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(5)
-        msg = "Where did I keep those things?"
+        msg = "`Professor Ironwood`: Where did I keep those things?"
         await self.client.send_message(channel, msg)
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(2)
-        msg = "Up here?"
+        msg = "`Professor Ironwood`: Up here?"
         await self.client.send_message(channel, msg)
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(7)
-        msg = "Nope!"
+        msg = "`Professor Ironwood`: Nope!"
         await self.client.send_message(channel, msg)
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(2)
-        msg = "*Looks at the table*"
+        msg = "`Professor Ironwood`: *Looks at the table*"
         await self.client.send_message(channel, msg)
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(2)
-        msg = f"Right! These guys! Okay, here are your choices {name}!"
+        msg = f"`Professor Ironwood`: Right! These guys! Okay, here are your choices {name}!"
         await self.client.send_message(channel, msg)
 
         poke1 = await MonsterSpawner().spawn_at_level(1, 5)
@@ -127,6 +128,7 @@ class NewPlayerStateMachine(BaseStateMachine):
 
         prompt_list = [x.identifier for x in poke_list]
 
+        self.log.info(f"{self.trainer.trainer_id} Prompting for a Pokemon to use")
         while 1:
             prompt_question = "Which pokemon would you like?"
             selection = await self.client.select_prompt(channel, prompt_question, prompt_list, user=user)
@@ -134,19 +136,24 @@ class NewPlayerStateMachine(BaseStateMachine):
             prompt = f"You wanted {prompt_list[selection]}, is that right?"
             if await self.client.confirm_prompt(channel, prompt, user=user):
                 break
+            self.log.info(f"{self.trainer.trainer_id} User selected {prompt_list[selection]},"
+                          " but didn't like that selection.")
 
+        self.log.info(f"{self.trainer.trainer_id} User selected {prompt_list[selection]}.")
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(2)
-        msg = f"Listen, I'm kinda not sure how to give this to you? I'm a bit of a stupid bot right now..."\
-            " Sorry about that..."
+        msg = f"`Professor Ironwood`: Listen, I'm kinda not sure how to give this to you? I'm a bit of a stupid bot"\
+            " right now... Sorry about that..."
         await self.client.send_message(channel, msg)
 
         await asyncio.sleep(1.5)
         await self.client.send_typing(channel)
         await asyncio.sleep(2)
-        msg = f"Either way, I hope you have a good adventure, {name}! (~~God, what a stupid name...~~)"
+        msg = f"`Professor Ironwood`: Either way, I hope you have a good adventure, {name}!"\
+            " (~~God, what a stupid name...~~)"
         await self.client.send_message(channel, msg)
+        self.log.info(f"{self.trainer.trainer_id} User was insulted and wished on their way.")
 
         # We are done, die!
         self.alive = False

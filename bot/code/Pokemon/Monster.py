@@ -254,7 +254,6 @@ class Monster(Pokemon):
                  WHERE growth_rate_id=:growth_rate_id AND experience<=:xp
                  ORDER BY level
                  DESC LIMIT 1"""
-        self.log.error(f"id: {self.growth_rate_id}, xp: {self.xp}")
         level = self.sql.cur.execute(cmd, self.__dict__).fetchone()['level']
         return int(level)
         # return int(np.floor(self.xp ** (1 / 3)))
