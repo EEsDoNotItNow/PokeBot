@@ -1,4 +1,5 @@
 
+from collections import defaultdict
 import csv
 import time
 import pathlib
@@ -27,22 +28,15 @@ async def ingest_csv(csv_dir):
     # We are unable to guarentee that ALL entries will have all data,
     #   so we load them with default NULLs into the DB
     for entry in raw_dex:
-        pokemon_id = entry['id']
-        dex[pokemon_id] = {}
-        dex[pokemon_id]['gender_rate'] = None
-        dex[pokemon_id]['capture_rate'] = None
-        dex[pokemon_id]['hatch_counter'] = None
-        dex[pokemon_id]['base_happiness'] = None
-        dex[pokemon_id]['type2'] = None
+        dex[entry['id']] = defaultdict(lambda: None)
 
 
     for entry in raw_dex:
         pokemon_id = entry['id']
+        del entry['id']
         dex[pokemon_id]['pokemon_id'] = pokemon_id
-        dex[pokemon_id]['identifier'] = entry['identifier']
-        dex[pokemon_id]['height'] = entry['height']
-        dex[pokemon_id]['weight'] = entry['weight']
-        dex[pokemon_id]['base_xp'] = entry['base_experience']
+        dex[pokemon_id].update(entry)
+
     log.info(f"pokemon loaded in {time.time()-t_step:.3f}s")
 
 
@@ -85,7 +79,8 @@ async def ingest_csv(csv_dir):
     for entry in species_stats:
         entry['pokemon_id'] = entry['id']
         del entry['id']
-        dex[pokemon_id].update(entry)
+        dex[entry['pokemon_id']].update(entry)
+
     log.info(f"pokemon_species loaded in {time.time()-t_step:.3f}s")
 
 
@@ -302,14 +297,28 @@ async def populate():
     t_step = time.time()
     cur = sql.cur
     for key in data['pokedex']:
-        # log.info(data[key])
+        # print(data['pokedex'][key])
         cmd = """INSERT INTO pokedex
         (
             pokemon_id,
             identifier,
+            generation_id,
+            evolves_from_species_id,
+            evolution_chain_id,
+            color_id,
+            shape_id,
+            habitat_id,
+            gender_rate,
+            capture_rate,
+            base_happiness,
+            is_baby,
+            hatch_counter,
+            has_gender_differences,
+            growth_rate_id,
+            forms_switchable,
             height,
             weight,
-            base_xp,
+            base_experience,
             base_hp,
             base_attack,
             base_defense,
@@ -322,17 +331,28 @@ async def populate():
             effort_sp_attack,
             effort_sp_defense,
             effort_speed,
-            gender_rate,
-            capture_rate,
-            hatch_counter,
             type1,
             type2
         ) VALUES (
             :pokemon_id,
             :identifier,
+            :generation_id,
+            :evolves_from_species_id,
+            :evolution_chain_id,
+            :color_id,
+            :shape_id,
+            :habitat_id,
+            :gender_rate,
+            :capture_rate,
+            :base_happiness,
+            :is_baby,
+            :hatch_counter,
+            :has_gender_differences,
+            :growth_rate_id,
+            :forms_switchable,
             :height,
             :weight,
-            :base_xp,
+            :base_experience,
             :base_hp,
             :base_attack,
             :base_defense,
@@ -345,9 +365,6 @@ async def populate():
             :effort_sp_attack,
             :effort_sp_defense,
             :effort_speed,
-            :gender_rate,
-            :capture_rate,
-            :hatch_counter,
             :type1,
             :type2
         )"""
@@ -589,8 +606,6 @@ async def populate():
             return 5 * level**3 / 4
         if growth_rate_id == 6:
             return 5 * level**3 / 4
-
-
     for growth_rate_id in [1, 2, 3, 4, 5, 6]:
         for level in range(1, 101):
             # log.info(data[key])
@@ -607,8 +622,6 @@ async def populate():
             )"""
             cur.execute(cmd, locals())
     log.info(f"experience_lookup loaded in {time.time()-t_step:.3f}s")
-
-
 
 
     log.info(f"SQL Population took {time.time()-t_start_sql:.3f}s")
