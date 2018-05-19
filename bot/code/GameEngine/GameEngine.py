@@ -1,4 +1,5 @@
 
+import numpy as np
 import re
 import shlex
 
@@ -7,6 +8,7 @@ from ..CommandProcessor import DiscordArgumentParser
 from ..CommandProcessor.exceptions import NoValidCommands, HelpNeeded
 from ..Log import Log
 from ..Player import League
+from ..Pokemon import MonsterSpawner
 from ..Session import SessionManager
 
 
@@ -69,6 +71,8 @@ class GameEngine:
 
         sub_parser = sp.add_parser('>spawn',
                                    description="Spawn a random Poke")
+        sub_parser.add_argument("pokemon_id", type=int, nargs='?')
+        sub_parser.add_argument("level", type=int, nargs='?')
         sub_parser.set_defaults(subCMD='>spawn',
                                 cmd=self._cmd_spawn)
 
@@ -90,7 +94,7 @@ class GameEngine:
                 return
             elif hasattr(results, 'cmd'):
                 # await self.client.send_message(message.channel, results)
-                await results.cmd(message)
+                await results.cmd(results)
                 return
             else:
                 await self.client.send_message(message.channel, results)
@@ -115,7 +119,8 @@ class GameEngine:
         return
 
 
-    async def _cmd_register(self, message):
+    async def _cmd_register(self, args):
+        message = args.message
         if message.server is None:
             await self.client.send_message(message.channel,
                                            "Sorry, you must register in a server! I cannot register you over DMs!")
@@ -125,7 +130,8 @@ class GameEngine:
         return
 
 
-    async def _cmd_deregister(self, message):
+    async def _cmd_deregister(self, args):
+        message = args.message
         # Create a basic trainer object
         await self.session_manager.delecte_session(message)
         result = await League().deregister(message.author.id, message.server.id)
@@ -140,19 +146,27 @@ class GameEngine:
         return
 
 
-    async def _cmd_spawn(self, message):
-        from ..Pokemon import MonsterSpawner
+    async def _cmd_spawn(self, args):
+        message = args.message
 
-        poke = await MonsterSpawner().spawn_random()
+        if hasattr(args,"pokemon_id"):
+            if hasattr(args,"level"):
+                level = args.level
+            else:
+                level = np.random.randint(1,100)
+            self.log.info(args.pokemon_id)
+            poke = await MonsterSpawner().spawn_at_level(args.pokemon_id, level)
+        else:        
+            poke = await MonsterSpawner().spawn_random()
 
         await self.client.send_message(message.channel,
                                        embed=await poke.em())
         self.log.info("Finished spawn command")
-
         return
 
 
-    async def _cmd_emojidecode(self, message):
+    async def _cmd_emojidecode(self, args):
+        message = args.message
 
         match_obj = re.match("> ?emojidecode (.*)$", message.content)
         if match_obj:

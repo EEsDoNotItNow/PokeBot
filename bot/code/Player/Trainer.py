@@ -11,6 +11,7 @@ from ..Log import Log
 from ..SQL import SQL
 from ..World import World
 from .States import TrainerStates
+from .Party import Party
 
 
 class Trainer:
@@ -76,6 +77,10 @@ class Trainer:
         values = self.sql.cur.execute(cmd, self.__dict__).fetchone()
         for key in values:
             setattr(self, key, values[key])
+
+        self.party = Party(self.trainer_id)
+        await self.party.load()
+
 
 
     async def save(self, create_ok=False):
@@ -251,10 +256,6 @@ class Trainer:
 
 
     async def em(self):
-        return await self.get_trainer_card()
-
-
-    async def get_trainer_card(self):
         em = discord.Embed()
 
         # server = self.client.get_server(self.server_id)

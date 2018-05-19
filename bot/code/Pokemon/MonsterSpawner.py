@@ -22,16 +22,21 @@ class MonsterSpawner:
         cur = self.sql.cur
 
         if level <= 0 or level > 100:
-            raise ValueError(f"")
-
-        cmd = "SELECT pokemon_id FROM pokedex ORDER BY RANDOM() LIMIT 1"
-        pokemon_id = cur.execute(cmd).fetchone()['pokemon_id']
+            raise ValueError(f"Level value of {level} is illegal")
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
         poke = Monster(pokemon_id)
         await poke.load()
 
+        growth_rate_id = 1
+
         poke.xp = np.random.randint(0, 1e6)
+        # 'SELECT * FROM experience_lookup WHERE growth_rate_id=1 AND experience<=9 ORDER BY level DESC LIMIT 1'
+        cmd = "SELECT experience FROM experience_lookup WHERE growth_rate_id=:growth_rate_id AND level=:level"
+        poke.xp = cur.execute(cmd,locals()).fetchone()['experience']
+
+        self.log.info(cmd)
+        self.log.info(poke.xp)
 
         poke.iv_hp = np.random.randint(0, 31)
         poke.iv_attack = np.random.randint(0, 31)

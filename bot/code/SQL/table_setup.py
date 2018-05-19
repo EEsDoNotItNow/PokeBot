@@ -433,7 +433,7 @@ async def table_setup():
             CREATE TABLE experience_lookup
             (
                 growth_rate_id TEXT,
-                level TEXT,
+                level INTEGER,
                 experience INTEGER
             )
         """
