@@ -36,7 +36,7 @@ class SessionManager(metaclass=Singleton):
             await asyncio.sleep(15)
             self.log.debug("Tick")
             for session in self.sessions:
-                await session.tick()
+                asyncio.ensure_future(session.tick())
 
             pruned_sessions = [x for x in SessionManager.sessions if not x.alive]
             for session in pruned_sessions:
