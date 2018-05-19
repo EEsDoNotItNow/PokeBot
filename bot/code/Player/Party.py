@@ -4,7 +4,7 @@ from ..Pokemon import Monster
 
 
 class Party:
-    """Manage a players pokemon, their interactions, and other such things
+    """Manage a players Monsters, their interactions, and other such things
     """
 
 
@@ -47,18 +47,29 @@ class Party:
 
 
     async def add(self, monster):
-        """Add pokemon to the party
+        """Add pokemon to the party.
 
-        @param monster a Monster object to add to the party
+        @param monster a Monster object to add to the party.
+
+        @throws IndexError When party is already full.
+        @throws ValueError Argument monster was not a Monster.
         """
         if type(monster) != Monster:
             raise ValueError
+        if len(self) == 6:
+            raise IndexError
+
+        for index in range(6):
+            if self.monsters[index] is None:
+                break
+
+        self.monsters[index] = monster
 
 
     async def remove(self, target):
         """
-        @param target Can be Monster or Int. If Int, remove that slot's monster (zero indexed)
+        @param target Can be Monster or Int. If Int, remove that slot's monster (zero indexed).
 
-        @return Monster that was removed
+        @return Monster that was removed.
         """
         pass
