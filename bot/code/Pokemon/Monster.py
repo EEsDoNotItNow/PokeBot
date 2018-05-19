@@ -250,7 +250,11 @@ class Monster(Pokemon):
 
 
     async def calc_level(self):
-        return int(np.floor(self.xp ** (1 / 3)))
+        # 'SELECT * FROM experience_lookup WHERE growth_rate_id=1 AND experience<=9 ORDER BY level DESC LIMIT 1'
+        cmd = 'SELECT * FROM experience_lookup WHERE growth_rate_id=:growth_rate_id AND experience<=:xp ORDER BY level DESC LIMIT 1'
+        level = self.sql.cur.execute(cmd, self.__dict__).fetchone()['level']
+        return int(level)
+        # return int(np.floor(self.xp ** (1 / 3)))
 
 
     async def damage(self, amount, _type=None):
