@@ -31,7 +31,7 @@ class Party:
 
     @property
     def _monsters_not_none(self):
-        return [x for x in self.monster if x is not None]
+        return [x for x in self.monsters if x is not None]
 
 
     async def load(self):
