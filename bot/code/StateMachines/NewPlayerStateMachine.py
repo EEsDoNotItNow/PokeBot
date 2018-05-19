@@ -25,6 +25,8 @@ class NewPlayerStateMachine(BaseStateMachine):
         self.sql = SQL()
         self.log = Log()
 
+        self.alive = True
+
 
     async def run(self):
         """Run through the player creation process.
@@ -36,6 +38,8 @@ class NewPlayerStateMachine(BaseStateMachine):
         except Exception:
             self.log.exception(f"{self.trainer.trainer_id} Something went wrong...")
             await League().deregister(self.trainer.user_id, self.trainer.server_id)
+            self.alive = False
+            
         await self.trainer.save()
         self.log.exception(f"{self.trainer.trainer_id} Saved status and exited NewPlayerStateMachine")
 
