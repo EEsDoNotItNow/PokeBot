@@ -264,14 +264,14 @@ class Trainer:
         em.title = "Trainer Card"
 
         em.set_author(name=self.nickname)
-
         em.add_field(name="Pokecoin", value=f"{self.stats['pokecoin']:,.2f}")
-
         em.add_field(name="Level", value=f"{self.level:,d}")
-
         if self.current_zone_id:
             zone_name = (await World().get_zone(self.current_zone_id)).name.title()
             em.add_field(name="Zone", value=zone_name)
+
+        for poke in self.party:
+            em.add_field(name="Poke", value=poke.identifier)
 
         em.timestamp = self.created_on
 
