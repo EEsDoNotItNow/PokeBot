@@ -64,7 +64,7 @@ class test_monster(unittest.TestCase):
 
             example_id = poke.monster_id
 
-            poke2 = Monster(pokemon_id=i, monster_id=example_id)
+            poke2 = Monster(monster_id=example_id, pokemon_id=i)
 
             _run(poke2.load())
 

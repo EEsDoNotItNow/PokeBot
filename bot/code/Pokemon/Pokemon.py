@@ -54,7 +54,8 @@ class Pokemon:
         cmd = "SELECT * FROM pokedex WHERE pokemon_id=:pokemon_id"
         cur = self.sql.cur
         data = cur.execute(cmd, locals()).fetchone()
-        self.log.debug(f"Loaded data: {data}")
+        self.log.info(f"Loaded data: {locals()}")
+        self.log.info(f"Loaded data: {data}")
 
         self.identifier = data['identifier']
 

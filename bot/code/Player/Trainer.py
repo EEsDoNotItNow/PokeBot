@@ -117,6 +117,7 @@ class Trainer:
         (:trainer_id)"""
         cur.execute(cmd, self.__dict__)
         await self.sql.commit(now=True)
+        await self.party.save()
 
 
     async def create(self):

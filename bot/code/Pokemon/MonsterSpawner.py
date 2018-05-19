@@ -25,7 +25,7 @@ class MonsterSpawner:
             raise ValueError(f"Level value of {level} is illegal")
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
-        poke = Monster(pokemon_id)
+        poke = Monster(pokemon_id=pokemon_id)
         await poke.load()
 
         growth_rate_id = 1
@@ -59,7 +59,7 @@ class MonsterSpawner:
         pokemon_id = cur.execute(cmd).fetchone()['pokemon_id']
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
-        poke = Monster(pokemon_id)
+        poke = Monster(pokemon_id=pokemon_id)
         await poke.load()
 
         poke.xp = np.random.randint(0, 1e6)

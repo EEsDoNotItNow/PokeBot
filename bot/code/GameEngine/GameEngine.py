@@ -59,6 +59,7 @@ class GameEngine:
         sub_parser = sp.add_parser('>register',
                                    description='Register self with the Pokemon League',
                                    add_help=True)
+        sub_parser.add_argument("--fast", action='store_true')
         sub_parser.set_defaults(subCMD='>register',
                                 cmd=self._cmd_register)
 
@@ -124,9 +125,15 @@ class GameEngine:
         if message.server is None:
             await self.client.send_message(message.channel,
                                            "Sorry, you must register in a server! I cannot register you over DMs!")
-        self.log.info("Spawn a player registration.")
-        await self.session_manager.spawn_registration_session(message)
-        self.log.info("Fin spawn a player registration.")
+        if args.fast:
+            self.log.info("Spawn a player registration.")
+            await self.session_manager.spawn_fast_registration_session(message)
+            self.log.info("Fin spawn a player registration.")
+
+        else:
+            self.log.info("Spawn a player registration.")
+            await self.session_manager.spawn_registration_session(message)
+            self.log.info("Fin spawn a player registration.")
         return
 
 

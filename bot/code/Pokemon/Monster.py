@@ -15,7 +15,7 @@ from . import EnumStatus
 class Monster(Pokemon):
 
 
-    def __init__(self, pokemon_id, monster_id=None):
+    def __init__(self, monster_id=None, pokemon_id=None):
         """Create a new Monster (an acutal pokemon in the sim)
 
         @param pokemon_id Id from the pokedex table, stats are based off this value
@@ -25,9 +25,13 @@ class Monster(Pokemon):
         self.sql = SQL()
 
         # Init our superclass
-        super().__init__(pokemon_id)
+        if pokemon_id:
+            super().__init__(pokemon_id)
 
-        self.monster_id = monster_id
+        if monster_id:
+            self.monster_id = monster_id
+        else:
+            self.monster_id = str(uuid.uuid4())
 
         self.status = EnumStatus.ALIVE
 
@@ -66,8 +70,7 @@ class Monster(Pokemon):
 
 
     def __repr__(self):
-        return f"Monster({self.pokemon_id})"
-
+        return f"Monster({self.monster_id})"
 
 
     def __eq__(self, other):
@@ -100,7 +103,6 @@ class Monster(Pokemon):
             type2 = ""
 
         em.add_field(name="Type", value=f"{str(self.type1).title()}{type2}")
-
 
         stats_block = f"`HP: {self.hp_current}/{self.hp}`"
         stats_block += f"\n`ATK: {self.attack}`"
@@ -139,21 +141,18 @@ class Monster(Pokemon):
 
     async def load(self):
         cur = self.sql.cur
+
+        cmd = "SELECT * FROM monsters WHERE monster_id=:monster_id"
+        values = cur.execute(cmd, self.__dict__).fetchone()
+        for key in values:
+            setattr(self, key, values[key])
+
+        super().__init__(pokemon_id=self.pokemon_id)
         await super().load()
 
         self.name = self.identifier
         self.hp_current = self.base_hp
         self.level = await self.calc_level()
-
-        if not self.monster_id:
-            self.monster_id = str(uuid.uuid4())
-            return
-
-        cmd = "SELECT * FROM monsters WHERE pokemon_id=:pokemon_id AND monster_id=:monster_id"
-        values = cur.execute(cmd, self.__dict__).fetchone()
-
-        for key in values:
-            setattr(self, key, values[key])
 
 
     async def save(self):

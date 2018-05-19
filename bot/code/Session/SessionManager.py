@@ -5,7 +5,7 @@ from ..Client import Client
 from ..Log import Log
 from ..Player import League
 from ..Singleton import Singleton
-from ..StateMachines import NewPlayerStateMachine
+from ..StateMachines import NewPlayerStateMachine, FastNewPlayerStateMachine
 
 from .Session import Session
 
@@ -130,6 +130,27 @@ class SessionManager(metaclass=Singleton):
         # I assume that we do not have an active session already, as this player isn't registered.
         session = Session(trainer)
         session.state_machine = NewPlayerStateMachine(trainer)
+        self.sessions.append(session)
+        msg = "Your request for registration is in the mail! Please wait 6 to 8 weeks for delivery!"
+        await self.client.send_message(message.channel, msg)
+
+        return
+
+
+    async def spawn_fast_registration_session(self, message):
+        # Create a basic trainer object
+
+        trainer = await League().get_trainer(message.author.id, message.server.id)
+        if trainer is not None:
+            await self.client.send_message(message.channel, "Error, I cannot re-register you!")
+            return
+
+        # We are good to register them!
+        trainer = await League().register(message.author.id, message.server.id)
+
+        # I assume that we do not have an active session already, as this player isn't registered.
+        session = Session(trainer)
+        session.state_machine = FastNewPlayerStateMachine(trainer)
         self.sessions.append(session)
         msg = "Your request for registration is in the mail! Please wait 6 to 8 weeks for delivery!"
         await self.client.send_message(message.channel, msg)
