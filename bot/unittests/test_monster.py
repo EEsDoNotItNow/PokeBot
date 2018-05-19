@@ -43,7 +43,7 @@ class test_monster(unittest.TestCase):
             # We cannot run async calls from here, use _run
             self.assertEqual(str(poke.pokemon_id), str(i))
 
-    def test_safe_and_load_monsters(self):
+    def test_save_and_load_monsters(self):
         for i in range(1, 807 + 1):
             poke = Monster(pokemon_id=i)
 
