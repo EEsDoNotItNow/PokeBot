@@ -592,7 +592,7 @@ async def populate():
 
 
     for growth_rate_id in [1, 2, 3, 4, 5, 6]:
-        for level in range(1, 100):
+        for level in range(1, 101):
             # log.info(data[key])
             experience = int(calc_xp(growth_rate_id, level))
             cmd = """INSERT INTO experience_lookup
