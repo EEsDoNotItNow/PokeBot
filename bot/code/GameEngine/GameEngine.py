@@ -133,7 +133,7 @@ class GameEngine:
     async def _cmd_deregister(self, args):
         message = args.message
         # Create a basic trainer object
-        await self.session_manager.delecte_session(message)
+        await self.session_manager.delete_session(message)
         result = await League().deregister(message.author.id, message.server.id)
         if result:
             # Remove any sessions with this trainer.

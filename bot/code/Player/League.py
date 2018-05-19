@@ -87,6 +87,11 @@ class League:
         """
         cur = self.sql.cur
 
+        # Check to see if we have this trainer in our list, and remove them if we do.
+        trainer = await self.get_trainer(user_id, server_id)
+        if trainer:
+            self.trainers.remove(trainer)
+
         cmd = "SELECT trainer_id FROM trainers WHERE server_id=:server_id AND user_id=:user_id"
         value = cur.execute(cmd, locals()).fetchone()
         if value is None:
