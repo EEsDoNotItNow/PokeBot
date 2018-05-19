@@ -37,7 +37,7 @@ class NewPlayerStateMachine(BaseStateMachine):
             self.log.exception(f"{self.trainer.trainer_id} Something went wrong...")
             await League().deregister(self.trainer.user_id, self.trainer.server_id)
         await self.trainer.save()
-            self.log.exception(f"{self.trainer.trainer_id} Saved status and exited NewPlayerStateMachine")
+        self.log.exception(f"{self.trainer.trainer_id} Saved status and exited NewPlayerStateMachine")
 
     async def _run(self):
 
