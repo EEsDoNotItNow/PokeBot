@@ -5,7 +5,7 @@ from ..code.Singleton import Singleton, SingletonArgs
 
 
 
-class TestSingletons(unittest.TestCase):
+class test_singletons(unittest.TestCase):
 
 
     def test_simple_singleton_like(self):
