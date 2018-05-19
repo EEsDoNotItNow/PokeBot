@@ -69,6 +69,7 @@ class Monster(Pokemon):
         return f"Monster({self.pokemon_id})"
 
 
+
     def __eq__(self, other):
         if type(other) is Monster:
             return self.monster_id == other.monster_id and self.pokemon_id == other.pokemon_id
@@ -141,11 +142,7 @@ class Monster(Pokemon):
         await super().load()
 
         self.name = self.identifier
-
         self.hp_current = self.base_hp
-
-        self.log.warning(self.__dict__)
-
         self.level = await self.calc_level()
 
         if not self.monster_id:
@@ -253,7 +250,10 @@ class Monster(Pokemon):
 
     async def calc_level(self):
         # 'SELECT * FROM experience_lookup WHERE growth_rate_id=1 AND experience<=9 ORDER BY level DESC LIMIT 1'
-        cmd = 'SELECT * FROM experience_lookup WHERE growth_rate_id=:growth_rate_id AND experience<=:xp ORDER BY level DESC LIMIT 1'
+        cmd = """SELECT * FROM experience_lookup
+                 WHERE growth_rate_id=:growth_rate_id AND experience<=:xp
+                 ORDER BY level
+                 DESC LIMIT 1"""
         self.log.error(f"id: {self.growth_rate_id}, xp: {self.xp}")
         level = self.sql.cur.execute(cmd, self.__dict__).fetchone()['level']
         return int(level)

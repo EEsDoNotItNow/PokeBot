@@ -149,14 +149,14 @@ class GameEngine:
     async def _cmd_spawn(self, args):
         message = args.message
 
-        if hasattr(args,"pokemon_id"):
-            if hasattr(args,"level"):
+        if hasattr(args, "pokemon_id"):
+            if hasattr(args, "level"):
                 level = args.level
             else:
-                level = np.random.randint(1,100)
+                level = np.random.randint(1, 100)
             self.log.info(args.pokemon_id)
             poke = await MonsterSpawner().spawn_at_level(args.pokemon_id, level)
-        else:        
+        else:
             poke = await MonsterSpawner().spawn_random()
 
         await self.client.send_message(message.channel,

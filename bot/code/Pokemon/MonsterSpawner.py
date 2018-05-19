@@ -33,10 +33,10 @@ class MonsterSpawner:
         poke.xp = np.random.randint(0, 1e6)
         # 'SELECT * FROM experience_lookup WHERE growth_rate_id=1 AND experience<=9 ORDER BY level DESC LIMIT 1'
         cmd = "SELECT experience FROM experience_lookup WHERE growth_rate_id=:growth_rate_id AND level=:level"
-        poke.xp = cur.execute(cmd,locals()).fetchone()['experience']
+        poke.xp = cur.execute(cmd, locals()).fetchone()['experience']
 
-        self.log.info(cmd)
-        self.log.info(poke.xp)
+        self.log.debug(cmd)
+        self.log.debug(poke.xp)
 
         poke.iv_hp = np.random.randint(0, 31)
         poke.iv_attack = np.random.randint(0, 31)
