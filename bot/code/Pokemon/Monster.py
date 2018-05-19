@@ -28,10 +28,7 @@ class Monster(Pokemon):
         if pokemon_id:
             super().__init__(pokemon_id)
 
-        if monster_id:
-            self.monster_id = monster_id
-        else:
-            self.monster_id = str(uuid.uuid4())
+        self.monster_id = monster_id
 
         self.status = EnumStatus.ALIVE
 
@@ -142,10 +139,13 @@ class Monster(Pokemon):
     async def load(self):
         cur = self.sql.cur
 
-        cmd = "SELECT * FROM monsters WHERE monster_id=:monster_id"
-        values = cur.execute(cmd, self.__dict__).fetchone()
-        for key in values:
-            setattr(self, key, values[key])
+        if self.monster_id is not None:
+            cmd = "SELECT * FROM monsters WHERE monster_id=:monster_id"
+            values = cur.execute(cmd, self.__dict__).fetchone()
+            for key in values:
+                setattr(self, key, values[key])
+        else:
+            self.monster_id = str(uuid.uuid4())
 
         super().__init__(pokemon_id=self.pokemon_id)
         await super().load()

@@ -27,6 +27,7 @@ class test_monster(unittest.TestCase):
         for i in range(1, 807 + 1):
             with self.subTest(pokemon_id=i):
                 poke = Monster(pokemon_id=i)
+                print(poke)
 
                 _run(poke.load())
 
