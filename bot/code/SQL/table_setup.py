@@ -423,7 +423,7 @@ async def table_setup():
         """
         cur.execute(cmd)
         await sql.commit()
-        
+
 
     log.info("Check to see if experience_lookup exists.")
     if not await sql.table_exists("experience_lookup"):

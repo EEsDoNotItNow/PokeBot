@@ -30,7 +30,7 @@ class Party:
 
 
     @property
-    def self._monsters_not_none(self):
+    def _monsters_not_none(self):
         return [x for x in self.monster if x is not None]
 
 

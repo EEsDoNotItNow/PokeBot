@@ -578,20 +578,20 @@ async def populate():
         if level == 1:
             return 0
         if growth_rate_id == 1:
-            return 5*level**3/4
+            return 5 * level**3 / 4
         if growth_rate_id == 2:
-            return 5*level**3/4
+            return 5 * level**3 / 4
         if growth_rate_id == 3:
-            return 5*level**3/4
+            return 5 * level**3 / 4
         if growth_rate_id == 4:
-            return 5*level**3/4
+            return 5 * level**3 / 4
         if growth_rate_id == 5:
-            return 5*level**3/4
+            return 5 * level**3 / 4
         if growth_rate_id == 6:
-            return 5*level**3/4
+            return 5 * level**3 / 4
 
 
-    for growth_rate_id in [1,2,3,4,5,6]:
+    for growth_rate_id in [1, 2, 3, 4, 5, 6]:
         for level in range(1, 100):
             # log.info(data[key])
             experience = int(calc_xp(growth_rate_id, level))

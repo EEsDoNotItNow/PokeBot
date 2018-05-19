@@ -1,6 +1,4 @@
 
-import logging
-import sys
 import unittest
 
 from ._run import _run

@@ -55,7 +55,7 @@ class SQL(metaclass=Singleton):
             await table_setup()
             self.log.warning("Calling populate()")
             await populate()
-            self.setup_needed=False
+            self.setup_needed = False
 
         self.log.info("SQL registered to recieve commands!")
 

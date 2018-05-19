@@ -1,8 +1,7 @@
 
 
 import unittest
-import logging
-import sys
+
 from ._run import _run
 
 from ..code.SQL import SQL

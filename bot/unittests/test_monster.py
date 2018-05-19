@@ -1,8 +1,6 @@
 
 
-import logging
 import numpy as np
-import sys
 import unittest
 
 from ._run import _run
