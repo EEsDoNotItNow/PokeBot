@@ -53,6 +53,8 @@ class NewPlayerStateMachine(BaseStateMachine):
 
         prompt = f"Are you ready to begin?"
         response = await self.client.confirm_prompt(channel, prompt, user=user, timeout=60 * 5, clean_up=False)
+        if response is not True:
+            raise ValueError("User didn't answer that they were ready to go, abort!")
 
         await asyncio.sleep(1)
         await self.client.send_typing(channel)
@@ -79,7 +81,6 @@ class NewPlayerStateMachine(BaseStateMachine):
                 break
 
         self.trainer.nickname = name
-
 
         await asyncio.sleep(1)
         await self.client.send_typing(user)
