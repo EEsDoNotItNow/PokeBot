@@ -47,12 +47,11 @@ class SQL(metaclass=Singleton):
 
 
     async def on_ready(self):
-        print("on_ready")
+        self.log.info("Calling table_setup()")
+        await table_setup()
         if self.setup_needed:
             print("setup needed")
             self.log.warning("Setup needed for SQL tables, starting")
-            self.log.warning("Calling table_setup()")
-            await table_setup()
             self.log.warning("Calling populate()")
             await populate()
             self.setup_needed = False

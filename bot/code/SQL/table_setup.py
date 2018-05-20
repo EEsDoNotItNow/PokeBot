@@ -33,6 +33,23 @@ async def table_setup():
         await sql.commit()
 
 
+    log.info("Check to see if command_log exists.")
+    if not await sql.table_exists("command_log"):
+        log.info("Create command_log table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE IF NOT EXISTS command_log
+            (
+                message_id TEXT NOT NULL UNIQUE,
+                channel_id TEXT,
+                author_id TEXT NOT NULL,
+                created_at INTEGER,
+                content TEXT
+            )"""
+        cur.execute(cmd)
+        await sql.commit()
+
+
     log.info("Check to see if trainers exists.")
     if not await sql.table_exists("trainers"):
         log.info("Create trainers table")

@@ -10,6 +10,7 @@ from ..Log import Log
 from ..Player import League
 from ..Pokemon import MonsterSpawner
 from ..Session import SessionManager
+from ..SQL import SQL
 
 
 
@@ -17,6 +18,7 @@ class GameEngine:
 
 
     def __init__(self):
+        self.sql = SQL()
         self.log = Log()
         self.client = Client()
         self.session_manager = SessionManager()
@@ -32,6 +34,7 @@ class GameEngine:
 
         match_obj = re.match("^>", message.content)
         if match_obj:
+            await self.log_command(message)
             self.log.info("Saw a command, handle it!")
             await self.command_proc(message)
 
@@ -125,7 +128,6 @@ class GameEngine:
         await self.session_manager.command_proc(message)
         return
 
-
     async def _cmd_register(self, args):
         message = args.message
         if message.server is None:
@@ -187,3 +189,29 @@ class GameEngine:
             string = match_obj.group(1).encode('unicode_escape')
             await self.client.send_message(message.channel, f"{string}: {string.decode('unicode-escape')}")
             return
+
+
+    async def log_command(self, message):
+
+        message_id = message.id
+        channel_id = message.channel.id if message.channel else None
+        author_id = message.author.id
+        created_at = message.timestamp.timestamp()
+        content = message.content
+        cmd="""
+            INSERT INTO command_log 
+            (
+                message_id,
+                channel_id,
+                author_id,
+                created_at,
+                content
+            ) VALUES (
+                :message_id,
+                :channel_id,
+                :author_id,
+                :created_at,
+                :content
+            )"""
+        self.sql.cur.execute(cmd, locals())
+        await self.sql.commit(now=True)
