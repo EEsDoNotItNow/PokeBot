@@ -133,4 +133,13 @@ class Party:
 
         @return Monster that was removed.
         """
-        pass
+        raise NotImplementedError()
+
+
+    async def get_leader(self):
+        """
+        @param target Can be Monster or Int. If Int, remove that slot's monster (zero indexed).
+
+        @return Monster that was removed.
+        """
+        return self.monsters[0]
