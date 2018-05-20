@@ -314,7 +314,7 @@ class Client(discord.Client):
                 await module.on_voice_state_update(before, after)
 
 
-    async def confirm_prompt(self, channel, prompt, user=None, timeout=20, prompt_set=0, clean_up=True):
+    async def confirm_prompt(self, channel, prompt, user=None, timeout=30, prompt_set=0, clean_up=False):
         """ Prompt user with Yes/No reactions
         @param message_target (discord.channel): Channel/DM Object
         @param message (str): Message to post
@@ -392,7 +392,7 @@ class Client(discord.Client):
         raise RuntimeError("Unsure of how we got here")
 
 
-    async def select_prompt(self, channel, prompt_question, prompt_list, user=None, timeout=30, clean_up=True):
+    async def select_prompt(self, channel, prompt_question, prompt_list, user=None, timeout=30, clean_up=False):
         """ Ask user to respond and pick from a list of strings.
 
         @param channel (discord Obj): Channel to send to (This could be a user, and result in a DM!
@@ -401,6 +401,7 @@ class Client(discord.Client):
         @param timeout (int/float): Seconds to wait for user response
         @param clean_up: Should we cleanup after
 
+        @throws TimeoutError If no response is given it time.
         """
         digits = [b'1\xe2\x83\xa3',
                   b'2\xe2\x83\xa3',
@@ -451,7 +452,7 @@ class Client(discord.Client):
             await self.delete_message(msg_obj)
 
         if ret_val is None:
-            return None
+            raise TimeoutError("No user selection")
 
         for idx, val in enumerate(digits):
             if ret_val[0].emoji == val:
@@ -490,7 +491,7 @@ class Client(discord.Client):
             timeout=timeout)
 
         if msg_obj is None:
-            return None
+            raise TimeoutError()
         if msg_obj.content == "STOP":
             return False
 

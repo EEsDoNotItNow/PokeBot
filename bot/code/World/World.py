@@ -36,7 +36,7 @@ class World(metaclass=Singleton):
         zone_connections = cur.execute(cmd).fetchall()
 
         for connection in zone_connections:
-            self.log.info(f"Handle connections for {connection}")
+            self.log.debug(f"Handle connections for {connection}")
 
             zone1_id = connection['location_id_1']
             zone2_id = connection['location_id_2']
@@ -49,8 +49,13 @@ class World(metaclass=Singleton):
                 self.zones[zone2_id] = Zone(zone2_id)
                 await self.zones[zone2_id].load()
 
-            self.zones[connection['location_id_1']].link(connection['location_id_2'], connection['distance_forward'])
-            self.zones[connection['location_id_2']].link(connection['location_id_1'], connection['distance_backward'])
+            await self.zones[connection['location_id_1']].link(connection['location_id_2'],
+                                                               connection['distance_forward']
+                                                               )
+
+            await self.zones[connection['location_id_2']].link(connection['location_id_1'],
+                                                               connection['distance_backward']
+                                                               )
 
 
     async def get_zone(self, zone_id):
@@ -58,9 +63,10 @@ class World(metaclass=Singleton):
         for key in self.zones:
             zone = self.zones[key]
             if str(zone.zone_id) == zone_id:
-                self.log.info(f"Got zone {zone}")
+                self.log.debug(f"Got zone {zone}")
+                await zone.load()
                 return zone
-        raise ValueError(f"Invalid zone_id: {zone_id}")
+        return None
 
 
     async def debug(self, channel):

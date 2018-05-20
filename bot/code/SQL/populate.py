@@ -1,4 +1,5 @@
 
+from collections import defaultdict
 import csv
 import time
 import pathlib
@@ -27,22 +28,15 @@ async def ingest_csv(csv_dir):
     # We are unable to guarentee that ALL entries will have all data,
     #   so we load them with default NULLs into the DB
     for entry in raw_dex:
-        pokemon_id = entry['id']
-        dex[pokemon_id] = {}
-        dex[pokemon_id]['gender_ratio'] = None
-        dex[pokemon_id]['catch_rate'] = None
-        dex[pokemon_id]['hatch_time'] = None
-        dex[pokemon_id]['base_happiness'] = None
-        dex[pokemon_id]['type2'] = None
+        dex[entry['id']] = defaultdict(lambda: None)
 
 
     for entry in raw_dex:
         pokemon_id = entry['id']
+        del entry['id']
         dex[pokemon_id]['pokemon_id'] = pokemon_id
-        dex[pokemon_id]['identifier'] = entry['identifier']
-        dex[pokemon_id]['height'] = entry['height']
-        dex[pokemon_id]['weight'] = entry['weight']
-        dex[pokemon_id]['base_xp'] = entry['base_experience']
+        dex[pokemon_id].update(entry)
+
     log.info(f"pokemon loaded in {time.time()-t_step:.3f}s")
 
 
@@ -83,11 +77,10 @@ async def ingest_csv(csv_dir):
                     pass
 
     for entry in species_stats:
-        pokemon_id = entry['id']
-        dex[pokemon_id]['gender_ratio'] = entry['gender_rate']
-        dex[pokemon_id]['catch_rate'] = entry['capture_rate']
-        dex[pokemon_id]['hatch_time'] = entry['hatch_counter']
-        dex[pokemon_id]['base_happiness'] = entry['base_happiness']
+        entry['pokemon_id'] = entry['id']
+        del entry['id']
+        dex[entry['pokemon_id']].update(entry)
+
     log.info(f"pokemon_species loaded in {time.time()-t_step:.3f}s")
 
 
@@ -304,14 +297,28 @@ async def populate():
     t_step = time.time()
     cur = sql.cur
     for key in data['pokedex']:
-        # log.info(data[key])
+        # print(data['pokedex'][key])
         cmd = """INSERT INTO pokedex
         (
             pokemon_id,
             identifier,
+            generation_id,
+            evolves_from_species_id,
+            evolution_chain_id,
+            color_id,
+            shape_id,
+            habitat_id,
+            gender_rate,
+            capture_rate,
+            base_happiness,
+            is_baby,
+            hatch_counter,
+            has_gender_differences,
+            growth_rate_id,
+            forms_switchable,
             height,
             weight,
-            base_xp,
+            base_experience,
             base_hp,
             base_attack,
             base_defense,
@@ -324,17 +331,28 @@ async def populate():
             effort_sp_attack,
             effort_sp_defense,
             effort_speed,
-            gender_ratio,
-            catch_rate,
-            hatch_time,
             type1,
             type2
         ) VALUES (
             :pokemon_id,
             :identifier,
+            :generation_id,
+            :evolves_from_species_id,
+            :evolution_chain_id,
+            :color_id,
+            :shape_id,
+            :habitat_id,
+            :gender_rate,
+            :capture_rate,
+            :base_happiness,
+            :is_baby,
+            :hatch_counter,
+            :has_gender_differences,
+            :growth_rate_id,
+            :forms_switchable,
             :height,
             :weight,
-            :base_xp,
+            :base_experience,
             :base_hp,
             :base_attack,
             :base_defense,
@@ -347,9 +365,6 @@ async def populate():
             :effort_sp_attack,
             :effort_sp_defense,
             :effort_speed,
-            :gender_ratio,
-            :catch_rate,
-            :hatch_time,
             :type1,
             :type2
         )"""
@@ -570,6 +585,44 @@ async def populate():
         )"""
         cur.execute(cmd, entry)
     log.info(f"zone_connections loaded in {time.time()-t_step:.3f}s")
+
+
+    log.info(f"Must calculate and load experience_lookup rows (600)")
+    t_step = time.time()
+    cur = sql.cur
+
+    def calc_xp(growth_rate_id, level):
+        if level == 1:
+            return 0
+        if growth_rate_id == 1:
+            return 5 * level**3 / 4
+        if growth_rate_id == 2:
+            return 5 * level**3 / 4
+        if growth_rate_id == 3:
+            return 5 * level**3 / 4
+        if growth_rate_id == 4:
+            return 5 * level**3 / 4
+        if growth_rate_id == 5:
+            return 5 * level**3 / 4
+        if growth_rate_id == 6:
+            return 5 * level**3 / 4
+    for growth_rate_id in [1, 2, 3, 4, 5, 6]:
+        for level in range(1, 101):
+            # log.info(data[key])
+            experience = int(calc_xp(growth_rate_id, level))
+            cmd = """INSERT INTO experience_lookup
+            (
+                growth_rate_id,
+                level,
+                experience
+            ) VALUES (
+                :growth_rate_id,
+                :level,
+                :experience
+            )"""
+            cur.execute(cmd, locals())
+    log.info(f"experience_lookup loaded in {time.time()-t_step:.3f}s")
+
 
     log.info(f"SQL Population took {time.time()-t_start_sql:.3f}s")
     log.info(f"Total Population took {time.time()-t_start_csv:.3f}s")

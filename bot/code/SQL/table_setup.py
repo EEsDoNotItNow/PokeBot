@@ -33,6 +33,23 @@ async def table_setup():
         await sql.commit()
 
 
+    log.info("Check to see if command_log exists.")
+    if not await sql.table_exists("command_log"):
+        log.info("Create command_log table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE IF NOT EXISTS command_log
+            (
+                message_id TEXT NOT NULL UNIQUE,
+                channel_id TEXT,
+                author_id TEXT NOT NULL,
+                created_at INTEGER,
+                content TEXT
+            )"""
+        cur.execute(cmd)
+        await sql.commit()
+
+
     log.info("Check to see if trainers exists.")
     if not await sql.table_exists("trainers"):
         log.info("Create trainers table")
@@ -60,6 +77,8 @@ async def table_setup():
             (
                 trainer_id TEXT NOT NULL UNIQUE,
 
+                state INTEGER DEFAULT 0,
+
                 /* Track where we are.*/
                 current_region_id TEXT,
                 current_zone_id TEXT,
@@ -68,7 +87,8 @@ async def table_setup():
                 /* Track where we want to be, if we are traveling */
                 destination_region_id TEXT DEFAULT NULL,
                 destination_zone_id TEXT DEFAULT NULL,
-                destination_building_id TEXT DEFAULT NULL
+                destination_building_id TEXT DEFAULT NULL,
+                destination_distance REAL DEFAULT NULL
             )
         """
         cur.execute(cmd)
@@ -173,9 +193,23 @@ async def table_setup():
             (
                 pokemon_id TEXT DEFAULT 0,
                 identifier TEXT NOT NULL,
+                generation_id TEXT,
+                evolves_from_species_id TEXT,
+                evolution_chain_id TEXT,
+                color_id TEXT,
+                shape_id TEXT,
+                habitat_id TEXT,
+                gender_rate INTEGER,
+                capture_rate INTEGER,
+                base_happiness INTEGER,
+                is_baby BOOLEAN,
+                hatch_counter INTEGER,
+                has_gender_differences BOOLEAN,
+                growth_rate_id TEXT,
+                forms_switchable BOOLEAN,
                 height INTEGER,
                 weight INTEGER,
-                base_xp INTEGER NOT NULL,
+                base_experience INTEGER NOT NULL,
                 base_hp INTEGER NOT NULL,
                 base_attack INTEGER NOT NULL,
                 base_defense INTEGER NOT NULL,
@@ -188,9 +222,6 @@ async def table_setup():
                 effort_sp_attack INTEGER NOT NULL,
                 effort_sp_defense INTEGER NOT NULL,
                 effort_speed INTEGER NOT NULL,
-                gender_ratio INTEGER,
-                catch_rate INTEGER,
-                hatch_time INTEGER,
                 abilities TEXT,
                 hidden_abilities TEXT,
                 type1 TEXT NOT NULL,
@@ -407,7 +438,7 @@ async def table_setup():
 
     log.info("Check to see if zone_connections exists.")
     if not await sql.table_exists("zone_connections"):
-        log.info("Create location table")
+        log.info("Create zone_connections table")
         cur = sql.cur
         cmd = """
             CREATE TABLE zone_connections
@@ -416,6 +447,22 @@ async def table_setup():
                 location_id_2 TEXT NOT NULL,
                 distance_forward REAL DEFAULT NULL,
                 distance_backward REAL DEFAULT NULL
+            )
+        """
+        cur.execute(cmd)
+        await sql.commit()
+
+
+    log.info("Check to see if experience_lookup exists.")
+    if not await sql.table_exists("experience_lookup"):
+        log.info("Create experience_lookup table")
+        cur = sql.cur
+        cmd = """
+            CREATE TABLE experience_lookup
+            (
+                growth_rate_id TEXT,
+                level INTEGER,
+                experience INTEGER
             )
         """
         cur.execute(cmd)

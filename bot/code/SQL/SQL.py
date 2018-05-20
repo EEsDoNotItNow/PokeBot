@@ -47,14 +47,16 @@ class SQL(metaclass=Singleton):
 
 
     async def on_ready(self):
+        self.log.info("Calling table_setup()")
+        await table_setup()
         if self.setup_needed:
+            print("setup needed")
             self.log.warning("Setup needed for SQL tables, starting")
-            self.log.warning("Calling table_setup()")
-            await table_setup()
             self.log.warning("Calling populate()")
             await populate()
+            self.setup_needed = False
 
-        self.log.info("SQL registered to recieve commands!")
+        self.log.info("SQL registered to receive commands!")
 
 
     async def on_message(self, message):
@@ -101,3 +103,16 @@ class SQL(metaclass=Singleton):
         for idx, col in enumerate(cursor.description):
             d[col[0]] = row[idx]
         return d
+
+
+"""
+Neat trick for ranks
+select  p1.*
+,       (
+        select  count(*)
+        from    People as p2
+        where   p2.age > p1.age
+        ) as AgeRank
+from    People as p1
+where   p1.Name = 'Juju bear'
+"""

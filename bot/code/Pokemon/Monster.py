@@ -15,8 +15,8 @@ from . import EnumStatus
 class Monster(Pokemon):
 
 
-    def __init__(self, pokemon_id, monster_id=None):
-        """Create a new Monster (an acutal pokemon in the sim)
+    def __init__(self, monster_id=None, pokemon_id=None):
+        """Create a new Monster (an actual pokemon in the sim)
 
         @param pokemon_id Id from the pokedex table, stats are based off this value
         @param monster_id if given, load all other values from the DB
@@ -25,7 +25,8 @@ class Monster(Pokemon):
         self.sql = SQL()
 
         # Init our superclass
-        super().__init__(pokemon_id)
+        if pokemon_id:
+            super().__init__(pokemon_id)
 
         self.monster_id = monster_id
 
@@ -66,7 +67,19 @@ class Monster(Pokemon):
 
 
     def __repr__(self):
-        return f"Monster({self.pokemon_id})"
+        return f"Monster({self.monster_id})"
+
+
+    def __eq__(self, other):
+        if type(other) is Monster:
+            return self.monster_id == other.monster_id and self.pokemon_id == other.pokemon_id
+        if type(other) is Pokemon:
+            return self.pokemon_id == other.pokemon_id
+        raise NotImplementedError
+
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
     async def em(self, debug=False):
@@ -87,7 +100,6 @@ class Monster(Pokemon):
             type2 = ""
 
         em.add_field(name="Type", value=f"{str(self.type1).title()}{type2}")
-
 
         stats_block = f"`HP: {self.hp_current}/{self.hp}`"
         stats_block += f"\n`ATK: {self.attack}`"
@@ -124,40 +136,23 @@ class Monster(Pokemon):
         return em
 
 
-    @staticmethod
-    def calc_stat(base, iv, ev, level, nature=1):
-        return int(np.floor((np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + 5) * nature))
-
-
-    @staticmethod
-    def calc_hp(base, iv, ev, level):
-        result = int(np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + level + 10)
-        return result
-
-
-    async def calc_level(self):
-        return int(np.floor(self.xp ** (1 / 3)))
-
-
     async def load(self):
         cur = self.sql.cur
+
+        if self.monster_id is not None:
+            cmd = "SELECT * FROM monsters WHERE monster_id=:monster_id"
+            values = cur.execute(cmd, self.__dict__).fetchone()
+            for key in values:
+                setattr(self, key, values[key])
+        else:
+            self.monster_id = str(uuid.uuid4())
+
+        super().__init__(pokemon_id=self.pokemon_id)
         await super().load()
 
         self.name = self.identifier
-
         self.hp_current = self.base_hp
-
         self.level = await self.calc_level()
-
-        if not self.monster_id:
-            self.monster_id = str(uuid.uuid4())
-            return
-
-        cmd = "SELECT * FROM monsters WHERE pokemon_id=:pokemon_id AND monster_id=:monster_id"
-        values = cur.execute(cmd, self.__dict__).fetchone()
-
-        for key in values:
-            setattr(self, key, values[key])
 
 
     async def save(self):
@@ -229,28 +224,82 @@ class Monster(Pokemon):
         """Update state given current stats
         """
         self.level = await self.calc_level()
-        self.attack = self.calc_stat(self.base_attack, self.iv_attack, self.ev_attack, self.level, 1)
-        self.defense = self.calc_stat(self.base_defense, self.iv_defense, self.ev_defense, self.level, 1)
-        self.sp_attack = self.calc_stat(self.base_sp_attack, self.iv_sp_attack, self.ev_sp_attack, self.level, 1)
-        self.sp_defense = self.calc_stat(self.base_sp_defense, self.iv_sp_defense, self.ev_sp_defense, self.level, 1)
-        self.speed = self.calc_stat(self.base_speed, self.iv_speed, self.ev_speed, self.level, 1)
+        self.attack = self._calc_stat(self.base_attack, self.iv_attack, self.ev_attack, self.level, 1)
+        self.defense = self._calc_stat(self.base_defense, self.iv_defense, self.ev_defense, self.level, 1)
+        self.sp_attack = self._calc_stat(self.base_sp_attack, self.iv_sp_attack, self.ev_sp_attack, self.level, 1)
+        self.sp_defense = self._calc_stat(self.base_sp_defense, self.iv_sp_defense, self.ev_sp_defense, self.level, 1)
+        self.speed = self._calc_stat(self.base_speed, self.iv_speed, self.ev_speed, self.level, 1)
 
         # HP must be handled with care!
         old_hp = self.hp
-        self.hp = self.calc_stat(self.base_hp, self.iv_hp, self.ev_hp, self.level, 1)
+        self.hp = self._calc_hp(self.base_hp, self.iv_hp, self.ev_hp, self.level)
         await self.heal(amount=self.hp - old_hp)
 
 
-    async def heal(self, amount=None):
-        """Add given amount of HP
+    @staticmethod
+    def _calc_stat(base, iv, ev, level, nature=1):
+        return int(np.floor((np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + 5) * nature))
 
-        @param
+
+    @staticmethod
+    def _calc_hp(base, iv, ev, level):
+        result = int(np.floor(((2 * base + iv + np.floor(ev / 4)) * level) / 100) + level + 10)
+        return result
+
+
+    async def calc_level(self):
+        # 'SELECT * FROM experience_lookup WHERE growth_rate_id=1 AND experience<=9 ORDER BY level DESC LIMIT 1'
+        cmd = """SELECT * FROM experience_lookup
+                 WHERE growth_rate_id=:growth_rate_id AND experience<=:xp
+                 ORDER BY level
+                 DESC LIMIT 1"""
+        level = self.sql.cur.execute(cmd, self.__dict__).fetchone()['level']
+        return int(level)
+        # return int(np.floor(self.xp ** (1 / 3)))
+
+
+    async def damage(self, amount, _type=None):
+        """Add given amount of HP.
+
+        @details Might set status to EnumStatus.DEAD if damage exceeds current hp!
+
+        @param amount Amount to damage. Must be positive. Will not lower hp below zero.
+        @param _type [OPTIONAL] Type of damage being dealt.
         """
+        amount = int(amount)
+        if amount <= 0:
+            return
 
-        if amount:
+        self.hp_current -= amount
+
+        if self.hp_current <= 0:
+            # This will clear all
+            self.status = EnumStatus.DEAD
+            self.hp_current = 0
+
+
+    async def heal(self, amount=None):
+        """Add given amount of HP.
+
+        @param amount Amount to heal. If 'None', heal to full.
+            Negative values are ignored, overflow is capped at max hp.
+        """
+        amount = int(amount)
+        if amount > 0:
             if self.hp_current + amount > self.hp:
                 self.hp_current = self.hp
             else:
                 self.hp_current += amount
-        else:
+        elif amount <= 0:
+            # Do nothing, you cannot heal by a negative amount!
+            pass
+        elif amount is None:
             self.hp_current = self.hp
+
+
+    async def capture(self, trainer_id):
+        """Capture a pokemon. This will register it to the player, and attempt to find a place it the party for it.
+
+        @param trainer_id Trainer that captured this poke.
+        """
+        raise NotImplementedError()

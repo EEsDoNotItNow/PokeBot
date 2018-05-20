@@ -1,8 +1,6 @@
 
 
-import logging
 import numpy as np
-import sys
 import unittest
 
 from ._run import _run
@@ -12,11 +10,10 @@ from ..code.SQL import SQL
 
 
 
-class Basic(unittest.TestCase):
+class test_monster(unittest.TestCase):
 
 
     def setUp(self):
-        logging.disable(sys.maxsize)
         self.sql = SQL("poke.db")
 
         # We cannot run async calls from here, use _run
@@ -28,25 +25,27 @@ class Basic(unittest.TestCase):
 
     def test_create_all_monsters(self):
         for i in range(1, 807 + 1):
-            poke = Monster(pokemon_id=i)
+            with self.subTest(pokemon_id=i):
+                poke = Monster(pokemon_id=i)
+                print(poke)
 
-            _run(poke.load())
+                _run(poke.load())
 
-            poke.xp = np.random.randint(0, 1e6)
+                poke.xp = np.random.randint(0, 1e6)
 
-            poke.iv_hp = np.random.randint(0, 31)
-            poke.iv_attack = np.random.randint(0, 31)
-            poke.iv_defense = np.random.randint(0, 31)
-            poke.iv_sp_attack = np.random.randint(0, 31)
-            poke.iv_sp_defense = np.random.randint(0, 31)
-            poke.iv_speed = np.random.randint(0, 31)
+                poke.iv_hp = np.random.randint(0, 31)
+                poke.iv_attack = np.random.randint(0, 31)
+                poke.iv_defense = np.random.randint(0, 31)
+                poke.iv_sp_attack = np.random.randint(0, 31)
+                poke.iv_sp_defense = np.random.randint(0, 31)
+                poke.iv_speed = np.random.randint(0, 31)
 
-            _run(poke.update_state())
+                _run(poke.update_state())
 
-            # We cannot run async calls from here, use _run
-            self.assertEqual(str(poke.pokemon_id), str(i))
+                # We cannot run async calls from here, use _run
+                self.assertEqual(str(poke.pokemon_id), str(i))
 
-    def test_safe_and_load_monsters(self):
+    def test_save_and_load_monsters(self):
         for i in range(1, 807 + 1):
             poke = Monster(pokemon_id=i)
 
@@ -66,7 +65,7 @@ class Basic(unittest.TestCase):
 
             example_id = poke.monster_id
 
-            poke2 = Monster(pokemon_id=i, monster_id=example_id)
+            poke2 = Monster(monster_id=example_id, pokemon_id=i)
 
             _run(poke2.load())
 

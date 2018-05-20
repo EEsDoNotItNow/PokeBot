@@ -1,8 +1,6 @@
 pipeline {
     agent { dockerfile true } //{ additionalBuildArgs '--no-cache'}  if we wanted to be slower!
 
-
-
     environment {
         LC_ALL = 'C.UTF-8'
         LANG = 'C.UTF-8'
@@ -24,7 +22,7 @@ pipeline {
                 }
                 sh 'python3 --version'
                 sh 'rm poke.db || true'
-                sh 'python3 -m unittest -v'
+                sh './run_unittests.sh'
             }
         }
         stage('Post Analysis') {
@@ -56,11 +54,14 @@ pipeline {
                         useStableBuildAsReference: true
                     ])
                 }
-	
-                script {
-                    if (env.GIT_COMMIT != env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
-                        discordSend description: "Jenkins Pipeline Build: ${GIT_BRANCH}#${env.BUILD_ID}\n\nResult: ${currentBuild.currentResult}", link: "${myGitURL}", footer: 'Have a nice build!', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: "${GIT_COMMIT}", webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
-                    }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                if (env.GIT_COMMIT != env.GIT_PREVIOUS_SUCCESSFUL_COMMIT) {
+                    discordSend description: "Jenkins Pipeline Build: ${GIT_BRANCH}#${env.BUILD_ID}\n\nResult: ${currentBuild.currentResult}", link: "${myGitURL}", footer: 'Have a nice build!', successful: currentBuild.resultIsBetterOrEqualTo('SUCCESS'), title: "${GIT_COMMIT}", webhookURL: 'https://discordapp.com/api/webhooks/445449456117219328/wRdFW4QjHKSoA-5Kt16gFCNdVVGeBAo9eOo63saSD2s9IB1BFNfT65s5zjDCVvx-Whcc'
                 }
             }
         }

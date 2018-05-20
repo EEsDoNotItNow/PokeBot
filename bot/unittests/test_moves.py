@@ -1,7 +1,5 @@
 
 import unittest
-import logging
-import sys
 
 from ._run import _run
 
@@ -10,11 +8,10 @@ from ..code.Pokemon import Move
 
 
 
-class Basic(unittest.TestCase):
+class test_moves(unittest.TestCase):
 
 
     def setUp(self):
-        logging.disable(sys.maxsize)
         self.sql = SQL("poke.db")
 
         # We cannot run async calls from here, use _run
