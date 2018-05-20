@@ -70,6 +70,10 @@ class Session:
                 self.log.debug("Tick it.")
                 await self.state_machine.tick()
 
+        # Let state machines keep sessions alive
+        if self.state_machine is not None:
+            self.last_command = datetime.datetime.now()
+
         await self.trainer.tick()
 
         if datetime.datetime.now() - self.last_command > datetime.timedelta(minutes=15):

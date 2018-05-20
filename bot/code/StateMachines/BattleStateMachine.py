@@ -8,8 +8,17 @@ class BattleStateMachine(BaseStateMachine):
     """"Handle a pokemon battle
     """
 
-    def __init__(self, trainer_id, opponent_id):
+    def __init__(self, trainer, opponent):
         super().__init__()
+        raise NotImplementedError()
+        self.alive = True
+
+        self.trainer = trainer
+
+        self.opponent = opponent
+
+
+    async def run(self):
         raise NotImplementedError()
 
 

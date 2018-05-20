@@ -28,6 +28,7 @@ class BaseStateMachine:
 
     async def run(self):
         self.started = True
+        self.alive = False
 
 
     async def tick(self):
