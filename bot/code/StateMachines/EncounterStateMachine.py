@@ -54,7 +54,12 @@ class EncounterStateMachine(BaseStateMachine):
             self.action = None
 
             # Print opponents Pokemon
+            embed = await self.opponent.em()
+            await self.client.send_message(self.channel, embed = embed)
             # Print users Pokemon
+            poke = await self.trainer.party.get_leader()
+            embed = await poke.em()
+            await self.client.send_message(self.channel, embed = embed)
 
             prompt_question = "What would you like to do?"
             prompt_list = ["Fight", "Items", "Pokemon", "Run"]
