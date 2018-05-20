@@ -1,4 +1,5 @@
 
+import asyncio
 import datetime
 import shlex
 import uuid
@@ -8,7 +9,9 @@ from ..CommandProcessor import DiscordArgumentParser
 from ..CommandProcessor.exceptions import NoValidCommands, HelpNeeded
 from ..Log import Log
 from ..Player import TrainerStates as TS
+from ..Pokemon import MonsterSpawner
 from ..SQL import SQL
+from ..StateMachines import EncounterStateMachine
 from ..World import World
 
 
@@ -103,6 +106,14 @@ class Session:
         sps = parser.add_subparsers(title="commands")
 
 
+        sp = sps.add_parser('>test',
+                            description='Force encounter',
+                            prog=">test",
+                            add_help=True)
+        sp.set_defaults(cmd=self._cmd_test,
+                        subCMD='>test',)
+
+
         sp = sps.add_parser('>status',
                             description='Current game status (generic)',
                             aliases=['>s'],
@@ -191,6 +202,24 @@ class Session:
 
         # Information printing commands can always be run
         self.log.warning(f"Saw a command ({message.content}), which did not match any current commands.")
+        return
+
+
+    async def _cmd_test(self, message):
+        # match_obj = re.match("> ?stop$", message.content)
+        # Check for valid states that we can stop from
+        valid_transition_states = [TS.IDLE, TS.WALKING_IN_GRASS]
+        if TS(self.trainer.state) in valid_transition_states:
+            poke = await MonsterSpawner().spawn_random()
+            self.state_machine = EncounterStateMachine(self.trainer, poke)
+
+            # Hold the command bus until this script starts!
+            while not self.state_machine.started:
+                await asyncio.sleep(1)
+        else:
+            self.log.warning(f"Cannot run test while {self.trainer.state}")
+
+        self.log.info("Command Complete")
         return
 
 

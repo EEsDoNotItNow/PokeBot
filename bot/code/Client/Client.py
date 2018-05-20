@@ -23,7 +23,6 @@ class Client(discord.Client):
             self._inited = True
 
 
-
     def register(self, cls):
         """Register a class with our client.
         """

@@ -1,5 +1,5 @@
 
-
+# from ..SQL import SQL
 from ..Player import TrainerStates as TS
 
 from .BaseStateMachine import BaseStateMachine
@@ -12,7 +12,7 @@ class EncounterStateMachine(BaseStateMachine):
 
     def __init__(self, trainer, opponent):
         super().__init__()
-        raise NotImplementedError()
+        # raise NotImplementedError()
         self.alive = True
 
         self.trainer = trainer
@@ -41,10 +41,42 @@ class EncounterStateMachine(BaseStateMachine):
     async def _run(self):
         pass
 
-        return
+        self.user = await self.client.get_user_info(self.trainer.user_id)
+
+        await self.client.start_private_message(self.user)
+
+        for channel in self.client.private_channels:
+            if channel.user == self.user:
+                break
+        self.channel = channel
 
         while True:
-            pass
+            self.action = None
+
+            # Print opponents Pokemon
+            # Print users Pokemon
+
+            prompt_question = "What would you like to do?"
+            prompt_list = ["Fight", "Items", "Pokemon", "Run"]
+            selection = await self.client.select_prompt(self.channel,
+                                                        prompt_question,
+                                                        prompt_list,
+                                                        user=self.user,
+                                                        timeout=300)
+            menu_list = [
+                self._menu_fight,
+                self._menu_item,
+                self._menu_pokemon,
+                self._menu_run]
+
+            await menu_list[selection]()
+
+            await self.client.send_message(self.channel,
+                                           "This is a proof of concept, and doesn't do anything yet!")
+            break
+
+            if self.action is None:
+                continue
             """
                 Present menu
                     Fight
@@ -67,7 +99,7 @@ class EncounterStateMachine(BaseStateMachine):
 
 
     async def _menu_fight(self):
-        raise NotImplementedError()
+        pass
         """
             Get active poke
             Request current move set
@@ -77,7 +109,7 @@ class EncounterStateMachine(BaseStateMachine):
 
 
     async def _menu_item(self):
-        raise NotImplementedError()
+        pass
         """
             Get inventory
             Request player pick an item, or cancel
@@ -86,7 +118,7 @@ class EncounterStateMachine(BaseStateMachine):
 
 
     async def _menu_pokemon(self):
-        raise NotImplementedError()
+        pass
         """
             Get party
             Request player pick a poke
@@ -96,7 +128,7 @@ class EncounterStateMachine(BaseStateMachine):
 
 
     async def _menu_run(self):
-        raise NotImplementedError()
+        pass
         """
             Prompt user to run
             Register action
