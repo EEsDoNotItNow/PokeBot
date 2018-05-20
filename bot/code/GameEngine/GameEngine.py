@@ -78,7 +78,7 @@ class GameEngine:
         sub_parser.add_argument("pokemon_id", type=int, nargs='?')
         sub_parser.add_argument("level",
                                 type=int,
-                                choices=range(1,101),
+                                choices=range(1, 101),
                                 metavar="1-100",
                                 help="Level of pokemon to spawn",
                                 default=None,
@@ -198,8 +198,8 @@ class GameEngine:
         author_id = message.author.id
         created_at = message.timestamp.timestamp()
         content = message.content
-        cmd="""
-            INSERT INTO command_log 
+        cmd = """
+            INSERT INTO command_log
             (
                 message_id,
                 channel_id,
