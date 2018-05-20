@@ -4,6 +4,19 @@
 class EmojiMap:
 
     emojis = {
+        # Numbers:
+        ':zero:': b'0\u20e3',
+        ':one:': b'1\u20e3',
+        ':two:': b'2\u20e3',
+        ':three:': b'3\u20e3',
+        ':four:': b'4\u20e3',
+        ':five:': b'5\u20e3',
+        ':six:': b'6\u20e3',
+        ':seven:': b'7\u20e3',
+        ':eight:': b'8\u20e3',
+        ':nine:': b'9\u20e3',
+        ':keycap_ten:': b'\U0001f51f',
+
         # People
         ':family_mmbb:': b'\U0001f468\u200d\U0001f468\u200d\U0001f466\u200d\U0001f466',
         ':family_mwgb:': b'\U0001f468\u200d\U0001f469\u200d\U0001f467\u200d\U0001f466',
@@ -58,7 +71,6 @@ class EmojiMap:
         ':white_sun_small_cloud:': b'\U0001f324',
         ':wind_blowing_face:': b'\U0001f32c',
     }
-
     def __call__(self, _input):
 
         return self.emojis[_input].decode('unicode-escape')
