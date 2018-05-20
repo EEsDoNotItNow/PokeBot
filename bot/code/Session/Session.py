@@ -106,12 +106,12 @@ class Session:
         sps = parser.add_subparsers(title="commands")
 
 
-        sp = sps.add_parser('>test',
+        sp = sps.add_parser('>encounter',
                             description='Force encounter',
-                            prog=">test",
+                            prog=">encounter",
                             add_help=True)
-        sp.set_defaults(cmd=self._cmd_test,
-                        subCMD='>test',)
+        sp.set_defaults(cmd=self._cmd_encounter,
+                        subCMD='>encounter',)
 
 
         sp = sps.add_parser('>status',
@@ -205,7 +205,7 @@ class Session:
         return
 
 
-    async def _cmd_test(self, message):
+    async def _cmd_encounter(self, message):
         # match_obj = re.match("> ?stop$", message.content)
         # Check for valid states that we can stop from
         valid_transition_states = [TS.IDLE, TS.WALKING_IN_GRASS]

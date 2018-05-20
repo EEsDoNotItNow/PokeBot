@@ -1,4 +1,5 @@
 
+import asyncio
 import numpy as np
 import re
 import shlex
@@ -88,6 +89,12 @@ class GameEngine:
                                 nargs='?')
         sub_parser.set_defaults(subCMD='>spawn',
                                 cmd=self._cmd_spawn)
+
+
+        sub_parser = sp.add_parser('>test',
+                                   description='test something')
+        sub_parser.set_defaults(subCMD='>test',
+                                cmd=self._cmd_test)
 
 
         sub_parser = sp.add_parser('>emojidecode',
@@ -183,14 +190,20 @@ class GameEngine:
     async def _cmd_emojidecode(self, args):
         message = args.message
 
-        match_obj = re.match("> ?emojidecode (.*)$", message.content)
-        if match_obj:
-            self.log.info(match_obj.groups())
+        for emoji in args.emoji:
+            await self.client.send_message(message.channel, f"'{emoji}': {emoji.encode('unicode_escape')}")
+        return
 
-            string = match_obj.group(1).encode('unicode_escape')
-            await self.client.send_message(message.channel, f"{string}: {string.decode('unicode-escape')}")
-            return
 
+    async def _cmd_test(self, args):
+        message = args.message
+
+        from ..Client import EmojiMap
+        em = EmojiMap()
+
+        for key in em.emojis:
+            await asyncio.sleep(1)
+            await self.client.send_message(message.channel, f"`{key}`: {em(key)}")
 
     async def log_command(self, message):
 
