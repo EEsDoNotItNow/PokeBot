@@ -249,14 +249,19 @@ class Monster(Pokemon):
 
     async def calc_level(self):
         # 'SELECT * FROM experience_lookup WHERE growth_rate_id=1 AND experience<=9 ORDER BY level DESC LIMIT 1'
-        self.log.info(f"growth_rate_id: {self.growth_rate_id}")
-        self.log.info(f"xp: {self.xp}")
         cmd = """SELECT * FROM experience_lookup
                  WHERE growth_rate_id=:growth_rate_id AND experience<=:xp
                  ORDER BY level
                  DESC LIMIT 1"""
-        level = self.sql.cur.execute(cmd, self.__dict__).fetchone()['level']
-        return int(level)
+        result = self.sql.cur.execute(cmd, self.__dict__).fetchone()
+        if result is None:
+            self.log.error("Failed a lookup on the following:")
+            self.log.error(f"Pokemon ID: {self.pokemon_id}")
+            self.log.error(f"growth_rate_id: {self.growth_rate_id}")
+            self.log.error(f"xp: {self.xp}")
+            raise RunTimeError()
+
+        return int(result['level'])
         # return int(np.floor(self.xp ** (1 / 3)))
 
 
