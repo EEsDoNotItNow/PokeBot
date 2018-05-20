@@ -30,8 +30,11 @@ class EmojiMap:
         ':anger:': b'\U0001f4a2',
         ':dash:': b'\U0001f4a8',
         ':droplet:': b'\U0001f4a7',
+        ':female:': b'\u2640\ufe0f',
         ':gear:': b'\u2699',
         ':globe_with_meridians:': b'\U0001f310',
+        ':male:': b'\u2642\ufe0f',
+        ':mercury:': b'\u263f\ufe0f',
         ':new:': b'\U0001f195',
         ':ocean:': b'\U0001f30a',
         ':octagonal_sign:': b'\U0001f6d1',
@@ -40,6 +43,7 @@ class EmojiMap:
         ':speech_left:': b'\U0001f5e8',
         ':sweat_drops:': b'\U0001f4a6',
         ':zap:': b'\u26a1',
+        ':zwj:': b'\u200d',
 
         # Things
         ':boom:': b'\U0001f4a5',
