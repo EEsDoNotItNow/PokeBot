@@ -132,7 +132,7 @@ class Trainer:
         nickname = self.nickname
         trainer_id = str(uuid.uuid4())
         self.trainer_id = trainer_id
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         user_id = self.user_id
         server_id = self.server_id
 
