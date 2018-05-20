@@ -197,13 +197,20 @@ class GameEngine:
 
     async def _cmd_test(self, args):
         message = args.message
+        import discord
 
         from ..Client import EmojiMap
-        em = EmojiMap()
+        emap = EmojiMap()
 
-        for key in em.emojis:
+        em = discord.Embed(title="test")
+        em.add_field(name=".", value=f"{emap(':anger:')}test\n1,2,3")
+        await self.client.send_message(message.channel, embed=em)
+
+        return
+
+        for key in emap.emojis:
             await asyncio.sleep(1)
-            await self.client.send_message(message.channel, f"`{key}`: {em(key)}")
+            await self.client.send_message(message.channel, f"`{key}`: {emap(key)}")
 
     async def log_command(self, message):
 
