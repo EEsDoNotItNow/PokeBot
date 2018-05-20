@@ -62,7 +62,8 @@ class GameEngine:
         sub_parser = sp.add_parser('>register',
                                    description='Register self with the Pokemon League',
                                    add_help=True)
-        sub_parser.add_argument("--fast", action='store_true')
+        sub_parser.add_argument("--fast",
+                                action='store_true')
         sub_parser.set_defaults(subCMD='>register',
                                 cmd=self._cmd_register)
 
@@ -75,7 +76,9 @@ class GameEngine:
 
         sub_parser = sp.add_parser('>spawn',
                                    description="Spawn a random Poke")
-        sub_parser.add_argument("pokemon_id", type=int, nargs='?')
+        sub_parser.add_argument("pokemon_id",
+                                type=int,
+                                nargs='?')
         sub_parser.add_argument("level",
                                 type=int,
                                 choices=range(1, 101),
@@ -133,26 +136,24 @@ class GameEngine:
         if message.server is None:
             await self.client.send_message(message.channel,
                                            "Sorry, you must register in a server! I cannot register you over DMs!")
-        if args.fast:
-            self.log.info("Spawn a player registration.")
-            await self.session_manager.spawn_fast_registration_session(message)
-            self.log.info("Fin spawn a player registration.")
 
-        else:
-            self.log.info("Spawn a player registration.")
-            await self.session_manager.spawn_registration_session(message)
-            self.log.info("Fin spawn a player registration.")
+        self.log.info("Spawn a player registration.")
+        await self.session_manager.spawn_registration_session(args)
+        self.log.info("Fin spawn a player registration.")
         return
 
 
     async def _cmd_deregister(self, args):
         message = args.message
         # Create a basic trainer object
+        self.log.info("Deleting a Trainer.")
+        self.log.info("Remove all sessions")
         await self.session_manager.delete_session(message)
+        self.log.info("Remove from League")
         result = await League().deregister(message.author.id, message.server.id)
+        self.log.info(f"Removal result: {result}")
         if result:
             # Remove any sessions with this trainer.
-
             await self.client.send_message(message.channel,
                                            f"The Discord League is sorry to see you go, <@!{message.author.id}>")  # noqa: E501
         else:

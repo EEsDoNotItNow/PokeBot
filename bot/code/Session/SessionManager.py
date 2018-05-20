@@ -4,8 +4,9 @@ import asyncio
 from ..Client import Client
 from ..Log import Log
 from ..Player import League
+from ..Player import TrainerStates as TS
 from ..Singleton import Singleton
-from ..StateMachines import NewPlayerStateMachine, FastNewPlayerStateMachine
+from ..StateMachines import NewPlayerStateMachine
 
 from .Session import Session
 
@@ -104,10 +105,7 @@ class SessionManager(metaclass=Singleton):
                 if session.trainer == trainer:
                     return session
 
-        # Active sessions didn't work, check the inactive ones!
-        pass
-
-        # Inactive session not found, return a NEW session
+        # Active session not found, return a NEW session
         if len(trainers) == 1:
             self.log.info("No session found, create a new one")
             session = Session(trainers[-1])
@@ -116,41 +114,23 @@ class SessionManager(metaclass=Singleton):
         pass
 
 
-    async def spawn_registration_session(self, message):
+    async def spawn_registration_session(self, args):
         # Create a basic trainer object
-
+        message = args.message
         trainer = await League().get_trainer(message.author.id, message.server.id)
         if trainer is not None:
+            self.log.warning("We saw a trainer request to register when they were already in the league!")
             await self.client.send_message(message.channel, "Error, I cannot re-register you!")
             return
 
         # We are good to register them!
         trainer = await League().register(message.author.id, message.server.id)
 
-        # I assume that we do not have an active session already, as this player isn't registered.
-        session = Session(trainer)
-        session.state_machine = NewPlayerStateMachine(trainer)
-        self.sessions.append(session)
-        msg = "Your request for registration is in the mail! Please wait 6 to 8 weeks for delivery!"
-        await self.client.send_message(message.channel, msg)
-
-        return
-
-
-    async def spawn_fast_registration_session(self, message):
-        # Create a basic trainer object
-
-        trainer = await League().get_trainer(message.author.id, message.server.id)
-        if trainer is not None:
-            await self.client.send_message(message.channel, "Error, I cannot re-register you!")
-            return
-
-        # We are good to register them!
-        trainer = await League().register(message.author.id, message.server.id)
+        trainer.state = TS.IN_SCRIPT
 
         # I assume that we do not have an active session already, as this player isn't registered.
         session = Session(trainer)
-        session.state_machine = FastNewPlayerStateMachine(trainer)
+        session.state_machine = NewPlayerStateMachine(trainer, args)
         self.sessions.append(session)
         msg = "Your request for registration is in the mail! Please wait 6 to 8 weeks for delivery!"
         await self.client.send_message(message.channel, msg)

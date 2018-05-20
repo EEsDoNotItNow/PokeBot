@@ -34,3 +34,6 @@ class TrainerStates(enum.IntEnum):
     TRADING = 400
     SHOPPING = 401
     SOMEONES_PC = 402
+
+    # State Machine States
+    IN_SCRIPT = 500

@@ -197,7 +197,7 @@ class Session:
             # Safe to update, lets see where we are!
             await self.trainer.tick()
             msg = f"<@!{message.author.id}> You are walking!"\
-                " You have about {self.trainer.destination_distance:,.0f} to go!"
+                f" You have about {self.trainer.destination_distance:,.0f} to go!"
 
         elif self.trainer.state == TS.WALKING_IN_GRASS:
             # Safe to update, lets see where we are!
