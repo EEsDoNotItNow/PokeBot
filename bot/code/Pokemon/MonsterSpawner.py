@@ -55,7 +55,7 @@ class MonsterSpawner:
         """
         cur = self.sql.cur
 
-        cmd = "SELECT pokemon_id FROM pokedex ORDER BY RANDOM() LIMIT 1"
+        cmd = "SELECT pokemon_id FROM pokedex WHERE pokemon_id<10000 ORDER BY RANDOM() LIMIT 1"
         pokemon_id = cur.execute(cmd).fetchone()['pokemon_id']
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
