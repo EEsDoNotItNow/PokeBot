@@ -259,7 +259,7 @@ class Monster(Pokemon):
             self.log.error(f"Pokemon ID: {self.pokemon_id}")
             self.log.error(f"growth_rate_id: {self.growth_rate_id}")
             self.log.error(f"xp: {self.xp}")
-            raise RunTimeError()
+            raise RuntimeError()
 
         return int(result['level'])
         # return int(np.floor(self.xp ** (1 / 3)))
