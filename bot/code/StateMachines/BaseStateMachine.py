@@ -1,4 +1,7 @@
 
+from ..Client import Client
+from ..Log import Log
+
 
 
 class BaseStateMachine:
@@ -20,6 +23,9 @@ class BaseStateMachine:
 
         # Sub state to help this state machine
         self.sub_state_machine = None
+
+        self.client = Client()
+        self.log = Log()
 
 
     async def command_proc(self, message):
