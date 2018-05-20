@@ -1,4 +1,6 @@
 
+import asyncio
+
 # from ..SQL import SQL
 from ..Player import TrainerStates as TS
 
@@ -39,7 +41,6 @@ class EncounterStateMachine(BaseStateMachine):
 
 
     async def _run(self):
-        pass
 
         self.user = await self.client.get_user_info(self.trainer.user_id)
 
@@ -76,18 +77,47 @@ class EncounterStateMachine(BaseStateMachine):
 
             await menu_list[selection]()
 
-            await self.client.send_message(self.channel,
-                                           "This is a proof of concept, and doesn't do anything yet!")
-            break
-
             if self.action is None:
                 continue
+
+            if self.action[0] == 'fight':
+                await self.client.send_message(self.channel,
+                                               "We can't do that yet, sorry!")
+
+            if self.action[0] in ['use', 'give', 'take']:
+                await self.client.send_message(self.channel,
+                                               "We can't do that yet, sorry!")
+
+            if self.action[0] == 'swap':
+                await self.client.send_message(self.channel,
+                                               "We can't do that yet, sorry!")
+
+            if self.action[0] == 'run':
+                await self.client.send_message(self.channel,
+                                               "You run away!")
+                break
+
+            await asyncio.sleep(3)
+            # Item actions happen
+
+            # Pokemon swaps happen
+
+            # Battle actions are checked for who goes first
+
+            # First attack
+            # Check for swap
+
+            # Second attack
+            # Check for swap
+
+
+
             """
                 Present menu
-                    Fight
-                    Item
-                    Pokemon
-                    Run
+                    [ ] Fight
+                    [ ] Item
+                    [ ] Pokemon
+                    [x] Run
 
                 Handle Actions on both sides
 
@@ -102,14 +132,13 @@ class EncounterStateMachine(BaseStateMachine):
                         No: Keep fighting!
             """
 
-
     async def _menu_fight(self):
         pass
         """
             Get active poke
             Request current move set
             Ask user to pick one, or cancel
-            Register action
+            Register action ("fight", n)
         """
 
 
@@ -118,7 +147,7 @@ class EncounterStateMachine(BaseStateMachine):
         """
             Get inventory
             Request player pick an item, or cancel
-            Register action
+            Register action ("use", n, m) or ("give", n, m) or ("take", n)
         """
 
 
@@ -128,13 +157,19 @@ class EncounterStateMachine(BaseStateMachine):
             Get party
             Request player pick a poke
             Give details, or make active
-            Register action
+            Register action ("swap", n, m)
         """
 
 
     async def _menu_run(self):
-        pass
         """
             Prompt user to run
             Register action
         """
+        try:
+            choice = self.client.confirm_prompt(self.channel, "Do you want to run away?", user=self.user)
+        except TimeoutError:
+            return
+
+        if choice:
+            self.action = ("run",)
