@@ -71,6 +71,8 @@ class EmojiMap:
         ':white_sun_small_cloud:': b'\U0001f324',
         ':wind_blowing_face:': b'\U0001f32c',
     }
+
+
     def __call__(self, _input):
 
         return self.emojis[_input].decode('unicode-escape')
