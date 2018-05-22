@@ -26,7 +26,7 @@ class BattleHelper(metaclass=SingletonArgs):
 
 
     async def deregister(self, monster):
-        self.participants = [x for x in self.participants if x[0] is not mosnter]
+        self.participants = [x for x in self.participants if x[0] is not Monster]
 
 
     async def get_log(self, full=False):
@@ -35,7 +35,7 @@ class BattleHelper(metaclass=SingletonArgs):
 
     async def mark_ready(self, trainer):
         """
-        Mark yourself as read for the turn to begin. 
+        Mark yourself as read for the turn to begin.
         """
 
     async def execute(self):
@@ -45,5 +45,3 @@ class BattleHelper(metaclass=SingletonArgs):
         if self.has_run:
             return
         self.has_run = True
-
-
