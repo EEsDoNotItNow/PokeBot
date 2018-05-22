@@ -5,7 +5,7 @@ from ..Singleton import SingletonArgs
 
 
 
-class BattleHelper(metaclass=SingletonArgs):
+class Battle(metaclass=SingletonArgs):
 
 
     def __init__(self, battle_id, encounter=False, trainer=False, players=False):
@@ -22,7 +22,9 @@ class BattleHelper(metaclass=SingletonArgs):
     async def register(self, trainer):
         """Register a trainer with the battle
         """
-        pass
+        if trainer in self.participants:
+            raise ValueError("Trainer already in battle!")
+        self.participants.append(trainer)
 
 
     async def deregister(self, monster):
@@ -33,10 +35,18 @@ class BattleHelper(metaclass=SingletonArgs):
         return self._log
 
 
+    async def log_event(self, message):
+        if self.turn not in self._log:
+            self._log[self.turn] = []
+        self._log[self.turn].append(message)
+
+
     async def mark_ready(self, trainer):
         """
         Mark yourself as read for the turn to begin.
         """
+        pass
+
 
     async def execute(self):
         """
