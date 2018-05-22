@@ -1,8 +1,7 @@
 
-
 import unittest
 
-from ._run import _run
+from .helpers import _run
 
 from ..code.SQL import SQL
 from ..code.Pokemon import MoveSlot

@@ -3,7 +3,7 @@
 import numpy as np
 import unittest
 
-from ._run import _run
+from .helpers import _run
 
 from ..code.Pokemon import Monster
 from ..code.SQL import SQL

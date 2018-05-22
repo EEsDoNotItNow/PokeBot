@@ -202,6 +202,19 @@ class GameEngine:
         from ..Client import EmojiMap
         emap = EmojiMap()
 
+        question = "What do you want to do?"
+        responses = (
+            (emap(":runner:"), "Run away!"),
+            (emap(":fist:"), "Fight!"),
+            (emap(":nut_and_bolt:"), "Screw!"),
+        )
+
+        result = await self.client.select_custom_prompt(message.channel, question, responses, message.author)
+
+        await self.client.send_message(message.channel, f"You picked {responses[result][1]}")
+
+        return
+
         em = discord.Embed(title="test")
         em.add_field(name=".", value=f"{emap(':anger:')}test\n1,2,3")
         await self.client.send_message(message.channel, embed=em)
