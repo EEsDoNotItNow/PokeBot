@@ -7,7 +7,7 @@ from ..code.SQL import SQL
 
 
 
-class test_monster(unittest.TestCase):
+class test_0_preload_sql(unittest.TestCase):
 
 
     def setUp(self):
