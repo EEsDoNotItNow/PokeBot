@@ -85,3 +85,21 @@ class Pokemon:
         self.type1 = Type(self.type1)
         if self.type2:
             self.type2 = Type(self.type2)
+
+
+    async def calc_xp_for_level(self, level):
+        """Calculates the minimum XP required for a given pokemon to be a given level
+        """
+        level = int(level)
+        if level < 1:
+            raise ValueError(f"Level must be positive! Got {level}")
+        if level > 100:
+            raise ValueError(f"Level must be less than 100! got {level}")
+
+        data = {
+            'growth_rate_id': self.growth_rate_id,
+            'level': level,
+        }
+        cur = self.sql.cur
+        cmd = "SELECT experience FROM experience_lookup WHERE growth_rate_id=:growth_rate_id AND level=:level"
+        return cur.execute(cmd, data).fetchone()['experience']
