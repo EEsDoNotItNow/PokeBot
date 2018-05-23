@@ -47,23 +47,13 @@ class test_monster(unittest.TestCase):
                 self.assertEqual(str(poke.pokemon_id), str(i))
 
 
-    def test_01_create_all_monsters_all_levels(self):
+    def test_01_create_all_monsters_some_levels(self):
         for i in range(1, 807 + 1):
-            for level in range(1, 101):
+            for level in [1, 2, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99, 100]:
                 with self.subTest(pokemon_id=i, level=level):
                     poke = Monster(pokemon_id=i)
                     _run(poke.load())
-
-                    growth_rate_id = poke.growth_rate_id
-
-                    cmd = """
-                        SELECT experience
-                        FROM experience_lookup
-                        WHERE
-                            growth_rate_id=:growth_rate_id
-                            AND level=:level
-                    """
-                    poke.xp = self.sql.cur.execute(cmd, locals()).fetchone()['experience']
+                    poke.xp = _run(poke.calc_xp_for_level(level))
 
                     poke.iv_hp = np.random.randint(0, 31)
                     poke.iv_attack = np.random.randint(0, 31)

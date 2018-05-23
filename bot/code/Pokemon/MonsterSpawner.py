@@ -19,8 +19,6 @@ class MonsterSpawner:
     async def spawn_at_level(self, pokemon_id, level):
         """ Pick a poke at random from the dex and spawn it!
         """
-        cur = self.sql.cur
-
         if level <= 0 or level > 100:
             raise ValueError(f"Level value of {level} is illegal")
 
@@ -28,14 +26,8 @@ class MonsterSpawner:
         poke = Monster(pokemon_id=pokemon_id)
         await poke.load()
 
-        growth_rate_id = 1
+        poke.xp = await poke.calc_xp_for_level(level)
 
-        poke.xp = np.random.randint(0, 1e6)
-        # 'SELECT * FROM experience_lookup WHERE growth_rate_id=1 AND experience<=9 ORDER BY level DESC LIMIT 1'
-        cmd = "SELECT experience FROM experience_lookup WHERE growth_rate_id=:growth_rate_id AND level=:level"
-        poke.xp = cur.execute(cmd, locals()).fetchone()['experience']
-
-        self.log.debug(cmd)
         self.log.debug(poke.xp)
 
         poke.iv_hp = np.random.randint(0, 31)
