@@ -48,6 +48,8 @@ class test_monster(unittest.TestCase):
 
 
     def test_01_create_all_monsters_some_levels(self):
+        """Test every Pokemon with various key levels
+        """
         for i in range(1, 807 + 1):
             for level in [1, 2, 10, 20, 30, 40, 50, 60, 70, 80, 90, 99, 100]:
                 with self.subTest(pokemon_id=i, level=level):
@@ -63,7 +65,6 @@ class test_monster(unittest.TestCase):
                     poke.iv_speed = np.random.randint(0, 31)
 
                     _run(poke.update_state())
-
 
                     self.assertEqual(level, poke.level)
 
