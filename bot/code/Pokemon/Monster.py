@@ -310,3 +310,21 @@ class Monster(Pokemon):
         @param trainer_id Trainer that captured this poke.
         """
         raise NotImplementedError()
+
+
+    async def level_up(self):
+        """If a Pokemon has experenced a level up, handle this.
+
+        @param trainer_id Trainer that captured this poke.
+        """
+        while self.level != await self.calc_level():
+            # Check for evolution conditions
+            #   Level based evolve?
+            #   Other conditional evolution?
+            #   Prompt trainer to stop or allow evolution (30 second timeout)
+
+            # Check for new moves
+            #   Pormpt user to learn it if needed
+
+            await self.update_state()
+            await self.save()
