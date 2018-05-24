@@ -181,8 +181,11 @@ class GameEngine:
         else:
             poke = await MonsterSpawner().spawn_random()
 
-        await self.client.send_message(message.channel,
-                                       embed=await poke.em())
+        # await self.client.send_message(message.channel,
+        #                                embed=await poke.em())
+
+        await self.client.send_message(message.channel, await poke.text_card(debug=False))
+
         self.log.info("Finished spawn command")
         return
 

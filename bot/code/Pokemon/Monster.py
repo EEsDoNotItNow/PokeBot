@@ -6,6 +6,7 @@ import uuid
 
 from ..Log import Log
 from ..SQL import SQL
+from ..Client import EmojiMap
 
 from .Pokemon import Pokemon
 from . import EnumStatus
@@ -32,8 +33,10 @@ class Monster(Pokemon):
 
         self.status = EnumStatus.ALIVE
 
+        self.moves = [None, None, None, None]
+
         # Setup some sensible default values
-        self.name = "NOT LOADED"
+        self.name = None
 
         self.hp_current = -1
 
@@ -41,7 +44,7 @@ class Monster(Pokemon):
 
         self.ability = None
         self.hidden_ability = None
-        self.gender = "?"
+        self.gender = None
         self.xp = 0
 
         self.iv_hp = 0
@@ -136,6 +139,60 @@ class Monster(Pokemon):
         return em
 
 
+    async def text_card(self, bar_length=20, debug=False, opponent=False):
+        """Return a text card
+        """
+        msg = "```\n"
+
+        # Handle Top Bar
+        ng_tag = f"{self.name}{self.gender}"
+        lv_tag = f"Lv{self.level}"
+        msg += f"{ng_tag:13} {lv_tag:5}"
+
+        # Handle HP
+        hp_ratio = self.hp_current / self.hp
+
+        hp_blocks_full = int(bar_length * hp_ratio)
+        hp_blocks_empty = bar_length - hp_blocks_full
+
+        msg += f"\nHP:[{'#' * hp_blocks_full}{' ' * hp_blocks_empty}]"
+        if not opponent:
+            msg += f" {self.hp_current}/{self.hp}"
+
+        if not opponent:
+            xp_base = self.calc_xp_for_level(self.level)
+
+            xp_ratio = self.hp_current / self.hp
+            xp_blocks_full = int(bar_length * xp_ratio)
+            xp_blocks_empty = bar_length - xp_blocks_full
+            msg += f"\nHP:[{'#' * xp_blocks_full}{' ' * xp_blocks_empty}]"
+            if not opponent:
+                msg += f" {self.hp_current}/{self.hp}"
+
+        if debug:
+            msg += "\n"
+            evs = {
+                "ev_hp": self.ev_hp,
+                "ev_attack": self.ev_attack,
+                "ev_defense": self.ev_defense,
+                "ev_sp_attack": self.ev_sp_attack,
+                "ev_sp_defense": self.ev_sp_defense,
+                "ev_speed": self.ev_speed,
+            }
+            ivs = {
+                "iv_hp": self.iv_hp,
+                "iv_attack": self.iv_attack,
+                "iv_defense": self.iv_defense,
+                "iv_sp_attack": self.iv_sp_attack,
+                "iv_sp_defense": self.iv_sp_defense,
+                "iv_speed": self.iv_speed,
+            }
+            msg += f"{evs}\n{ivs}"
+
+        msg += "```"
+        return msg
+
+
     async def load(self):
         cur = self.sql.cur
 
@@ -150,9 +207,18 @@ class Monster(Pokemon):
         super().__init__(pokemon_id=self.pokemon_id)
         await super().load()
 
-        self.name = self.identifier
-        self.hp_current = self.base_hp
-        self.level = await self.calc_level()
+        if self.name is None:
+            self.name = self.identifier.title()
+
+        if self.gender is None:
+            em = EmojiMap()
+            male = em(":male:")
+            female = em(":female:")
+            self.gender = np.random.choice((male, female))
+
+        if self.hp_current == -1:
+            self.hp_current = self.hp
+
 
 
     async def save(self):
