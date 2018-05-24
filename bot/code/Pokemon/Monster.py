@@ -160,7 +160,7 @@ class Monster(Pokemon):
         lv_tag = f"Lv{self.level}"
         msg += f"{ng_tag:13} {lv_tag:5}"
 
-        # Handle HP
+        # Handle HP bar
         hp_ratio = self.hp_current / self.hp
 
         hp_blocks_full = int(bar_length * hp_ratio)
@@ -170,15 +170,21 @@ class Monster(Pokemon):
         if not opponent:
             msg += f" {self.hp_current}/{self.hp}"
 
+        # Handle XP bar
         if not opponent:
-            xp_base = self.calc_xp_for_level(self.level)
+            if self.level == 100:
+                xp_ratio = 1.0
+            else:
+                xp_base = await self.calc_xp_for_level(self.level)
+                xp_next = await self.calc_xp_for_level(self.level + 1)
+                xp_delta = xp_next - xp_base
+                xp_base -= xp_delta
+                xp_next -= xp_delta
+                xp_ratio = xp_base / xp_next
 
-            xp_ratio = self.hp_current / self.hp
             xp_blocks_full = int(bar_length * xp_ratio)
             xp_blocks_empty = bar_length - xp_blocks_full
-            msg += f"\nHP:[{'#' * xp_blocks_full}{' ' * xp_blocks_empty}]"
-            if not opponent:
-                msg += f" {self.hp_current}/{self.hp}"
+            msg += f"\nXP:[{'#' * xp_blocks_full}{' ' * xp_blocks_empty}]"
 
         if debug:
             msg += "\n"
