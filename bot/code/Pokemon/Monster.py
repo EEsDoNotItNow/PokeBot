@@ -47,6 +47,7 @@ class Monster(Pokemon):
         self.gender = None
         self.xp = 0
 
+        # "Genetics" of the pokemon
         self.iv_hp = 0
         self.iv_attack = 0
         self.iv_defense = 0
@@ -54,6 +55,7 @@ class Monster(Pokemon):
         self.iv_sp_defense = 0
         self.iv_speed = 0
 
+        # Effort values, come from winning battles
         self.ev_hp = 0
         self.ev_attack = 0
         self.ev_defense = 0
@@ -61,12 +63,21 @@ class Monster(Pokemon):
         self.ev_sp_defense = 0
         self.ev_speed = 0
 
+        # Resultant stat values
         self.hp = 0
         self.attack = 0
         self.defense = 0
         self.sp_attack = 0
         self.sp_defense = 0
         self.speed = 0
+
+        # Stage of stats in battles (-7 <= x <= 6)
+        self.stage_hp = 0
+        self.stage_attack = 0
+        self.stage_defense = 0
+        self.stage_sp_attack = 0
+        self.stage_sp_defense = 0
+        self.stage_speed = 0
 
 
     def __repr__(self):
