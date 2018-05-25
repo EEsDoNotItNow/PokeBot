@@ -9,18 +9,24 @@ class test_singletons(unittest.TestCase):
 
 
     def test_simple_singleton_like(self):
+        """Test SingletonArgs as a Singleton
+        """
         class A(object, metaclass=SingletonArgs):
             FOO = 'bar'
         assert A() is A()
 
 
     def test_simple_singleton(self):
+        """Test Singleton
+        """
         class A(object, metaclass=Singleton):
             FOO = 'bar'
         assert A() is A()
 
 
     def test_simple_singleton_args(self):
+        """Test SingletonArgs
+        """
         class B(object, metaclass=SingletonArgs):
             def __init__(self, key):
                 self.key = key
@@ -29,6 +35,8 @@ class test_singletons(unittest.TestCase):
 
 
     def test_complex_singleton_args(self):
+        """Test SingletonArgs with complex cases
+        """
         class C(object, metaclass=SingletonArgs):
             def __init__(self, key=None):
                 self.key = key
@@ -44,6 +52,8 @@ class test_singletons(unittest.TestCase):
 
 
     def test_different_singleton(self):
+        """Test SingletonArgs with different classes
+        """
         class D(object, metaclass=SingletonArgs):
             def __init__(self):
                 pass

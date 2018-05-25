@@ -21,5 +21,7 @@ class test_0_preload_sql(unittest.TestCase):
         del self.sql
 
     def test_create_all_monsters(self):
+        """Preload SQL database for testing
+        """
         # Placeholder assert to force a setUp and tearDown
         self.assertEqual(1, 1)

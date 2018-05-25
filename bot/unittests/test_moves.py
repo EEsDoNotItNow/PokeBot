@@ -19,6 +19,8 @@ class test_moves(unittest.TestCase):
 
 
     def test_import_all_moves(self):
+        """Load up every Move in the DB
+        """
         for i in range(1, 728 + 1):
             move = Move(move_id=i)
 

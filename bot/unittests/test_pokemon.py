@@ -19,6 +19,8 @@ class test_pokemon(unittest.TestCase):
 
 
     def test_import_all_pokemon(self):
+        """Load up every Pokemon in the DB
+        """
         for i in range(1, 807 + 1):
             poke = Pokemon(pokemon_id=i)
 
