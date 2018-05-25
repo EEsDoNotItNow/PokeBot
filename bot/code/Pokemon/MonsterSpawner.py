@@ -24,20 +24,7 @@ class MonsterSpawner:
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
         poke = Monster(pokemon_id=pokemon_id)
-        await poke.load()
-
-        poke.xp = await poke.calc_xp_for_level(level)
-
-        self.log.debug(poke.xp)
-
-        poke.iv_hp = np.random.randint(0, 31)
-        poke.iv_attack = np.random.randint(0, 31)
-        poke.iv_defense = np.random.randint(0, 31)
-        poke.iv_sp_attack = np.random.randint(0, 31)
-        poke.iv_sp_defense = np.random.randint(0, 31)
-        poke.iv_speed = np.random.randint(0, 31)
-
-        await poke.update_state()
+        await poke.spawn(level)
 
         return poke
 
@@ -54,17 +41,5 @@ class MonsterSpawner:
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
         poke = Monster(pokemon_id=pokemon_id)
-        await poke.load()
-
-        poke.xp = np.random.randint(0, 1e6)
-
-        poke.iv_hp = np.random.randint(0, 31)
-        poke.iv_attack = np.random.randint(0, 31)
-        poke.iv_defense = np.random.randint(0, 31)
-        poke.iv_sp_attack = np.random.randint(0, 31)
-        poke.iv_sp_defense = np.random.randint(0, 31)
-        poke.iv_speed = np.random.randint(0, 31)
-
-        await poke.update_state()
-
+        await poke.spawn(np.random.randint(1, 101))
         return poke

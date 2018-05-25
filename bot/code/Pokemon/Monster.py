@@ -29,6 +29,8 @@ class Monster(Pokemon):
         if pokemon_id:
             super().__init__(pokemon_id)
 
+        self.loaded = False
+
         self.monster_id = monster_id
 
         self.status = EnumStatus.ALIVE
@@ -220,19 +222,7 @@ class Monster(Pokemon):
 
         super().__init__(pokemon_id=self.pokemon_id)
         await super().load()
-
-        if self.name is None:
-            self.name = self.identifier.title()
-
-        if self.gender is None:
-            em = EmojiMap()
-            male = em(":male:")
-            female = em(":female:")
-            self.gender = np.random.choice((male, female))
-
-        if self.hp_current == -1:
-            self.hp_current = self.hp
-
+        self.loaded = True
 
 
     async def save(self):
@@ -298,6 +288,35 @@ class Monster(Pokemon):
         # Build data table
         cur.execute(cmd, self.__dict__)
         await self.sql.commit(now=True)
+
+
+    async def spawn(self, level=5):
+        # We MUST have loaded before we can do anything!
+        if not self.loaded:
+            await self.load()
+
+        self.name = self.identifier.title()
+
+        em = EmojiMap()
+        male = em(":male:")
+        female = em(":female:")
+        self.gender = np.random.choice((male, female))
+
+
+        self.xp = await self.calc_xp_for_level(level)
+
+        self.iv_hp = np.random.randint(0, 31)
+        self.iv_attack = np.random.randint(0, 31)
+        self.iv_defense = np.random.randint(0, 31)
+        self.iv_sp_attack = np.random.randint(0, 31)
+        self.iv_sp_defense = np.random.randint(0, 31)
+        self.iv_speed = np.random.randint(0, 31)
+
+        await self.update_state()
+
+        self.hp_current = self.hp
+
+
 
 
     async def update_state(self):
