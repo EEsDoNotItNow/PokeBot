@@ -1,12 +1,13 @@
 
 
+from ..Log import Log
 
 class EventBase:
     """Define the base event for battle events.
     """
 
 
-    def __init__(self):
+    def __init__(self, battle):
 
         # Mark when event has been processed.
         self.triggered = False
@@ -14,8 +15,11 @@ class EventBase:
         # Mark even ready for processing
         self.ready = False
 
+        self.battle = battle
+
         #
         self.turns = -1
+        self.log = Log()
         pass
 
 
@@ -25,7 +29,7 @@ class EventBase:
         self.ready = True
 
 
-    async def execute(self, battle, *args, **kwargs):
+    async def execute(self, *args, **kwargs):
         """ Implement in other classes. Depending on the event,
         """
         raise NotImplementedError()

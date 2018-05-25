@@ -1,9 +1,7 @@
 
-import asyncio
 
-# from ..SQL import SQL
 from ..Player import TrainerStates as TS
-from ..Battle import BattleManager
+from ..Battle import BattleManager, EventRun
 
 from .BaseUserInterface import BaseUserInterface
 
@@ -38,7 +36,7 @@ class EncounterUserInterface(BaseUserInterface):
             self.alive = False
         finally:
             try:
-                self.battle.deregister(self.trainer)
+                await self.battle.deregister(self.trainer)
             except ValueError:
                 self.log.exception("Failed to deregister, that's weird!")
 
@@ -59,16 +57,16 @@ class EncounterUserInterface(BaseUserInterface):
                 break
         self.channel = channel
 
-        while True:
+        while self.battle.active:
             self.action = None
 
             # Print opponents Pokemon
-            embed = await self.opponent.em()
-            await self.client.send_message(self.channel, embed=embed)
+            card = await self.opponent.text_card(opponent=True)
+            await self.client.send_message(self.channel, card)
             # Print users Pokemon
             poke = await self.trainer.party.get_leader()
-            embed = await poke.em()
-            await self.client.send_message(self.channel, embed=embed)
+            card = await poke.text_card()
+            await self.client.send_message(self.channel, card)
 
             prompt_question = "What would you like to do?"
             prompt_list = ["Fight", "Items", "Pokemon", "Run"]
@@ -83,29 +81,20 @@ class EncounterUserInterface(BaseUserInterface):
                 self._menu_pokemon,
                 self._menu_run]
 
-            await menu_list[selection]()
+            picked_action = await menu_list[selection]()
 
-            if self.action is None:
+            if not picked_action:
                 continue
 
-            if self.action[0] == 'fight':
-                await self.client.send_message(self.channel,
-                                               "We can't do that yet, sorry!")
+            await self.battle.execute()
 
-            if self.action[0] in ['use', 'give', 'take']:
-                await self.client.send_message(self.channel,
-                                               "We can't do that yet, sorry!")
+            self.log.info(f"Attemping to pull from turn {self.battle.turn} - 1")
 
-            if self.action[0] == 'swap':
-                await self.client.send_message(self.channel,
-                                               "We can't do that yet, sorry!")
+            for log in await self.battle.get_log(self.battle.turn - 1):
+                await self.client.send_message(self.channel, log)
 
-            if self.action[0] == 'run':
-                await self.client.send_message(self.channel,
-                                               "You run away!")
-                break
 
-            await asyncio.sleep(3)
+
             # Item actions happen
 
             # Pokemon swaps happen
@@ -117,8 +106,6 @@ class EncounterUserInterface(BaseUserInterface):
 
             # Second attack
             # Check for swap
-
-
 
             """
                 Present menu
@@ -177,7 +164,8 @@ class EncounterUserInterface(BaseUserInterface):
         try:
             choice = await self.client.confirm_prompt(self.channel, "Do you want to run away?", user=self.user)
         except TimeoutError:
-            return
+            return False
 
         if choice:
-            self.action = ("run",)
+            await self.battle.register_event(EventRun(self.battle, self.trainer))
+        return True
