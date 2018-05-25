@@ -349,7 +349,7 @@ class Monster(Pokemon):
         if fast:
             return
 
-        
+
         # Pick moves
         cmd = f"""
             SELECT move_id
