@@ -50,7 +50,7 @@ class MonsterSpawner:
         cmd = "SELECT pokemon_id FROM pokedex WHERE CAST(pokemon_id AS INTEGER)<10000 ORDER BY RANDOM() LIMIT 1"
         pokemon_id = cur.execute(cmd).fetchone()['pokemon_id']
 
-        self.log.info(f"Spawned a poke with id: {pokemon_id}")
+        self.log.debug(f"Spawned a poke with id: {pokemon_id}")
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
         poke = Monster(pokemon_id=pokemon_id)

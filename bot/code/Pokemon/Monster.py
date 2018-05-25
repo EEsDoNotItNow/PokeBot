@@ -177,10 +177,7 @@ class Monster(Pokemon):
             else:
                 xp_base = await self.calc_xp_for_level(self.level)
                 xp_next = await self.calc_xp_for_level(self.level + 1)
-                xp_delta = xp_next - xp_base
-                xp_base -= xp_delta
-                xp_next -= xp_delta
-                xp_ratio = xp_base / xp_next
+                xp_ratio = (self.xp - xp_base) / (xp_next - xp_base)
 
             xp_blocks_full = int(bar_length * xp_ratio)
             xp_blocks_empty = bar_length - xp_blocks_full
