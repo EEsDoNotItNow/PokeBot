@@ -6,7 +6,7 @@ from .EventBase import EventBase
 
 
 
-class EventAttack(EventBase):
+class EventMove(EventBase):
 
 
     def __init__(self, move):
