@@ -60,6 +60,7 @@ class Move:
         """Load data from DB on this move
         """
         cmd = f"SELECT * FROM moves WHERE move_id={self.move_id}"
+        self.log.info(cmd)
         cur = self.sql.cur
         data = cur.execute(cmd).fetchone()
         if data is None:
@@ -80,22 +81,17 @@ class Move:
 
 class MoveSlot(Move):
 
-    def __init__(self, move_id, move_uuid=None, slot_number=None, pp=None, pp_max=None):
+    def __init__(self, move_id, move_uuid=None, slot_number=None):
         """A move that currently sits in the slot of a pokemon
 
         @param move_id [REQUIRED] Id of the move, used to look up information in the DB
         @param move_uuid Unique ID of the move. If not given before being saved, will be generated
-        @param slot_number Slot number (1-4) that a move sits in. Can be -1 to indicate it is temporary
-            (When picking a new more, for instance)
-        @param pp
         """
 
         super().__init__(move_id)
 
         self.move_uuid = move_uuid
         self.slot_number = slot_number
-        self.pp = pp
-        self.pp_max_slot = pp_max
 
 
     def __repr__(self):

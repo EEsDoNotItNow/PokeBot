@@ -9,6 +9,7 @@ from ..SQL import SQL
 from ..Client import EmojiMap
 
 from .Pokemon import Pokemon
+from .Move import MoveSlot
 from . import EnumStatus
 
 
@@ -35,7 +36,7 @@ class Monster(Pokemon):
 
         self.status = EnumStatus.ALIVE
 
-        self.moves = [None, None, None, None]
+        self.move_slots = [None, None, None, None]
 
         # Setup some sensible default values
         self.name = None
@@ -184,6 +185,10 @@ class Monster(Pokemon):
             xp_blocks_full = int(bar_length * xp_ratio)
             xp_blocks_empty = bar_length - xp_blocks_full
             msg += f"\nXP:[{'#' * xp_blocks_full}{' ' * xp_blocks_empty}]"
+
+            msg += "\nMoves:"
+            for move in self.move_slots:
+                msg += f"\n   {move}"
 
         if debug:
             msg += "\n"
@@ -340,6 +345,27 @@ class Monster(Pokemon):
 
         self.hp_current = self.hp
 
+        # Pick moves
+        cmd = f"""
+            SELECT move_id
+            FROM pokemon_moves
+            WHERE pokemon_id={self.pokemon_id}
+                AND version_group_id=18
+                AND pokemon_move_method_id=1
+                AND level<={self.level}
+            ORDER BY level DESC"""
+        cur = self.sql.cur
+        data = cur.execute(cmd).fetchall()
+        for idx, move_id in enumerate(data[:4]):
+            self.log.info(move_id)
+            cmd = f"""
+                SELECT *
+                FROM moves
+                WHERE move_id=:move_id"""
+            move_data = cur.execute(cmd, move_id).fetchone()
+            self.log.info(move_data)
+            self.move_slots[idx] = MoveSlot(move_data['move_id'], slot_number=idx)
+            await self.move_slots[idx].load()
 
 
 
