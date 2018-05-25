@@ -25,7 +25,6 @@ class EmojiMap:
         ':robot:': b'\U0001f916',
         ':runner:': b'\U0001f3c3',
 
-
         # Symbol
         ':anger:': b'\U0001f4a2',
         ':dash:': b'\U0001f4a8',
@@ -55,6 +54,8 @@ class EmojiMap:
         ':floppy_disk:': b'\U0001f4be',
         ':map:': b'\U0001f5fa',
         ':nut_and_bolt:': b'\U0001f529',
+        ':package:': b'\U0001f4e6',
+        ':pokeball:': b':pokeball:',
         ':shield:': b'\U0001f6e1',
         ':tools:': b'\U0001f6e0',
         ':yen:': b'\U0001f4b4',

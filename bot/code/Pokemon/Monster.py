@@ -227,6 +227,8 @@ class Monster(Pokemon):
 
         super().__init__(pokemon_id=self.pokemon_id)
         await super().load()
+
+        await self.update_state()
         self.loaded = True
 
 

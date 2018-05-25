@@ -1,7 +1,8 @@
 
 
-from ..Player import TrainerStates as TS
 from ..Battle import BattleManager, EventRun
+from ..Client import EmojiMap
+from ..Player import TrainerStates as TS
 
 from .BaseUserInterface import BaseUserInterface
 
@@ -68,17 +69,31 @@ class EncounterUserInterface(BaseUserInterface):
             card = await poke.text_card()
             await self.client.send_message(self.channel, card)
 
-            prompt_question = "What would you like to do?"
-            prompt_list = ["Fight", "Items", "Pokemon", "Run"]
-            selection = await self.client.select_prompt(self.channel,
-                                                        prompt_question,
-                                                        prompt_list,
-                                                        user=self.user,
-                                                        timeout=300)
+            emap = EmojiMap()
+
+            question = "What do you want to do?"
+            responses = (
+                (emap(":fist:"), "Fight"),
+                (emap(":package:"), "Use Item"),
+                # (emap(":pokeball:"), "Use Pokemon"),
+                (emap(":runner:"), "Run away"),
+            )
+
+            selection = await self.client.select_custom_prompt(self.channel, question, responses, self.user)
+
+            await self.client.send_message(self.channel, f"You picked {responses[selection][1]}")
+
+            # prompt_question = "What would you like to do?"
+            # prompt_list = ["Fight", "Items", "Pokemon", "Run"]
+            # selection = await self.client.select_prompt(self.channel,
+            #                                             prompt_question,
+            #                                             prompt_list,
+            #                                             user=self.user,
+            #                                             timeout=300)
             menu_list = [
                 self._menu_fight,
                 self._menu_item,
-                self._menu_pokemon,
+                # self._menu_pokemon,
                 self._menu_run]
 
             picked_action = await menu_list[selection]()
@@ -92,8 +107,6 @@ class EncounterUserInterface(BaseUserInterface):
 
             for log in await self.battle.get_log(self.battle.turn - 1):
                 await self.client.send_message(self.channel, log)
-
-
 
             # Item actions happen
 
