@@ -311,8 +311,6 @@ class Monster(Pokemon):
         elif self.gender_rate == 1:
             m_ratio = 7 / 8
             f_ratio = 1 - m_ratio
-            p = (m_ratio, f_ratio)
-            self.log.info(f"p={p}")
             self.gender = np.random.choice((male, female), p=(m_ratio, f_ratio))
 
         elif self.gender_rate == 2:
