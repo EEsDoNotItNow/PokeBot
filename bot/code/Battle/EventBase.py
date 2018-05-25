@@ -19,21 +19,39 @@ class EventBase:
         pass
 
 
-    def setup(self):
+    async def setup(self):
         """This event is ready for use, mark it as such
         """
         self.ready = True
 
 
-    def execute(self, battle, *args, **kwargs):
+    async def execute(self, battle, *args, **kwargs):
         """ Implement in other classes. Depending on the event,
         """
         raise NotImplementedError()
 
 
-    def tear_down(self):
+    async def tear_down(self):
         """This event has been run, prevent another run before a setup
         """
         if self.triggered or not self.ready:
             raise RuntimeError(f"{self} was not ready! Triggered state: {self.triggered} Ready state: {self.ready}")
         self.triggered = True
+
+
+    async def on_swap(self, swapper):
+        """Called when a pokemon swaps
+        """
+        pass
+
+
+    async def on_attack(self, attacker, target):
+        """Called when a pokemon attacks a target
+        """
+        pass
+
+
+    async def on_feint(self, attacker, target):
+        """Called when a pokemon feints
+        """
+        pass

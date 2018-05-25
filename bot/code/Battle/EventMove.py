@@ -17,7 +17,7 @@ class EventMove(EventBase):
         self.target = target
 
 
-    def execute(self, battle, *args, **kwargs):
+    async def execute(self, battle, *args, **kwargs):
         """ Implement in other classes. Depending on the event,
         """
         print(MC)
