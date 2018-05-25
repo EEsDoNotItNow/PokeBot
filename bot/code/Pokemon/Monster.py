@@ -325,7 +325,6 @@ class Monster(Pokemon):
             elif self.gender_rate == 8:
                 m_ratio = 0
                 f_ratio = 1
-                self.gender = female
             self.gender = np.random.choice((male, female), p=(m_ratio, f_ratio))
 
         self.xp = await self.calc_xp_for_level(level)
