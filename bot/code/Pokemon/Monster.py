@@ -300,8 +300,43 @@ class Monster(Pokemon):
         em = EmojiMap()
         male = em(":male:")
         female = em(":female:")
-        self.gender = np.random.choice((male, female))
 
+        self.log.info(f"Gender Rate: {self.gender_rate}")
+        if self.gender_rate == -1:
+            self.gender = ''
+
+        elif self.gender_rate == 0:
+            self.gender = male
+
+        elif self.gender_rate == 1:
+            m_ratio = 7 / 8
+            f_ratio = 1 - m_ratio
+            p = (m_ratio, f_ratio)
+            self.log.info(f"p={p}")
+            self.gender = np.random.choice((male, female), p=(m_ratio, f_ratio))
+
+        elif self.gender_rate == 2:
+            m_ratio = 3 / 4
+            f_ratio = 1 - m_ratio
+            self.gender = np.random.choice((male, female), p=(m_ratio, f_ratio))
+
+        elif self.gender_rate == 4:
+            m_ratio = 1 / 2
+            f_ratio = 1 - m_ratio
+            self.gender = np.random.choice((male, female), p=(m_ratio, f_ratio))
+
+        elif self.gender_rate == 6:
+            m_ratio = 1 / 4
+            f_ratio = 1 - m_ratio
+            self.gender = np.random.choice((male, female), p=(m_ratio, f_ratio))
+
+        elif self.gender_rate == 7:
+            m_ratio = 1 / 8
+            f_ratio = 1 - m_ratio
+            self.gender = np.random.choice((male, female), p=(m_ratio, f_ratio))
+
+        elif self.gender_rate == 8:
+            self.gender = female
 
         self.xp = await self.calc_xp_for_level(level)
 
