@@ -4,7 +4,7 @@ from ..Log import Log
 
 
 
-class BaseStateMachine:
+class BaseUserInterface:
     """Base class that all state machines dreive from.
 
     State machines handle three things.

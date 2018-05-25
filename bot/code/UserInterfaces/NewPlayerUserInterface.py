@@ -9,11 +9,11 @@ from ..Player import TrainerStates as TS
 from ..Pokemon import MonsterSpawner
 from ..SQL import SQL
 
-from .BaseStateMachine import BaseStateMachine
+from .BaseUserInterface import BaseUserInterface
 
 
 
-class NewPlayerStateMachine(BaseStateMachine):
+class NewPlayerUserInterface(BaseUserInterface):
     """"Handle a new players creation process
     """
 
@@ -37,7 +37,7 @@ class NewPlayerStateMachine(BaseStateMachine):
         """Run through the player creation process.
         """
         self.started = True
-        self.log.info(f"{self.trainer.trainer_id} Begin our run of NewPlayerStateMachine")
+        self.log.info(f"{self.trainer.trainer_id} Begin our run of NewPlayerUserInterface")
         try:
             await self._run()
         except Exception:
@@ -46,7 +46,7 @@ class NewPlayerStateMachine(BaseStateMachine):
             self.alive = False
         self.trainer.state = TS.IDLE
         await self.trainer.save()
-        self.log.info(f"{self.trainer.trainer_id} Saved status and exited NewPlayerStateMachine")
+        self.log.info(f"{self.trainer.trainer_id} Saved status and exited NewPlayerUserInterface")
 
 
     async def _run(self):

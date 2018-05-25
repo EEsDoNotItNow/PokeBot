@@ -1,10 +1,10 @@
 
 
-from .BaseStateMachine import BaseStateMachine
+from .BaseUserInterface import BaseUserInterface
 
 
 
-class BattleStateMachine(BaseStateMachine):
+class BattleUserInterface(BaseUserInterface):
     """"Handle a pokemon battle
     """
 

@@ -295,7 +295,7 @@ class Monster(Pokemon):
         await self.sql.commit(now=True)
 
 
-    async def spawn(self, level=5):
+    async def spawn(self, level=5, fast=False):
         # We MUST have loaded before we can do anything!
         if not self.loaded:
             await self.load()
@@ -345,6 +345,11 @@ class Monster(Pokemon):
 
         self.hp_current = self.hp
 
+        # All slow operations happen after this gate
+        if fast:
+            return
+
+        
         # Pick moves
         cmd = f"""
             SELECT move_id

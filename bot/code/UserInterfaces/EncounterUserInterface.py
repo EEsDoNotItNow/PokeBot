@@ -4,11 +4,11 @@ import asyncio
 # from ..SQL import SQL
 from ..Player import TrainerStates as TS
 
-from .BaseStateMachine import BaseStateMachine
+from .BaseUserInterface import BaseUserInterface
 
 
 
-class EncounterStateMachine(BaseStateMachine):
+class EncounterUserInterface(BaseUserInterface):
     """"Handle a pokemon battle
     """
 

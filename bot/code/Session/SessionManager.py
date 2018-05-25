@@ -6,7 +6,7 @@ from ..Log import Log
 from ..Player import League
 from ..Player import TrainerStates as TS
 from ..Singleton import Singleton
-from ..StateMachines import NewPlayerStateMachine
+from ..UserInterfaces import NewPlayerUserInterface
 
 from .Session import Session
 
@@ -130,7 +130,7 @@ class SessionManager(metaclass=Singleton):
 
         # I assume that we do not have an active session already, as this player isn't registered.
         session = Session(trainer)
-        session.state_machine = NewPlayerStateMachine(trainer, args)
+        session.state_machine = NewPlayerUserInterface(trainer, args)
         self.sessions.append(session)
         msg = "Your request for registration is in the mail! Please wait 6 to 8 weeks for delivery!"
         await self.client.send_message(message.channel, msg)

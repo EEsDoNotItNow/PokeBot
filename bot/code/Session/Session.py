@@ -11,7 +11,7 @@ from ..Log import Log
 from ..Player import TrainerStates as TS
 from ..Pokemon import MonsterSpawner
 from ..SQL import SQL
-from ..StateMachines import EncounterStateMachine
+from ..UserInterfaces import EncounterUserInterface
 from ..World import World
 
 
@@ -211,7 +211,7 @@ class Session:
         valid_transition_states = [TS.IDLE, TS.WALKING_IN_GRASS]
         if TS(self.trainer.state) in valid_transition_states:
             poke = await MonsterSpawner().spawn_random()
-            self.state_machine = EncounterStateMachine(self.trainer, poke)
+            self.state_machine = EncounterUserInterface(self.trainer, poke)
 
             # Hold the command bus until this script starts!
             while not self.state_machine.started:
