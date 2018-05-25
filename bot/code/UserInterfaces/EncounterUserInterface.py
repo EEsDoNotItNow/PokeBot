@@ -3,6 +3,7 @@ import asyncio
 
 # from ..SQL import SQL
 from ..Player import TrainerStates as TS
+from ..Battle import BattleManager
 
 from .BaseUserInterface import BaseUserInterface
 
@@ -16,6 +17,8 @@ class EncounterUserInterface(BaseUserInterface):
         super().__init__()
         # raise NotImplementedError()
         self.alive = True
+
+        self.battle = BattleManager.get_battle()
 
         self.trainer = trainer
 
@@ -33,6 +36,11 @@ class EncounterUserInterface(BaseUserInterface):
         except Exception:
             self.log.exception(f"{self.trainer.trainer_id} Something went wrong...")
             self.alive = False
+        finally:
+            try:
+                self.battle.deregister(self.trainer)
+            except ValueError:
+                self.log.exception("Failed to deregister, that's weird!")
 
         # TODO: We really should set this to a post battle event...
         self.trainer.state = old_state
@@ -167,7 +175,7 @@ class EncounterUserInterface(BaseUserInterface):
             Register action
         """
         try:
-            choice = self.client.confirm_prompt(self.channel, "Do you want to run away?", user=self.user)
+            choice = await self.client.confirm_prompt(self.channel, "Do you want to run away?", user=self.user)
         except TimeoutError:
             return
 

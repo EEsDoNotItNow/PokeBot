@@ -8,7 +8,7 @@ class EventBase:
 
     def __init__(self):
 
-        # Mark when event has been used.
+        # Mark when event has been processed.
         self.triggered = False
 
         # Mark even ready for processing
