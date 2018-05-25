@@ -2,6 +2,8 @@
 
 from ..Log import Log
 
+
+
 class EventBase:
     """Define the base event for battle events.
     """
