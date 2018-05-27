@@ -46,18 +46,18 @@ class EventBase:
 
 
     async def on_swap(self, swapper):
-        """Called when a pokemon swaps
+        """Called when a Pokemon swaps
         """
         pass
 
 
     async def on_attack(self, attacker, target):
-        """Called when a pokemon attacks a target
+        """Called when a Pokemon attacks a target
         """
         pass
 
 
     async def on_feint(self, attacker, target):
-        """Called when a pokemon feints
+        """Called when a Pokemon feints
         """
         pass
