@@ -1,6 +1,6 @@
 
 
-from ..Log import Log
+from ...Log import Log
 
 
 

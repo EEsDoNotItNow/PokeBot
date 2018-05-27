@@ -1,11 +1,10 @@
 
-
-from ..Battle import BattleManager, EventRun
+from ..Battle import BattleManager
+from ..Battle.Events import EventRun
 from ..Client import EmojiMap
 from ..Player import TrainerStates as TS
 
 from .BaseUserInterface import BaseUserInterface
-
 
 
 class EncounterUserInterface(BaseUserInterface):
