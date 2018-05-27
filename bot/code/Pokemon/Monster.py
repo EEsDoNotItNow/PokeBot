@@ -483,3 +483,17 @@ class Monster(Pokemon):
 
             await self.update_state()
             await self.save()
+
+
+    async def get_moves(self):
+        """Return a list of valid moves for this Monster to use. If there are no valid moves, we return struggle.
+        """
+
+        # Check to see if we have zero PP across all moves
+        if len([x for x in self.move_slots if x is not None and x.pp > 0]) == 0:
+            struggle = MoveSlot(165, slot_number=-1)
+            await struggle.load()
+            return [struggle, ]
+
+        # Otherwise just return our moves
+        return [x for x in self.move_slots if x is not None]

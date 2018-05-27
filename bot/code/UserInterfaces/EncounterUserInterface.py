@@ -147,6 +147,17 @@ class EncounterUserInterface(BaseUserInterface):
             Ask user to pick one, or cancel
             Register action ("fight", n)
         """
+        leader = await self.trainer.party.get_leader()
+        move_options = await leader.get_moves()
+        prompt_question = "Which move should you use?"
+        prompt_list = [str(x) for x in move_options]
+        try:
+            selection = await self.client.select_prompt(self.channel, prompt_question, prompt_list, user=self.user)
+        except TimeoutError:
+            return False
+
+        self.log.info(f"We picked {move_options[selection]}")
+        return False
 
 
     async def _menu_item(self):

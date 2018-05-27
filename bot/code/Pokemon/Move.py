@@ -92,6 +92,7 @@ class MoveSlot(Move):
 
         self.move_uuid = move_uuid
         self.slot_number = slot_number
+        self.pp = None
 
 
     def __repr__(self):
