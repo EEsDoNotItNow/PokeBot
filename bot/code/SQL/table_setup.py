@@ -325,6 +325,7 @@ async def table_setup():
                 pokemon_id TEXT NOT NULL,
                 name TEXT,
                 hp INTEGER NOT NULL,
+                current_hp INTEGER,
                 attack INTEGER NOT NULL,
                 defense INTEGER NOT NULL,
                 sp_attack INTEGER NOT NULL,
@@ -360,7 +361,8 @@ async def table_setup():
             CREATE TABLE move_slots
             (
                 move_id TEXT NOT NULL,
-                move_uuid TEXT NOT NULL,
+                move_slot_uuid TEXT NOT NULL UNIQUE,
+                monster_id,
                 slot_number INTEGER NOT NULL,
                 pp INTEGER NOT NULL,
                 pp_max_slot INTEGER NOT NULL

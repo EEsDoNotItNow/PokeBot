@@ -41,7 +41,7 @@ class Monster(Pokemon):
         # Setup some sensible default values
         self.name = None
 
-        self.hp_current = -1
+        self.current_hp = -1
 
         self.level = -1
 
@@ -50,7 +50,7 @@ class Monster(Pokemon):
         self.gender = None
         self.xp = 0
 
-        # "Genetics" of the pokemon
+        # "Genetics" of the Pokemon
         self.iv_hp = 0
         self.iv_attack = 0
         self.iv_defense = 0
@@ -118,7 +118,7 @@ class Monster(Pokemon):
 
         em.add_field(name="Type", value=f"{str(self.type1).title()}{type2}")
 
-        stats_block = f"`HP: {self.hp_current}/{self.hp}`"
+        stats_block = f"`HP: {self.current_hp}/{self.hp}`"
         stats_block += f"\n`ATK: {self.attack}`"
         stats_block += f"\n`DEF: {self.defense}`"
         stats_block += f"\n`S.ATK: {self.sp_attack}`"
@@ -164,14 +164,14 @@ class Monster(Pokemon):
         msg += f"{ng_tag:13} {lv_tag:5}"
 
         # Handle HP bar
-        hp_ratio = self.hp_current / self.hp
+        hp_ratio = self.current_hp / self.hp
 
         hp_blocks_full = int(bar_length * hp_ratio)
         hp_blocks_empty = bar_length - hp_blocks_full
 
         msg += f"\nHP:[{'#' * hp_blocks_full}{' ' * hp_blocks_empty}]"
         if not opponent:
-            msg += f" {self.hp_current}/{self.hp}"
+            msg += f" {self.current_hp}/{self.hp}"
 
         # Handle XP bar
         if not opponent:
@@ -229,6 +229,19 @@ class Monster(Pokemon):
         await super().load()
 
         await self.update_state()
+
+        cmd = """
+            SELECT move_slot_uuid
+            FROM move_slots
+            WHERE monster_id=:monster_id
+        """
+
+        moves = cur.execute(cmd, self.__dict__).fetchall()
+        for move in moves:
+            move = MoveSlot(move_slot_uuid=move['move_slot_uuid'])
+            await move.load()
+            self.move_slots[move.slot_number] = move
+
         self.loaded = True
 
 
@@ -241,6 +254,7 @@ class Monster(Pokemon):
                 pokemon_id,
                 name,
                 hp,
+                current_hp,
                 attack,
                 defense,
                 sp_attack,
@@ -268,6 +282,7 @@ class Monster(Pokemon):
                 :pokemon_id,
                 :name,
                 :hp,
+                :current_hp,
                 :attack,
                 :defense,
                 :sp_attack,
@@ -294,6 +309,12 @@ class Monster(Pokemon):
         """
         # Build data table
         cur.execute(cmd, self.__dict__)
+
+        for move in self.move_slots:
+            if move is None:
+                continue
+            await move.save()
+
         await self.sql.commit(now=True)
 
 
@@ -345,7 +366,7 @@ class Monster(Pokemon):
 
         await self.update_state()
 
-        self.hp_current = self.hp
+        self.current_hp = self.hp
 
         # All slow operations happen after this gate
         if fast:
@@ -363,14 +384,18 @@ class Monster(Pokemon):
         cur = self.sql.cur
         data = cur.execute(cmd).fetchall()
         for idx, move_id in enumerate(data[:4]):
-            self.log.info(move_id)
+
+            self.log.debug(move_id)
+
             cmd = f"""
                 SELECT *
                 FROM moves
                 WHERE move_id=:move_id"""
             move_data = cur.execute(cmd, move_id).fetchone()
-            self.log.info(move_data)
-            self.move_slots[idx] = MoveSlot(move_data['move_id'], slot_number=idx)
+
+            self.log.debug(move_data)
+
+            self.move_slots[idx] = MoveSlot(move_data['move_id'], monster_id=self.monster_id, slot_number=idx)
             await self.move_slots[idx].load()
 
 
@@ -432,12 +457,12 @@ class Monster(Pokemon):
         if amount <= 0:
             return
 
-        self.hp_current -= amount
+        self.current_hp -= amount
 
-        if self.hp_current <= 0:
+        if self.current_hp <= 0:
             # This will clear all
             self.status = EnumStatus.DEAD
-            self.hp_current = 0
+            self.current_hp = 0
 
 
     async def heal(self, amount=None):
@@ -448,15 +473,15 @@ class Monster(Pokemon):
         """
         amount = int(amount)
         if amount > 0:
-            if self.hp_current + amount > self.hp:
-                self.hp_current = self.hp
+            if self.current_hp + amount > self.hp:
+                self.current_hp = self.hp
             else:
-                self.hp_current += amount
+                self.current_hp += amount
         elif amount <= 0:
             # Do nothing, you cannot heal by a negative amount!
             pass
         elif amount is None:
-            self.hp_current = self.hp
+            self.current_hp = self.hp
 
 
     async def capture(self, trainer_id):
