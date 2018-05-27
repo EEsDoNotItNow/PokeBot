@@ -1,7 +1,7 @@
 from ..EventMove import EventMove
 
 
-class M33_Tackle(EventMove):
+class M10_Scratch(EventMove):
 
 
     def __init__(self, battle, user, target=None):
@@ -11,6 +11,4 @@ class M33_Tackle(EventMove):
     async def execute(self):
         """ Implement in other classes. Depending on the event,
         """
-        target = await self._find_target_poke()
-
-        self.log.info(f"Targeting {target} ({type(target)}) with a tackle!")
+        raise NotImplementedError()

@@ -1,6 +1,6 @@
 
 from ..Battle import BattleManager
-from ..Battle.Events import EventRun
+from ..Battle.Events import EventRun, MoveSpawner
 from ..Client import EmojiMap
 from ..Player import TrainerStates as TS
 
@@ -29,6 +29,8 @@ class EncounterUserInterface(BaseUserInterface):
         self.log.info(f"{self.trainer.trainer_id} Begin our run of {self.__class__.__name__}")
         old_state = self.trainer.state
         self.trainer.state = TS.ENCOUNTER
+        await self.battle.register(self.trainer)
+        await self.battle.register(self.opponent)
         try:
             await self._run()
         except Exception:
@@ -93,7 +95,7 @@ class EncounterUserInterface(BaseUserInterface):
                 self._menu_fight,
                 self._menu_item,
                 # self._menu_pokemon,
-                self._menu_run]
+                self._menu_run_away]
 
             picked_action = await menu_list[selection]()
 
@@ -157,6 +159,15 @@ class EncounterUserInterface(BaseUserInterface):
             return False
 
         self.log.info(f"We picked {move_options[selection]}")
+
+        try:
+            move = await MoveSpawner.get_move(move_options[selection].move_id)
+            await self.battle.register_event(move(self.battle, leader))
+            return True
+        except Exception:
+            self.log.exception(f"Getting a move failed! Selection was: {selection}"
+                               f" and move was {move_options[selection]}")
+
         return False
 
 
@@ -179,7 +190,7 @@ class EncounterUserInterface(BaseUserInterface):
         """
 
 
-    async def _menu_run(self):
+    async def _menu_run_away(self):
         """
             Prompt user to run
             Register action

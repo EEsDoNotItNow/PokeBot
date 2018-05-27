@@ -7,6 +7,7 @@ import uuid
 from ..Log import Log
 from ..SQL import SQL
 from ..Client import EmojiMap
+from ..Player import Trainer
 
 from .Pokemon import Pokemon
 from .Move import MoveSlot
@@ -88,11 +89,15 @@ class Monster(Pokemon):
 
 
     def __eq__(self, other):
-        if type(other) is Monster:
+        if isinstance(other, Monster):
             return self.monster_id == other.monster_id and self.pokemon_id == other.pokemon_id
-        if type(other) is Pokemon:
+        elif isinstance(other, Pokemon):
             return self.pokemon_id == other.pokemon_id
-        raise NotImplementedError
+        # Trainer.Trainer to resolve circular import
+        elif isinstance(other, Trainer.Trainer):
+            return False
+        self.log.info(f"We can't compare {self} and {other}")
+        raise NotImplementedError()
 
 
     def __ne__(self, other):

@@ -185,8 +185,8 @@ class Trainer:
 
 
     def __eq__(self, other):
-        if type(other) != Trainer:
-            raise NotImplementedError()
+        if not isinstance(other, type(self)):
+            return False
 
         return str(self.trainer_id) == str(other.trainer_id)
 

@@ -4,8 +4,10 @@ import uuid
 
 # from ..Pokemon import Monster
 
-from ..Singleton import SingletonArgs
 from ..Log import Log
+from ..Player import Trainer
+from ..Pokemon import Pokemon
+from ..Singleton import SingletonArgs
 
 from .Events import EventBase
 
@@ -29,6 +31,9 @@ class Battle(metaclass=SingletonArgs):
 
         self.participants = []
 
+        # Participant location indicates Pokemon location!
+        self.pokemon_on_field = [[], []]
+
         self.events = []
 
         self.effects = []
@@ -42,7 +47,15 @@ class Battle(metaclass=SingletonArgs):
         """
         if participant in self.participants:
             raise ValueError(f"Participant {participant} already in battle!")
-        self.participants.append(participant)
+        else:
+            self.participants.append(participant)
+
+        side_of_field = self.participants.index(participant)
+        if isinstance(participant, Trainer):
+            poke = await participant.party.get_leader()
+            self.pokemon_on_field[side_of_field].append(poke)
+        elif isinstance(participant, Pokemon):
+            self.pokemon_on_field[side_of_field].append(participant)
 
 
     async def deregister(self, participant):
@@ -90,6 +103,8 @@ class Battle(metaclass=SingletonArgs):
             return
 
         self.executing = True
+
+        self._log[self.turn] = []
 
         try:
             # Handle any run events
