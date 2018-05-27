@@ -17,6 +17,7 @@ doxypypy = "*"
 
 nose = "*"
 nose-timer = "*"
+mypy = "*"
 
 
 [requires]
