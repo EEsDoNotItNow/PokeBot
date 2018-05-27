@@ -1,5 +1,3 @@
-
-
 from ...Log import Log
 
 

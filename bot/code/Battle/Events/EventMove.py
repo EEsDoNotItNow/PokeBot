@@ -1,5 +1,3 @@
-
-
 from ...Pokemon.Enums import EnumMoveCategory as MC
 
 from .EventBase import EventBase
