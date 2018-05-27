@@ -1,8 +1,8 @@
 
 from .Battle import Battle
 from .BattleManager import BattleManager
-from .EventBase import EventBase
-from .EventRun import EventRun
+from .Event.EventBase import EventBase
+from .Event.EventRun import EventRun
 
 __all__ = [
     Battle,
