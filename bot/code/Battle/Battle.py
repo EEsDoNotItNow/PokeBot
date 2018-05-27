@@ -7,7 +7,7 @@ import uuid
 from ..Singleton import SingletonArgs
 from ..Log import Log
 
-from .EventRun import EventRun
+from .Events import EventBase
 
 
 class Battle(metaclass=SingletonArgs):
@@ -95,19 +95,38 @@ class Battle(metaclass=SingletonArgs):
             # Handle any run events
             for event in self.events:
                 self.log.info(f"Found event {event}")
-                if type(event) is not EventRun:
+                if not isinstance(event, EventBase):
+                    self.log.error(f"Found {event} in {self.events}, this should never happen.")
                     continue
 
                 await event.execute()
 
                 # Is the battle over?
                 if not self.active:
+                    self.log.info("Battle is now completed, ending!")
                     return
 
         except Exception:
             self.log.exception("Caught while running Battle.execute.")
         finally:
-
             self.executing = False
             self.turn += 1
             self.log.info(f"Finished on turn {self.turn}")
+
+
+    async def on_swap(self, swapper):
+        """Called when a Pokemon swaps
+        """
+        pass
+
+
+    async def on_attack(self, attacker, target):
+        """Called when a Pokemon attacks a target
+        """
+        pass
+
+
+    async def on_feint(self, attacker, target):
+        """Called when a Pokemon feints
+        """
+        pass
