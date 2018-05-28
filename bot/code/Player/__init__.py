@@ -1,6 +1,6 @@
-from .Trainer import Trainer
 from .League import League
 from .States import TrainerStates
+from .Trainer import Trainer
 
 __all__ = [
     League,
