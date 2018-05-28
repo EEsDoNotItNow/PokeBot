@@ -6,8 +6,8 @@ class MoveSpawner:
     """Return move objects to simplify other code
     """
     moves = {
-        10: Moves.M10_Scratch,
-        33: Moves.M33_Tackle,
+        10: Moves.M010_Scratch,
+        33: Moves.M033_Tackle,
         165: Moves.M165_Struggle,
     }
 

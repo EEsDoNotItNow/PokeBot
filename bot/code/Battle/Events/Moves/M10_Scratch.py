@@ -1,7 +1,7 @@
 from ..EventMove import EventMove
 
 
-class M10_Scratch(EventMove):
+class M010_Scratch(EventMove):
 
 
     def __init__(self, battle, user, target=None):

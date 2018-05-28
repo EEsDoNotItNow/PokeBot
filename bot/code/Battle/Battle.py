@@ -116,6 +116,10 @@ class Battle(metaclass=SingletonArgs):
 
                 await event.execute()
 
+                # Check all active Pokemon for hp <= 0, mark them as feigned
+
+                # Fight all feigned Pokemon, remove them from the battle field
+
                 # Is the battle over?
                 if not self.active:
                     self.log.info("Battle is now completed, ending!")

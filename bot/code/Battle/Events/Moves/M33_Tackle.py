@@ -1,7 +1,7 @@
 from ..EventMove import EventMove
 
 
-class M33_Tackle(EventMove):
+class M033_Tackle(EventMove):
 
 
     def __init__(self, battle, user, target=None):
