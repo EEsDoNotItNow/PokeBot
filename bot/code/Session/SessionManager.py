@@ -34,7 +34,7 @@ class SessionManager(metaclass=Singleton):
         """Tick current game state
         """
         while 1:
-            await asyncio.sleep(15)
+            await asyncio.sleep(5)
             self.log.debug("Tick")
             for session in self.sessions:
                 asyncio.ensure_future(session.tick())

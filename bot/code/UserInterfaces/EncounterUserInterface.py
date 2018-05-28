@@ -46,6 +46,8 @@ class EncounterUserInterface(BaseUserInterface):
         self.trainer.state = old_state
         await self.trainer.save()
         self.log.info(f"{self.trainer.trainer_id} Saved status and exited {self.__class__.__name__}")
+        msg = "Encounter is completed!"
+        await self.client.send_message(self.user, msg)
 
 
     async def _run(self):
@@ -201,5 +203,6 @@ class EncounterUserInterface(BaseUserInterface):
             return False
 
         if choice:
-            await self.battle.register_event(EventRun(self.battle, self.trainer))
+            poke = await self.trainer.party.get_leader()
+            await self.battle.register_event(EventRun(self.battle, poke))
         return True

@@ -210,14 +210,14 @@ class Session:
         # Check for valid states that we can stop from
         valid_transition_states = [TS.IDLE, TS.WALKING_IN_GRASS]
         if TS(self.trainer.state) in valid_transition_states:
-            poke = await MonsterSpawner().spawn_random()
+            poke = await MonsterSpawner().spawn_random(level_cap=5)
             self.state_machine = EncounterUserInterface(self.trainer, poke)
 
             # Hold the command bus until this script starts!
             while not self.state_machine.started:
                 await asyncio.sleep(1)
         else:
-            self.log.warning(f"Cannot run test while {self.trainer.state}")
+            self.log.warning(f"Cannot run test while {self.trainer.state} ({self.trainer.state.name})")
 
         self.log.info("Command Complete")
         return

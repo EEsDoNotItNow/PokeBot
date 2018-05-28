@@ -9,18 +9,31 @@ class EventBase:
 
     def __init__(self, battle):
 
-        # Mark when event has been processed.
+        # Mark when event has started
         self.triggered = False
+
+        # Mark when event has started
+        self.completed = False
 
         # Mark even ready for processing
         self.ready = False
 
         self.battle = battle
 
-        #
         self.turns = -1
+
         self.log = Log()
-        pass
+
+
+    async def _find_target_poke(self):
+        """Attempt to find our target
+        """
+        for side in self.battle.pokemon_on_field:
+            for pokemon in side:
+                if pokemon != self.user:
+                    return pokemon
+
+        raise RuntimeError("Couldn't find a participant in battle!")
 
 
     async def setup(self):
@@ -55,7 +68,13 @@ class EventBase:
         pass
 
 
-    async def on_feint(self, attacker, target):
+    async def on_damage(self, target):
+        """Called when a Pokemon takes damage
+        """
+        pass
+
+
+    async def on_feint(self, feinter):
         """Called when a Pokemon feints
         """
         pass

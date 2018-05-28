@@ -62,7 +62,7 @@ class Move:
         """Load data from DB on this move
         """
         cmd = f"SELECT * FROM moves WHERE move_id={self.move_id}"
-        self.log.info(cmd)
+        self.log.debug(cmd)
         cur = self.sql.cur
         data = cur.execute(cmd).fetchone()
         if data is None:
@@ -151,7 +151,7 @@ class MoveSlot(Move):
             for key in data:
                 setattr(self, key, data[key])
             # We don't know our move_id until we have loaded from the SQL DB, load that info now
-            self.log.info(self.__dict__)
+            self.log.debug(self.__dict__)
             await super().load()
         self.move_slot_loaded = True
 

@@ -7,12 +7,11 @@ import uuid
 from ..Log import Log
 from ..Player import Trainer
 from ..Pokemon import Pokemon
-from ..Singleton import SingletonArgs
 
 from .Events import EventBase
 
 
-class Battle(metaclass=SingletonArgs):
+class Battle:
 
 
     def __init__(self, battle_id=None, encounter=False, trainer=False, players=False):
@@ -59,7 +58,7 @@ class Battle(metaclass=SingletonArgs):
 
 
     async def deregister(self, participant):
-        self.participants = [x for x in self.participants if x[0] is not participant]
+        self.participants = [x for x in self.participants if x is not participant]
 
 
     async def register_event(self, event):
@@ -125,6 +124,9 @@ class Battle(metaclass=SingletonArgs):
                     self.log.info("Battle is now completed, ending!")
                     return
 
+            # Remove remaining events
+            self.events = [x for x in self.events if x.triggered and not x.completed]
+
         except Exception:
             self.log.exception("Caught while running Battle.execute.")
         finally:
@@ -136,16 +138,26 @@ class Battle(metaclass=SingletonArgs):
     async def on_swap(self, swapper):
         """Called when a Pokemon swaps
         """
-        pass
+        for event in self.events:
+            await event.on_swap(swapper)
 
 
     async def on_attack(self, attacker, target):
         """Called when a Pokemon attacks a target
         """
-        pass
+        for event in self.events:
+            await event.on_attack(attacker, target)
 
 
-    async def on_feint(self, attacker, target):
+    async def on_damage(self, target):
+        """Called when a Pokemon takes damage
+        """
+        for event in self.events:
+            await event.on_damage(target)
+
+
+    async def on_feint(self, feinter):
         """Called when a Pokemon feints
         """
-        pass
+        for event in self.events:
+            await event.on_feint(feinter)

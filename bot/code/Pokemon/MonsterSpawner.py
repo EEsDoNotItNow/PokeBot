@@ -29,7 +29,7 @@ class MonsterSpawner:
         return poke
 
 
-    async def spawn_random(self):
+    async def spawn_random(self, level_cap=100):
         """ Pick a poke at random from the dex and spawn it!
         """
         cur = self.sql.cur
@@ -41,5 +41,5 @@ class MonsterSpawner:
 
         # NOTE: This is how monsters must be spawned, as we cannot call async functions in __init__!!!
         poke = Monster(pokemon_id=pokemon_id)
-        await poke.spawn(np.random.randint(1, 101))
+        await poke.spawn(np.random.randint(1, level_cap + 1))
         return poke
