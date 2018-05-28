@@ -6,7 +6,7 @@ import uuid
 
 from ..Log import Log
 from ..Player import Trainer
-from ..Pokemon import Pokemon
+from ..Pokemon import Pokemon, EnumStatus
 
 from .Events import EventBase
 
@@ -115,14 +115,20 @@ class Battle:
 
                 await event.execute()
 
-                # Check all active Pokemon for hp <= 0, mark them as feigned
+            # Check all active Pokemon for hp <= 0, mark them as feigned
+            for side in self.pokemon_on_field:
+                for pokemon in side:
+                    if pokemon.current_hp <= 0 and not (pokemon.status & EnumStatus.FAINT):
+                        pokemon.status = EnumStatus.FAINT
 
-                # Fight all feigned Pokemon, remove them from the battle field
+            # For all feigned Pokemon, remove them from the battle field
+            for side in self.pokemon_on_field:
+                side = [poke for poke in side if not (pokemon.status & EnumStatus.FAINT)]
 
-                # Is the battle over?
-                if not self.active:
-                    self.log.info("Battle is now completed, ending!")
-                    return
+            # Is the battle over?
+            if not self.active:
+                self.log.info("Battle is now completed, ending!")
+                return
 
             # Remove remaining events
             self.events = [x for x in self.events if x.triggered and not x.completed]

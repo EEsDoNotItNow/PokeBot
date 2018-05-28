@@ -8,6 +8,7 @@ from enum import auto
 class EnumStatus(enum.Flag):
     ALIVE = auto()
     DEAD = auto()
+    FAINT = auto()
     FROZEON = auto()
     SLEEP = auto()
     PARALYZED = auto()
