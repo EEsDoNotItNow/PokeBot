@@ -18,4 +18,4 @@ class EventMove(EventBase):
     async def execute(self, *args, **kwargs):
         """ Implement in other classes. Depending on the event,
         """
-        print(MC)
+        self.log.info(MC)
