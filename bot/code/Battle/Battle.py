@@ -119,11 +119,19 @@ class Battle:
             for side in self.pokemon_on_field:
                 for pokemon in side:
                     if pokemon.current_hp <= 0 and not (pokemon.status & EnumStatus.FAINT):
+                        self.log.error(f"Found that {pokemon} was under 0 hp, but not Fainted? This should never happen.")
                         pokemon.status = EnumStatus.FAINT
 
             # For all feigned Pokemon, remove them from the battle field
             for side in self.pokemon_on_field:
-                side = [poke for poke in side if not (pokemon.status & EnumStatus.FAINT)]
+                side = [poke for poke in side if not (poke.status & EnumStatus.FAINT)]
+
+            # If we are fighting a wild pokemon, the battle is now over
+            if isinstance(self.participants[1], Pokemon) and (self.participants[1].status & EnumStatus.FAINT):
+                self.log.info("Battle is concluded, opponent has fainted")
+                self.active = False
+
+            # TODO: Where the heck does XP get awarded?
 
             # Is the battle over?
             if not self.active:

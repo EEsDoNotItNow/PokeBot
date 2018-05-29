@@ -1,6 +1,6 @@
 import numpy as np
 
-from ....Pokemon import Move
+from ....Pokemon import Move, EnumStatus
 from ..EventMove import EventMove
 
 
@@ -41,7 +41,13 @@ class M033_Tackle(EventMove):
 
         await target.damage(damage)
 
-        await self.battle.log_event(f"{self.user.name} hit {target.name} for {damage}!")
+        await self.battle.log_event(f"{self.user.name} hit {target.name} for {damage}.")
+
+        if target.status == EnumStatus.FAINT:
+            await self.battle.log_event(f"{target.name} has fainted!")
+        else:
+            self.log.info(f"Target has {target.current_hp} remaining")
+
 
         self.triggered = True
         self.completed = True

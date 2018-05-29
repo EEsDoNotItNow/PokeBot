@@ -466,7 +466,7 @@ class Monster(Pokemon):
 
         if self.current_hp <= 0:
             # This will clear all
-            self.status = EnumStatus.DEAD
+            self.status = EnumStatus.FAINT
             self.current_hp = 0
 
 
