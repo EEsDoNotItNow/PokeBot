@@ -119,7 +119,8 @@ class Battle:
             for side in self.pokemon_on_field:
                 for pokemon in side:
                     if pokemon.current_hp <= 0 and not (pokemon.status & EnumStatus.FAINT):
-                        self.log.error(f"Found that {pokemon} was under 0 hp, but not Fainted? This should never happen.")
+                        self.log.error(f"Found that {pokemon} was under 0 hp,"
+                                       " but not Fainted? This should never happen.")
                         pokemon.status = EnumStatus.FAINT
 
             # For all feigned Pokemon, remove them from the battle field
